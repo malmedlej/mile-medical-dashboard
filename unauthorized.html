@@ -25,7 +25,7 @@
       text-align: center;
       line-height: 1.5;
     }
-    button {
+    .login-btn {
       background-color: #0078d4;
       color: white;
       border: none;
@@ -34,8 +34,9 @@
       font-size: 16px;
       cursor: pointer;
       transition: background-color 0.3s;
+      text-decoration: none;
     }
-    button:hover {
+    .login-btn:hover {
       background-color: #005ea2;
     }
     img {
@@ -51,4 +52,6 @@
     Only Mile Medical employees can access this dashboard.<br />
     Please sign in using your <strong>@milemedical.com</strong> account.
   </p>
-  <button onclick="window.location.href='/auth/login/aad'">S
+  <a href="/.auth/login/aad" class="login-btn">Sign in with Microsoft</a>
+</body>
+</html>
