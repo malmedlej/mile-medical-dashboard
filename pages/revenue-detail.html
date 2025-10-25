@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mile Medical Company - Revenue Detailed Analysis">
+    <title>Revenue Analysis | Mile Medical</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div id="sidebarContainer"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div id="headerContainer"></div>
+            
+            <!-- Content Area -->
+            <main class="content">
+                <div class="detail-page-header">
+                    <a href="../index.html" class="back-button">← Back to Dashboard</a>
+                    <h1 class="detail-title">Revenue Analysis</h1>
+                    <p class="detail-subtitle">Comprehensive revenue breakdown and performance metrics</p>
+                </div>
+                
+                <!-- Metric Overview -->
+                <div class="metric-overview">
+                    <div class="metric-card">
+                        <div class="metric-label">Current Month</div>
+                        <div class="metric-number">$5.8M</div>
+                        <div class="metric-change trend up">↑ 12.5%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Last Month</div>
+                        <div class="metric-number">$5.2M</div>
+                        <div class="metric-change">Previous period</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">YTD Revenue</div>
+                        <div class="metric-number">$32.4M</div>
+                        <div class="metric-change trend up">↑ 18.3%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Annual Target</div>
+                        <div class="metric-number">$65.0M</div>
+                        <div class="metric-change">49.8% achieved</div>
+                    </div>
+                </div>
+                
+                <!-- Tabs Navigation -->
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="overview">Overview</button>
+                    <button class="tab-button" data-tab="products">By Product</button>
+                    <button class="tab-button" data-tab="regions">By Region</button>
+                    <button class="tab-button" data-tab="trends">Trends</button>
+                </div>
+                
+                <!-- Tab Contents -->
+                <div id="overview" class="tab-content active">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">12-Month Revenue Trend</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="revenueDetailChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Revenue vs Target</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="revenueTargetChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-card mt-3">
+                        <div class="table-header">
+                            <h3 class="table-title">Monthly Revenue Breakdown</h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Revenue</th>
+                                    <th>Target</th>
+                                    <th>Achievement</th>
+                                    <th>Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>January 2024</td>
+                                    <td>$4.2M</td>
+                                    <td>$4.0M</td>
+                                    <td><span class="status-badge status-success">105%</span></td>
+                                    <td><span class="trend up">↑ 8.5%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>February 2024</td>
+                                    <td>$4.5M</td>
+                                    <td>$4.0M</td>
+                                    <td><span class="status-badge status-success">112.5%</span></td>
+                                    <td><span class="trend up">↑ 7.1%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>March 2024</td>
+                                    <td>$4.8M</td>
+                                    <td>$4.5M</td>
+                                    <td><span class="status-badge status-success">106.7%</span></td>
+                                    <td><span class="trend up">↑ 6.7%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>April 2024</td>
+                                    <td>$5.1M</td>
+                                    <td>$4.5M</td>
+                                    <td><span class="status-badge status-success">113.3%</span></td>
+                                    <td><span class="trend up">↑ 6.3%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>May 2024</td>
+                                    <td>$5.4M</td>
+                                    <td>$5.0M</td>
+                                    <td><span class="status-badge status-success">108%</span></td>
+                                    <td><span class="trend up">↑ 5.9%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>June 2024</td>
+                                    <td>$5.8M</td>
+                                    <td>$5.0M</td>
+                                    <td><span class="status-badge status-success">116%</span></td>
+                                    <td><span class="trend up">↑ 7.4%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="products" class="tab-content">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Revenue by Product Category</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="productRevenueChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Top 10 Products</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="topProductsDetailChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="regions" class="tab-content">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Revenue by Region</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="regionRevenueChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Regional Growth Comparison</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="regionGrowthChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="trends" class="tab-content">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Year-over-Year Comparison</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="yoyComparisonChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Quarterly Performance</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="quarterlyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Footer -->
+            <div id="footerContainer"></div>
+        </div>
+    </div>
+    
+    <!-- SharePoint Floating Action Button -->
+    <a href="https://milemedical.sharepoint.com/" target="_blank" class="sharepoint-fab" title="Open SharePoint Portal">
+        <span>☁️</span>
+        <span class="fab-tooltip">Open SharePoint Portal</span>
+    </a>
+    
+    <!-- Load Partials and Scripts -->
+    <script>
+        // Load sidebar
+        fetch('../partials/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('sidebarContainer').innerHTML = html;
+            });
+        
+        // Load header
+        fetch('../partials/header.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('headerContainer').innerHTML = html;
+            });
+        
+        // Load footer
+        fetch('../partials/footer.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('footerContainer').innerHTML = html;
+            });
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script src="../js/main.js"></script>
+    
+    <!-- Page-specific Charts -->
+    <script>
+        // Wait for DOM and Chart.js to load
+        window.addEventListener('load', function() {
+            // 12-Month Revenue Trend
+            new Chart(document.getElementById('revenueDetailChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [4200, 4500, 4800, 5100, 5400, 5800, 6100, 6400, 6700, 7000, 7300, 7600],
+                        borderColor: '#3FABE6',
+                        backgroundColor: 'rgba(63, 171, 230, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+            
+            // Revenue vs Target
+            new Chart(document.getElementById('revenueTargetChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Actual',
+                        data: [4200, 4500, 4800, 5100, 5400, 5800],
+                        backgroundColor: '#48BB78'
+                    }, {
+                        label: 'Target',
+                        data: [4000, 4000, 4500, 4500, 5000, 5000],
+                        backgroundColor: '#3FABE6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Product Revenue
+            new Chart(document.getElementById('productRevenueChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Surgical Supplies', 'Diagnostic Equipment', 'Pharmaceuticals', 'Medical Devices', 'Other'],
+                    datasets: [{
+                        data: [3200, 2800, 2100, 1800, 900],
+                        backgroundColor: ['#1B1464', '#3FABE6', '#48BB78', '#F6AD55', '#9F7AEA']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Top Products
+            new Chart(document.getElementById('topProductsDetailChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Product A', 'Product B', 'Product C', 'Product D', 'Product E', 'Product F', 'Product G', 'Product H', 'Product I', 'Product J'],
+                    datasets: [{
+                        label: 'Revenue ($K)',
+                        data: [1200, 980, 850, 720, 650, 580, 520, 480, 420, 380],
+                        backgroundColor: '#1B1464'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Region Revenue
+            new Chart(document.getElementById('regionRevenueChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East'],
+                    datasets: [{
+                        data: [4200, 3800, 2900, 1800, 1100],
+                        backgroundColor: ['#1B1464', '#3FABE6', '#48BB78', '#F6AD55', '#9F7AEA']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Regional Growth
+            new Chart(document.getElementById('regionGrowthChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['North America', 'Europe', 'Asia Pacific', 'Latin America', 'Middle East'],
+                    datasets: [{
+                        label: 'Growth Rate (%)',
+                        data: [12.5, 15.8, 22.3, 18.7, 14.2],
+                        backgroundColor: '#48BB78'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Year-over-Year Comparison
+            new Chart(document.getElementById('yoyComparisonChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: '2024',
+                        data: [4200, 4500, 4800, 5100, 5400, 5800],
+                        borderColor: '#3FABE6',
+                        tension: 0.4
+                    }, {
+                        label: '2023',
+                        data: [3600, 3800, 4100, 4300, 4500, 4900],
+                        borderColor: '#9F7AEA',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Quarterly Performance
+            new Chart(document.getElementById('quarterlyChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023', 'Q1 2024', 'Q2 2024'],
+                    datasets: [{
+                        label: 'Revenue ($M)',
+                        data: [11.5, 12.7, 13.2, 14.8, 13.5, 16.3],
+                        backgroundColor: '#1B1464'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    </script>
+</body>
+</html>

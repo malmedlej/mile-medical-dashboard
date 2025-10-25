@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Mile Medical Company - RFQ Detailed Analysis">
+    <title>RFQ Analysis | Mile Medical</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div id="sidebarContainer"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div id="headerContainer"></div>
+            
+            <!-- Content Area -->
+            <main class="content">
+                <div class="detail-page-header">
+                    <a href="../operations.html" class="back-button">← Back to Operations</a>
+                    <h1 class="detail-title">RFQ Management & Analysis</h1>
+                    <p class="detail-subtitle">Request for Quotation processing metrics and supplier responses</p>
+                </div>
+                
+                <!-- Metric Overview -->
+                <div class="metric-overview">
+                    <div class="metric-card">
+                        <div class="metric-label">Active RFQs</div>
+                        <div class="metric-number">178</div>
+                        <div class="metric-change trend up">↑ 15.2%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Avg Response Time</div>
+                        <div class="metric-number">2.3 days</div>
+                        <div class="metric-change trend down">↓ 0.4 days</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Completion Rate</div>
+                        <div class="metric-number">95.6%</div>
+                        <div class="metric-change trend up">↑ 2.1%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Cost Savings</div>
+                        <div class="metric-number">$428K</div>
+                        <div class="metric-change trend up">↑ 8.5%</div>
+                    </div>
+                </div>
+                
+                <!-- Tabs Navigation -->
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="overview">Overview</button>
+                    <button class="tab-button" data-tab="status">Status Tracking</button>
+                    <button class="tab-button" data-tab="suppliers">Supplier Response</button>
+                    <button class="tab-button" data-tab="analytics">Analytics</button>
+                </div>
+                
+                <!-- Tab Contents -->
+                <div id="overview" class="tab-content active">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Monthly RFQ Volume</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="rfqDetailChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">RFQ Status Distribution</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="rfqStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-card mt-3">
+                        <div class="table-header">
+                            <h3 class="table-title">Recent RFQs</h3>
+                            <div class="table-actions">
+                                <div class="search-box">
+                                    <span class="search-icon">🔍</span>
+                                    <input type="text" class="search-input" placeholder="Search RFQs..." data-table="rfqDetailTable">
+                                </div>
+                                <button class="btn btn-primary" onclick="MileDashboard.exportTableToCSV('rfqDetailTable', 'rfq-details')">
+                                    📊 Export CSV
+                                </button>
+                            </div>
+                        </div>
+                        <table class="data-table" id="rfqDetailTable">
+                            <thead>
+                                <tr>
+                                    <th>RFQ ID</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Suppliers</th>
+                                    <th>Created</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>RFQ-2024-3287</td>
+                                    <td>Surgical Masks (N95)</td>
+                                    <td>5,000 units</td>
+                                    <td>3</td>
+                                    <td>2024-01-20</td>
+                                    <td>2024-01-27</td>
+                                    <td><span class="status-badge status-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td>RFQ-2024-3286</td>
+                                    <td>Disposable Gloves</td>
+                                    <td>10,000 pairs</td>
+                                    <td>5</td>
+                                    <td>2024-01-20</td>
+                                    <td>2024-01-25</td>
+                                    <td><span class="status-badge status-info">Under Review</span></td>
+                                </tr>
+                                <tr>
+                                    <td>RFQ-2024-3285</td>
+                                    <td>Diagnostic Test Kits</td>
+                                    <td>2,500 units</td>
+                                    <td>4</td>
+                                    <td>2024-01-19</td>
+                                    <td>2024-01-24</td>
+                                    <td><span class="status-badge status-success">Approved</span></td>
+                                </tr>
+                                <tr>
+                                    <td>RFQ-2024-3284</td>
+                                    <td>IV Fluids (Saline)</td>
+                                    <td>1,200 bags</td>
+                                    <td>2</td>
+                                    <td>2024-01-19</td>
+                                    <td>2024-01-26</td>
+                                    <td><span class="status-badge status-success">Approved</span></td>
+                                </tr>
+                                <tr>
+                                    <td>RFQ-2024-3283</td>
+                                    <td>Syringes (10ml)</td>
+                                    <td>8,000 units</td>
+                                    <td>6</td>
+                                    <td>2024-01-18</td>
+                                    <td>2024-01-23</td>
+                                    <td><span class="status-badge status-info">Under Review</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="status" class="tab-content">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Processing Time Trends</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="processingTimeChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Status by Category</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="categoryStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="suppliers" class="tab-content">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Supplier Response Rate</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="supplierResponseChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Top Responding Suppliers</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="topSuppliersChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="analytics" class="tab-content">
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">RFQ Value Distribution</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="valueDistributionChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Cost Savings Analysis</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="savingsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Footer -->
+            <div id="footerContainer"></div>
+        </div>
+    </div>
+    
+    <!-- SharePoint Floating Action Button -->
+    <a href="https://milemedical.sharepoint.com/:x:/s/MileMedical/EVq4q-YnW0JKjK-eikbGR5kBnAF0I3X4BcxqYcO0_4CdJQ" target="_blank" class="sharepoint-fab" title="Open Operations Data in SharePoint">
+        <span>☁️</span>
+        <span class="fab-tooltip">Open Operations Data in SharePoint</span>
+    </a>
+    
+    <!-- Load Partials and Scripts -->
+    <script>
+        // Load sidebar
+        fetch('../partials/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('sidebarContainer').innerHTML = html;
+            });
+        
+        // Load header
+        fetch('../partials/header.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('headerContainer').innerHTML = html;
+            });
+        
+        // Load footer
+        fetch('../partials/footer.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('footerContainer').innerHTML = html;
+            });
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script src="../js/main.js"></script>
+    
+    <!-- Page-specific Charts -->
+    <script>
+        window.addEventListener('load', function() {
+            // Monthly RFQ Volume
+            new Chart(document.getElementById('rfqDetailChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'RFQs Received',
+                        data: [580, 640, 608, 712, 680, 750],
+                        backgroundColor: '#3FABE6'
+                    }, {
+                        label: 'RFQs Processed',
+                        data: [560, 620, 592, 680, 660, 720],
+                        backgroundColor: '#48BB78'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // RFQ Status Distribution
+            new Chart(document.getElementById('rfqStatusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Approved', 'Under Review', 'Pending', 'Rejected'],
+                    datasets: [{
+                        data: [112, 38, 28, 5],
+                        backgroundColor: ['#48BB78', '#3FABE6', '#F6AD55', '#F56565']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Processing Time Trends
+            new Chart(document.getElementById('processingTimeChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Avg Processing Days',
+                        data: [2.8, 2.5, 2.4, 2.3],
+                        borderColor: '#3FABE6',
+                        backgroundColor: 'rgba(63, 171, 230, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Status by Category
+            new Chart(document.getElementById('categoryStatusChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Surgical', 'Diagnostic', 'Pharmaceuticals', 'Equipment', 'Supplies'],
+                    datasets: [{
+                        label: 'Approved',
+                        data: [45, 38, 42, 28, 35],
+                        backgroundColor: '#48BB78'
+                    }, {
+                        label: 'Pending',
+                        data: [12, 8, 10, 6, 9],
+                        backgroundColor: '#F6AD55'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Supplier Response Rate
+            new Chart(document.getElementById('supplierResponseChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Response Rate (%)',
+                        data: [92, 94, 93, 95, 96, 95],
+                        borderColor: '#48BB78',
+                        backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 85,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // Top Responding Suppliers
+            new Chart(document.getElementById('topSuppliersChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Supplier A', 'Supplier B', 'Supplier C', 'Supplier D', 'Supplier E'],
+                    datasets: [{
+                        label: 'Response Rate (%)',
+                        data: [98, 96, 95, 93, 91],
+                        backgroundColor: '#1B1464'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Value Distribution
+            new Chart(document.getElementById('valueDistributionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['< $10K', '$10K-$50K', '$50K-$100K', '> $100K'],
+                    datasets: [{
+                        data: [45, 78, 42, 13],
+                        backgroundColor: ['#3FABE6', '#48BB78', '#F6AD55', '#1B1464']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+            
+            // Cost Savings Analysis
+            new Chart(document.getElementById('savingsChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Cost Savings ($K)',
+                        data: [58, 62, 71, 68, 75, 94],
+                        backgroundColor: '#48BB78'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    </script>
+</body>
+</html>

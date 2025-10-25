@@ -1,0 +1,16 @@
+Mile Medical Logo Placeholder
+
+Please replace this with your actual Mile Medical logo.
+
+Recommended specifications:
+- Format: PNG with transparency
+- Size: 200px x 60px (or similar aspect ratio)
+- File name: logo.png
+- Location: assets/logo.png
+
+The logo will appear in:
+- Sidebar navigation (all pages)
+- Header (if configured)
+- Print layouts
+
+For best results, use a high-resolution image that works well on both light and dark backgrounds.

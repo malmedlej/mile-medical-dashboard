@@ -3,601 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mile Medical - Dashboard Hub</title>
-    <meta http-equiv="X-Frame-Options" content="ALLOWALL">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <meta name="description" content="Mile Medical Company - Executive Dashboard with real-time analytics and insights">
+    <title>Executive Dashboard | Mile Medical</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-            color: #1b1464;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        /* Header */
-        .header {
-            background: white;
-            padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            border-bottom: 3px solid #3fabe6;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(63, 171, 230, 0.05) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #1b1464;
-            letter-spacing: -1px;
-        }
-
-        .logo-text .mile {
-            color: #1b1464;
-        }
-
-        .logo-text .medical {
-            color: #3fabe6;
-        }
-
-        .company-info h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1b1464;
-            margin-bottom: 0.5rem;
-        }
-
-        .company-tagline {
-            color: #64748b;
-            font-size: 1rem;
-        }
-
-        .user-info {
-            text-align: right;
-            padding: 0.75rem 1.5rem;
-            background: #e0f2fe;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            color: #0369a1;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        /* Company Overview Section */
-        .overview-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1b1464;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Key Metrics Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .metric-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border-left: 4px solid #3fabe6;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .metric-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-        }
-
-        .metric-card.purple { border-left-color: #1b1464; }
-        .metric-card.blue { border-left-color: #3fabe6; }
-        .metric-card.green { border-left-color: #22c55e; }
-        .metric-card.orange { border-left-color: #f59e0b; }
-
-        .metric-label {
-            font-size: 0.85rem;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #1b1464;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-subtext {
-            font-size: 0.9rem;
-            color: #64748b;
-        }
-
-        .metric-trend {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 0.5rem;
-        }
-
-        .trend-up {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .trend-down {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* Department Cards */
-        .departments-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .department-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .department-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .department-header {
-            padding: 2rem;
-            background: linear-gradient(135deg, #1b1464 0%, #3fabe6 100%);
-            color: white;
-            text-align: center;
-        }
-
-        .department-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .department-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .department-subtitle {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .department-body {
-            padding: 2rem;
-        }
-
-        .department-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            background: #f8fafc;
-            border-radius: 8px;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .stat-value {
-            font-weight: 700;
-            color: #1b1464;
-            font-size: 1.1rem;
-        }
-
-        .department-link {
-            display: block;
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #1b1464 0%, #3fabe6 100%);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .department-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(27, 20, 100, 0.3);
-        }
-
-        /* Charts Section */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .chart-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .chart-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1b1464;
-            margin-bottom: 1rem;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            color: #64748b;
-            font-size: 0.9rem;
-            background: white;
-            margin-top: 2rem;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .logo-text {
-                font-size: 1.8rem;
-            }
-
-            .company-info h1 {
-                font-size: 1.5rem;
-            }
-
-            .departments-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .metric-value {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-content">
-            <div class="header-top">
-                <div class="logo-section">
-                    <div class="logo-text">
-                        <span class="mile">Mile</span><span class="medical">Medical</span>
-                    </div>
-                    <div class="company-info">
-                        <h1>Business Intelligence Hub</h1>
-                        <p class="company-tagline">Real-time Performance & Analytics</p>
-                    </div>
-                </div>
-                <div class="user-info">
-                    👤 Signed in with @milemedical.com
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Company Overview Section -->
-        <div class="overview-section">
-            <h2 class="section-title">🏢 Company Overview</h2>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div id="sidebarContainer"></div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div id="headerContainer"></div>
             
-            <!-- Key Metrics -->
-            <div class="metrics-grid">
-                <div class="metric-card purple">
-                    <div class="metric-label">Total Active Projects</div>
-                    <div class="metric-value">23</div>
-                    <div class="metric-subtext">Across all departments</div>
-                    <span class="metric-trend trend-up">↑ 15% vs last month</span>
+            <!-- Content Area -->
+            <main class="content">
+                <div class="page-header">
+                    <h1 class="page-title">Executive Dashboard</h1>
+                    <p class="page-description">Real-time overview of Mile Medical Company performance metrics</p>
                 </div>
                 
-                <div class="metric-card blue">
-                    <div class="metric-label">Monthly Revenue</div>
-                    <div class="metric-value">$2.8M</div>
-                    <div class="metric-subtext">October 2025</div>
-                    <span class="metric-trend trend-up">↑ 12% vs September</span>
-                </div>
-                
-                <div class="metric-card green">
-                    <div class="metric-label">Client Satisfaction</div>
-                    <div class="metric-value">94%</div>
-                    <div class="metric-subtext">Based on recent feedback</div>
-                    <span class="metric-trend trend-up">↑ 3% improvement</span>
-                </div>
-                
-                <div class="metric-card orange">
-                    <div class="metric-label">Team Members</div>
-                    <div class="metric-value">11</div>
-                    <div class="metric-subtext">Active employees</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Department Dashboards Section -->
-        <div class="overview-section">
-            <h2 class="section-title">📊 Department Dashboards</h2>
-            <p style="color: #64748b; margin-bottom: 2rem;">Select a department to view detailed analytics and performance metrics</p>
-            
-            <div class="departments-grid">
-                <!-- Operations Dashboard -->
-                <div class="department-card">
-                    <div class="department-header">
-                        <div class="department-icon">📦</div>
-                        <h3 class="department-title">Operations</h3>
-                        <p class="department-subtitle">Supply Chain & Procurement</p>
+                <!-- KPI Cards Grid -->
+                <div class="kpi-grid">
+                    <div class="kpi-card" data-detail-page="pages/revenue-detail.html">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Total Revenue</span>
+                            <div class="kpi-icon blue">💰</div>
+                        </div>
+                        <div class="kpi-value">$5.8M</div>
+                        <div class="kpi-footer">
+                            <span class="trend up">↑ 12.5%</span>
+                            <span class="kpi-comparison">vs last month</span>
+                        </div>
+                        <div class="kpi-click-hint">Click for details →</div>
                     </div>
-                    <div class="department-body">
-                        <div class="department-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">Active RFQs</span>
-                                <span class="stat-value">5</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Pending POs</span>
-                                <span class="stat-value">8+</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Open Issues</span>
-                                <span class="stat-value">3</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Active Suppliers</span>
-                                <span class="stat-value">5+</span>
+                    
+                    <div class="kpi-card" data-detail-page="pages/orders-detail.html">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Active Orders</span>
+                            <div class="kpi-icon green">📦</div>
+                        </div>
+                        <div class="kpi-value">1,248</div>
+                        <div class="kpi-footer">
+                            <span class="trend up">↑ 8.3%</span>
+                            <span class="kpi-comparison">vs last month</span>
+                        </div>
+                        <div class="kpi-click-hint">Click for details →</div>
+                    </div>
+                    
+                    <div class="kpi-card" data-detail-page="pages/customers-detail.html">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Total Customers</span>
+                            <div class="kpi-icon purple">👥</div>
+                        </div>
+                        <div class="kpi-value">542</div>
+                        <div class="kpi-footer">
+                            <span class="trend up">↑ 5.2%</span>
+                            <span class="kpi-comparison">vs last month</span>
+                        </div>
+                        <div class="kpi-click-hint">Click for details →</div>
+                    </div>
+                    
+                    <div class="kpi-card" data-detail-page="pages/satisfaction-detail.html">
+                        <div class="kpi-header">
+                            <span class="kpi-title">Customer Satisfaction</span>
+                            <div class="kpi-icon orange">⭐</div>
+                        </div>
+                        <div class="kpi-value">94.5%</div>
+                        <div class="kpi-footer">
+                            <span class="trend up">↑ 2.1%</span>
+                            <span class="kpi-comparison">vs last month</span>
+                        </div>
+                        <div class="kpi-click-hint">Click for details →</div>
+                    </div>
+                </div>
+                
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Revenue Trend</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="Download">📥</button>
+                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
                             </div>
                         </div>
-                        <a href="operations.html" class="department-link">View Operations Dashboard →</a>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Commercial Dashboard -->
-                <div class="department-card">
-                    <div class="department-header" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
-                        <div class="department-icon">💼</div>
-                        <h3 class="department-title">Commercial</h3>
-                        <p class="department-subtitle">Sales & Business Development</p>
-                    </div>
-                    <div class="department-body">
-                        <div class="department-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">Active Opportunities</span>
-                                <span class="stat-value">15</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Pipeline Value</span>
-                                <span class="stat-value">$2.5M</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Win Rate</span>
-                                <span class="stat-value">85%</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Active Clients</span>
-                                <span class="stat-value">42</span>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Department Performance</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="Download">📥</button>
+                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
                             </div>
                         </div>
-                        <a href="commercial.html" class="department-link" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">View Commercial Dashboard →</a>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Marketing Dashboard -->
-                <div class="department-card">
-                    <div class="department-header" style="background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);">
-                        <div class="department-icon">📢</div>
-                        <h3 class="department-title">Marketing</h3>
-                        <p class="department-subtitle">Brand & Digital Marketing</p>
-                    </div>
-                    <div class="department-body">
-                        <div class="department-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">Active Campaigns</span>
-                                <span class="stat-value">3</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Website Visits</span>
-                                <span class="stat-value">5.2K</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">New Leads</span>
-                                <span class="stat-value">120</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Conversion Rate</span>
-                                <span class="stat-value">12%</span>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Project Status Distribution</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="Download">📥</button>
+                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
                             </div>
                         </div>
-                        <a href="marketing.html" class="department-link" style="background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);">View Marketing Dashboard →</a>
+                        <div class="chart-container">
+                            <canvas id="projectStatusChart"></canvas>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Company-Wide Charts -->
-        <div class="overview-section">
-            <h2 class="section-title">📈 Company Performance</h2>
-            
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h3 class="chart-title">Monthly Revenue Trend</h3>
-                    <div class="chart-container">
-                        <canvas id="revenueChart"></canvas>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Top Products by Sales</h3>
+                            <div class="chart-actions">
+                                <button class="chart-action-btn" title="Download">📥</button>
+                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="topProductsChart"></canvas>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="chart-card">
-                    <h3 class="chart-title">Department Performance</h3>
-                    <div class="chart-container">
-                        <canvas id="departmentChart"></canvas>
+                <!-- Recent Activities Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3 class="table-title">Recent Activities</h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" class="search-input" placeholder="Search activities..." data-table="activitiesTable">
+                            </div>
+                            <button class="btn btn-primary" onclick="MileDashboard.exportTableToCSV('activitiesTable', 'recent-activities')">
+                                📊 Export CSV
+                            </button>
+                        </div>
                     </div>
+                    <table class="data-table" id="activitiesTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Activity</th>
+                                <th>Department</th>
+                                <th>User</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-01-20</td>
+                                <td>Purchase Order #PO-2024-1458 created</td>
+                                <td>Operations</td>
+                                <td>John Smith</td>
+                                <td><span class="status-badge status-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-20</td>
+                                <td>New customer registration: Hospital ABC</td>
+                                <td>Commercial</td>
+                                <td>Sarah Johnson</td>
+                                <td><span class="status-badge status-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-19</td>
+                                <td>Marketing campaign launch: Q1 2024</td>
+                                <td>Marketing</td>
+                                <td>Mike Davis</td>
+                                <td><span class="status-badge status-info">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-19</td>
+                                <td>RFQ #RFQ-2024-3287 under review</td>
+                                <td>Operations</td>
+                                <td>Emily Brown</td>
+                                <td><span class="status-badge status-warning">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-18</td>
+                                <td>Sales proposal sent to Medical Center XYZ</td>
+                                <td>Commercial</td>
+                                <td>David Wilson</td>
+                                <td><span class="status-badge status-info">In Progress</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-18</td>
+                                <td>Supplier performance review scheduled</td>
+                                <td>Operations</td>
+                                <td>Lisa Anderson</td>
+                                <td><span class="status-badge status-warning">Scheduled</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-17</td>
+                                <td>Q4 2023 financial report published</td>
+                                <td>Finance</td>
+                                <td>Robert Taylor</td>
+                                <td><span class="status-badge status-success">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-17</td>
+                                <td>Lead qualification: Clinic Network DEF</td>
+                                <td>Marketing</td>
+                                <td>Jennifer Martinez</td>
+                                <td><span class="status-badge status-info">In Progress</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+            </main>
+            
+            <!-- Footer -->
+            <div id="footerContainer"></div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <div class="footer">
-        <p>Mile Medical Company © 2025 | www.milemedical.com</p>
-        <p style="margin-top: 0.5rem; color: #94a3b8;">🔐 Secure Access • @milemedical.com authenticated</p>
-    </div>
-
+    
+    <!-- SharePoint Floating Action Button -->
+    <a href="https://milemedical.sharepoint.com/" target="_blank" class="sharepoint-fab" title="Open SharePoint Portal">
+        <span>☁️</span>
+        <span class="fab-tooltip">Open SharePoint Portal</span>
+    </a>
+    
+    <!-- Load Partials and Scripts -->
     <script>
-        // Initialize charts
-        document.addEventListener('DOMContentLoaded', function() {
-            // Revenue Trend Chart
-            new Chart(document.getElementById('revenueChart'), {
-                type: 'line',
-                data: {
-                    labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-                    datasets: [{
-                        label: 'Revenue ($M)',
-                        data: [2.1, 2.3, 2.4, 2.5, 2.6, 2.5, 2.8],
-                        borderColor: '#3fabe6',
-                        backgroundColor: 'rgba(63, 171, 230, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
+        // Load sidebar
+        fetch('partials/sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('sidebarContainer').innerHTML = html;
             });
-
-            // Department Performance Chart
-            new Chart(document.getElementById('departmentChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Operations', 'Commercial', 'Marketing'],
-                    datasets: [{
-                        label: 'Performance Score',
-                        data: [92, 88, 85],
-                        backgroundColor: ['#1b1464', '#059669', '#dc2626']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100
-                        }
-                    }
-                }
+        
+        // Load header
+        fetch('partials/header.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('headerContainer').innerHTML = html;
             });
-        });
-
-        console.log('Mile Medical Dashboard Hub loaded successfully');
+        
+        // Load footer
+        fetch('partials/footer.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('footerContainer').innerHTML = html;
+            });
     </script>
+    
+    <!-- Main JavaScript -->
+    <script src="js/main.js"></script>
 </body>
 </html>

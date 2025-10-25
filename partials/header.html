@@ -1,115 +1,115 @@
-<header class="top-header">
-  <div class="header-left">
-    <a href="/index.html" class="logo">
-      <span class="mile">Mile</span><span class="medical">Medical</span>
-    </a>
-    <div class="subtitle">Business Intelligence Hub</div>
-  </div>
-
-  <div class="header-right">
-    <div class="sync-status">
-      <span class="sync-dot"></span> Synced: Just now
+<!-- ================================================================
+     Mile Medical Dashboard - Header Component
+     ================================================================ -->
+<header class="header">
+    <div class="header-content">
+        <div class="header-left">
+            <button class="menu-toggle">☰</button>
+            <div class="breadcrumb" id="breadcrumbContainer">
+                <!-- Breadcrumb will be injected by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <div class="refresh-indicator">
+                <span class="refresh-icon">🔄</span>
+                <span>Last updated: <span class="last-update-time">--:--:--</span></span>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar">MM</div>
+                <div class="user-details">
+                    <div style="font-size: 0.875rem; font-weight: 600;">Admin User</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Administrator</div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Dynamic Edit button (updated per page) -->
-    <a id="edit-link" href="#" target="_blank" class="btn btn-primary">📊 Edit in SharePoint</a>
-
-    <!-- Refresh -->
-    <button onclick="location.reload()" class="btn btn-secondary">🔄 Refresh</button>
-
-    <!-- Navigation dropdown -->
-    <select id="dashboard-nav" class="nav-select" onchange="navigateDashboard(this)">
-      <option value="">Switch Dashboard...</option>
-      <option value="/operations.html">Operations</option>
-      <option value="/commercial.html">Commercial</option>
-      <option value="/marketing.html">Marketing</option>
-    </select>
-
-    <span class="user-status">🔵 Signed in with @milemedical.com</span>
-  </div>
 </header>
 
-<style>
-.top-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  border-bottom: 3px solid #3fabe6;
-  padding: 1rem 2rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.logo {
-  font-size: 1.75rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-.mile { color: #1b1464; }
-.medical { color: #3fabe6; }
-
-.subtitle {
-  font-size: 0.9rem;
-  color: #64748b;
-  font-weight: 500;
-  margin-top: 0.2rem;
-}
-
-.header-left { display: flex; flex-direction: column; }
-.header-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-
-.sync-status {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: #e0f2fe;
-  padding: 0.4rem 0.7rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  color: #0369a1;
-}
-.sync-dot {
-  width: 8px;
-  height: 8px;
-  background: #22c55e;
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-
-.btn {
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.6rem 1rem;
-  transition: all 0.2s;
-  text-decoration: none;
-}
-.btn-primary {
-  background: linear-gradient(135deg,#1b1464 0%,#3fabe6 100%);
-  color: white;
-}
-.btn-primary:hover {
-  box-shadow: 0 4px 12px rgba(27,20,100,0.3);
-  transform: translateY(-1px);
-}
-.btn-secondary {
-  background: white;
-  color: #1b1464;
-  border: 2px solid #3fabe6;
-}
-.btn-secondary:hover { background:#f0f9ff; }
-
-.nav-select {
-  border: 2px solid #3fabe6;
-  border-radius: 8px;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
-  background: #f8fafc;
-  color: #1b1464;
-  font-weight:
+<script>
+    // Breadcrumb navigation setup
+    document.addEventListener('DOMContentLoaded', function() {
+        const breadcrumbContainer = document.getElementById('breadcrumbContainer');
+        if (!breadcrumbContainer) return;
+        
+        const currentPath = window.location.pathname;
+        let breadcrumbHTML = '';
+        
+        if (currentPath.includes('pages/')) {
+            // Detail page breadcrumb
+            const pageName = currentPath.split('/').pop().replace('.html', '').replace(/-/g, ' ');
+            const parentPage = getParentPage(pageName);
+            
+            breadcrumbHTML = `
+                <div class="breadcrumb-item">
+                    <a href="index.html" class="breadcrumb-link">Home</a>
+                    <span class="breadcrumb-separator">›</span>
+                </div>
+                <div class="breadcrumb-item">
+                    <a href="${parentPage.url}" class="breadcrumb-link">${parentPage.name}</a>
+                    <span class="breadcrumb-separator">›</span>
+                </div>
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-current">${capitalizeWords(pageName)}</span>
+                </div>
+            `;
+        } else if (currentPath.includes('operations')) {
+            breadcrumbHTML = `
+                <div class="breadcrumb-item">
+                    <a href="index.html" class="breadcrumb-link">Home</a>
+                    <span class="breadcrumb-separator">›</span>
+                </div>
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-current">Operations Dashboard</span>
+                </div>
+            `;
+        } else if (currentPath.includes('commercial')) {
+            breadcrumbHTML = `
+                <div class="breadcrumb-item">
+                    <a href="index.html" class="breadcrumb-link">Home</a>
+                    <span class="breadcrumb-separator">›</span>
+                </div>
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-current">Commercial Dashboard</span>
+                </div>
+            `;
+        } else if (currentPath.includes('marketing')) {
+            breadcrumbHTML = `
+                <div class="breadcrumb-item">
+                    <a href="index.html" class="breadcrumb-link">Home</a>
+                    <span class="breadcrumb-separator">›</span>
+                </div>
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-current">Marketing Dashboard</span>
+                </div>
+            `;
+        } else {
+            breadcrumbHTML = `
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-current">Executive Dashboard</span>
+                </div>
+            `;
+        }
+        
+        breadcrumbContainer.innerHTML = breadcrumbHTML;
+    });
+    
+    function getParentPage(pageName) {
+        const lowerName = pageName.toLowerCase();
+        
+        if (lowerName.includes('rfq') || lowerName.includes('purchase') || lowerName.includes('supplier')) {
+            return { name: 'Operations', url: '../operations.html' };
+        } else if (lowerName.includes('sales') || lowerName.includes('revenue') || lowerName.includes('customer')) {
+            return { name: 'Commercial', url: '../commercial.html' };
+        } else if (lowerName.includes('campaign') || lowerName.includes('lead') || lowerName.includes('marketing')) {
+            return { name: 'Marketing', url: '../marketing.html' };
+        }
+        
+        return { name: 'Dashboard', url: '../index.html' };
+    }
+    
+    function capitalizeWords(str) {
+        return str.replace(/\b\w/g, l => l.toUpperCase());
+    }
+</script>
