@@ -4,221 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mile Medical - Operations Dashboard</title>
-    
-    <!-- X-Frame-Options bypass for iframe compatibility -->
-    <meta http-equiv="X-Frame-Options" content="ALLOWALL">
-    
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Reset and iframe compatibility */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
             color: #1b1464;
             line-height: 1.6;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Container adjusted for iframe */
         .dashboard-wrapper {
             width: 100%;
             min-height: 100vh;
-            padding: 0;
-            margin: 0;
         }
 
-        /* Header optimized for iframe */
-        .header {
-            background: white;
-            color: #1b1464;
-            padding: 1.5rem 1.5rem 2rem 1.5rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 3px solid #3fabe6;
+        /* Back navigation */
+        .page-nav {
+            background: #f8faff;
+            border-bottom: 1px solid #e5e9f2;
+            padding: 12px 40px;
         }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(63, 171, 230, 0.05) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .header-content {
-            max-width: 100%;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        /* CSS Text Logo */
-        .logo-text {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1b1464;
-            letter-spacing: -1px;
-            white-space: nowrap;
-        }
-
-        .logo-text .mile {
-            color: #1b1464;
-        }
-
-        .logo-text .medical {
-            color: #3fabe6;
-        }
-
-        .company-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .company-name {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: #1b1464;
-        }
-
-        .tagline {
-            color: #64748b;
-            font-size: 0.85rem;
-            font-weight: 400;
-            margin-top: 0.25rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
+        .back-btn {
             text-decoration: none;
-            display: inline-block;
-            white-space: nowrap;
+            color: #0078d4;
+            font-weight: 600;
+            transition: color 0.3s;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #1b1464 0%, #3fabe6 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(27, 20, 100, 0.3);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #1b1464;
-            border: 2px solid #3fabe6;
-        }
-
-        .btn-secondary:hover {
-            background: #f0f9ff;
-        }
-
-        .sync-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            background: #e0f2fe;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            color: #0369a1;
-        }
-
-        .sync-dot {
-            width: 8px;
-            height: 8px;
-            background: #22c55e;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
+        .back-btn:hover { color: #1b1464; }
 
         /* Info Banner */
         .info-banner {
             background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
             border-left: 4px solid #3fabe6;
             padding: 0.75rem 1rem;
-            margin: 0;
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
 
-        .info-icon {
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .info-text {
-            flex: 1;
-        }
-
         .info-title {
             font-weight: 600;
             color: #0369a1;
-            margin-bottom: 0.25rem;
             font-size: 0.9rem;
         }
 
@@ -233,7 +72,7 @@
             padding: 1.5rem;
         }
 
-        /* Key Metrics Cards */
+        /* Metric Cards */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -255,43 +94,11 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
         }
 
-        .metric-card.purple {
-            border-left-color: #1b1464;
-        }
+        .metric-label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
+        .metric-value { font-size: 2rem; font-weight: 800; color: #1b1464; }
+        .metric-subtext { font-size: 0.8rem; color: #64748b; }
 
-        .metric-card.blue {
-            border-left-color: #3fabe6;
-        }
-
-        .metric-card.green {
-            border-left-color: #22c55e;
-        }
-
-        .metric-card.orange {
-            border-left-color: #f59e0b;
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1b1464;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-subtext {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        /* Critical Actions Section */
+        /* Critical Actions */
         .critical-actions {
             background: white;
             padding: 1.5rem;
@@ -305,9 +112,6 @@
             font-weight: 700;
             color: #1b1464;
             margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
         .action-item {
@@ -315,95 +119,16 @@
             border-left: 4px solid;
             margin-bottom: 0.75rem;
             border-radius: 6px;
-            transition: all 0.3s ease;
         }
 
-        .action-item:hover {
-            background: #f8fafc;
-            transform: translateX(4px);
-        }
+        .action-item.high { border-left-color: #ef4444; background: #fef2f2; }
+        .action-item.medium { border-left-color: #f59e0b; background: #fffbeb; }
+        .action-item.low { border-left-color: #22c55e; background: #f0fdf4; }
 
-        .action-item.high {
-            border-left-color: #ef4444;
-            background: #fef2f2;
-        }
+        .action-title { font-weight: 600; color: #1b1464; font-size: 0.9rem; }
+        .action-details { font-size: 0.8rem; color: #64748b; }
 
-        .action-item.medium {
-            border-left-color: #f59e0b;
-            background: #fffbeb;
-        }
-
-        .action-item.low {
-            border-left-color: #22c55e;
-            background: #f0fdf4;
-        }
-
-        .action-title {
-            font-weight: 600;
-            color: #1b1464;
-            margin-bottom: 0.25rem;
-            font-size: 0.9rem;
-        }
-
-        .action-details {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .priority-badge {
-            display: inline-block;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-right: 0.5rem;
-        }
-
-        .priority-badge.high {
-            background: #ef4444;
-            color: white;
-        }
-
-        .priority-badge.medium {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .priority-badge.low {
-            background: #22c55e;
-            color: white;
-        }
-
-        /* Charts Grid - Optimized for iframe */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .chart-card {
-            background: white;
-            padding: 1.25rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .chart-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1b1464;
-            margin-bottom: 1rem;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 250px;
-            width: 100%;
-        }
-
-        /* Tables - Optimized for iframe */
+        /* Tables */
         .table-container {
             background: white;
             padding: 1.25rem;
@@ -419,12 +144,6 @@
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             width: 100%;
-            font-size: 0.85rem;
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: #3fabe6;
         }
 
         table {
@@ -438,22 +157,13 @@
             color: white;
         }
 
-        th {
+        th, td {
             padding: 0.75rem;
             text-align: left;
-            font-weight: 600;
-            font-size: 0.8rem;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 0.75rem;
             border-bottom: 1px solid #e2e8f0;
         }
 
-        tbody tr:hover {
-            background: #f8fafc;
-        }
+        tbody tr:hover { background: #f8fafc; }
 
         .status-badge {
             display: inline-block;
@@ -461,25 +171,12 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 600;
-            white-space: nowrap;
         }
 
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
+        .status-active { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-overdue { background: #fee2e2; color: #991b1b; }
 
-        .status-pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-overdue {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* Footer */
         .footer {
             text-align: center;
             padding: 1.5rem;
@@ -488,475 +185,68 @@
             background: white;
             border-top: 1px solid #e2e8f0;
         }
-
-        /* Responsive Design for iframe */
-        @media (max-width: 1024px) {
-            .header {
-                padding: 1rem;
-            }
-
-            .header-top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .logo-text {
-                font-size: 1.5rem;
-            }
-
-            .company-name {
-                font-size: 1.2rem;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            .metrics-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                gap: 0.75rem;
-            }
-
-            .metric-value {
-                font-size: 1.5rem;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-container {
-                height: 200px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .logo-text {
-                font-size: 1.25rem;
-            }
-
-            .header-actions {
-                width: 100%;
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 0.75rem;
-            }
-
-            th, td {
-                padding: 0.5rem;
-            }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #3fabe6;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1b1464;
-        }
     </style>
 </head>
+
 <body>
     <div class="dashboard-wrapper">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-content">
-                <div class="header-top">
-                    <div class="logo-section">
-                        <div class="logo-text">
-                            <span class="mile">Mile</span><span class="medical">Medical</span>
-                        </div>
-                        <div class="company-info">
-                            <h1 class="company-name">Operations Dashboard</h1>
-                            <p class="tagline">Real-time Business Intelligence</p>
-                        </div>
-                    </div>
-                    <div class="header-actions">
-                        <div class="sync-status">
-                            <span class="sync-dot"></span>
-                            <span>Synced: Just now</span>
-                        </div>
-                        <a href="https://milemedical365.sharepoint.com/:x:/s/Milemedical2/EargtKysMAJDvKvCz5OqAyEBLmyngVlODEFfxFBnIv2yqQ?e=0dItdP" target="_blank" class="btn btn-primary">📊 Edit in SharePoint</a>
-                        <button onclick="location.reload()" class="btn btn-secondary">🔄 Refresh</button>
-                    </div>
-                </div>
-            </div>
+        <!-- Shared Header -->
+        <div id="header-container"></div>
+
+        <!-- Back to Overview -->
+        <div class="page-nav">
+            <a href="/index.html" class="back-btn">← Back to Main Dashboard</a>
         </div>
 
         <!-- Info Banner -->
         <div class="info-banner">
-            <div class="info-icon">ℹ️</div>
-            <div class="info-text">
+            <div>
                 <div class="info-title">📊 Data Source: SharePoint Dashboard</div>
-                <div class="info-description">This dashboard displays data from <strong>Mile Medical Dashboard.xlsx</strong> on SharePoint. Team updates in Excel will reflect here automatically.</div>
+                <div class="info-description">Data auto-syncs from <strong>Mile Medical Dashboard.xlsx</strong> via SharePoint.</div>
             </div>
         </div>
 
-        <!-- Main Container -->
+        <!-- Metrics -->
         <div class="container">
-            <!-- Key Metrics -->
             <div class="metrics-grid">
-                <div class="metric-card purple">
-                    <div class="metric-label">Active RFQs</div>
-                    <div class="metric-value">5</div>
-                    <div class="metric-subtext">2 due Oct 25</div>
-                </div>
-                <div class="metric-card blue">
-                    <div class="metric-label">Pending POs</div>
-                    <div class="metric-value">8+</div>
-                    <div class="metric-subtext">Awaiting delivery</div>
-                </div>
-                <div class="metric-card green">
-                    <div class="metric-label">Open Issues</div>
-                    <div class="metric-value">3</div>
-                    <div class="metric-subtext">Require attention</div>
-                </div>
-                <div class="metric-card orange">
-                    <div class="metric-label">Active Suppliers</div>
-                    <div class="metric-value">5+</div>
-                    <div class="metric-subtext">Global partners</div>
-                </div>
+                <div class="metric-card"><div class="metric-label">Active RFQs</div><div class="metric-value">5</div><div class="metric-subtext">2 due Oct 25</div></div>
+                <div class="metric-card"><div class="metric-label">Pending POs</div><div class="metric-value">8+</div><div class="metric-subtext">Awaiting delivery</div></div>
+                <div class="metric-card"><div class="metric-label">Open Issues</div><div class="metric-value">3</div><div class="metric-subtext">Require attention</div></div>
+                <div class="metric-card"><div class="metric-label">Active Suppliers</div><div class="metric-value">5+</div><div class="metric-subtext">Global partners</div></div>
             </div>
 
             <!-- Critical Actions -->
             <div class="critical-actions">
                 <h2 class="section-title">⚠️ Critical Actions Required</h2>
-                
                 <div class="action-item high">
-                    <div class="action-title">
-                        <span class="priority-badge high">HIGH</span>
-                        Follow up on Medis Fludarabine delivery response
-                    </div>
+                    <div class="action-title">Follow up on Medis Fludarabine delivery response</div>
                     <div class="action-details">Assigned to: Maria Rivera | Due: OVERDUE</div>
                 </div>
-
                 <div class="action-item high">
-                    <div class="action-title">
-                        <span class="priority-badge high">HIGH</span>
-                        Confirm CISATREX FORT PO status with Grindeks
-                    </div>
+                    <div class="action-title">Confirm CISATREX FORT PO status with Grindeks</div>
                     <div class="action-details">Assigned to: Saad Alshahrani | Due: OVERDUE</div>
                 </div>
-
-                <div class="action-item high">
-                    <div class="action-title">
-                        <span class="priority-badge high">HIGH</span>
-                        Submit RFQ NDP172-25 & NDP151-25
-                    </div>
-                    <div class="action-details">Assigned to: Maria Rivera | Due: Oct 25, 2025 (5 days)</div>
-                </div>
-
                 <div class="action-item medium">
-                    <div class="action-title">
-                        <span class="priority-badge medium">MEDIUM</span>
-                        Prepare for Global Health Exhibition
-                    </div>
+                    <div class="action-title">Prepare for Global Health Exhibition</div>
                     <div class="action-details">Event: Oct 27-30, Riyadh | Team: All Members</div>
                 </div>
-
                 <div class="action-item low">
-                    <div class="action-title">
-                        <span class="priority-badge low">LOW</span>
-                        Finalize Thursday meeting presentation
-                    </div>
+                    <div class="action-title">Finalize Thursday meeting presentation</div>
                     <div class="action-details">Due: Wednesday 5 PM | Assigned to: Team Leaders</div>
                 </div>
             </div>
 
-            <!-- Charts -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <h3 class="chart-title">RFQ Status Distribution</h3>
-                    <div class="chart-container">
-                        <canvas id="rfqChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">Purchase Orders by Supplier</h3>
-                    <div class="chart-container">
-                        <canvas id="poChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">Upcoming Deadlines (Next 30 Days)</h3>
-                    <div class="chart-container">
-                        <canvas id="deadlineChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">Action Items by Priority</h3>
-                    <div class="chart-container">
-                        <canvas id="priorityChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RFQs & Tenders Table -->
+            <!-- Example Table -->
             <div class="table-container">
-                <h2 class="section-title">📋 Active RFQs & Tenders</h2>
-                <input type="text" class="search-box" placeholder="Search RFQs..." onkeyup="searchTable(this, 'rfqTable')">
-                <table id="rfqTable">
+                <h2 class="section-title">📋 Active RFQs</h2>
+                <input type="text" class="search-box" placeholder="Search..." onkeyup="searchTable(this)">
+                <table>
                     <thead>
-                        <tr>
-                            <th>RFQ Number</th>
-                            <th>Description</th>
-                            <th>Status</th>
-                            <th>Submission Deadline</th>
-                            <th>Assigned To</th>
-                        </tr>
+                        <tr><th>RFQ</th><th>Description</th><th>Status</th><th>Deadline</th><th>Owner</th></tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>NDP1172-25</td>
-                            <td>Medical Supplies Package A</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
-                            <td>Oct 25, 2025</td>
-                            <td>Maria Rivera</td>
-                        </tr>
-                        <tr>
-                            <td>NDP1151-25</td>
-                            <td>Pharmaceutical Products Batch</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
-                            <td>Oct 25, 2025</td>
-                            <td>Maria Rivera</td>
-                        </tr>
-                        <tr>
-                            <td>NDP0752-25</td>
-                            <td>Laboratory Equipment</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Nov 10, 2025</td>
-                            <td>Procurement Team</td>
-                        </tr>
-                        <tr>
-                            <td>NDP0798-25</td>
-                            <td>Surgical Instruments Set</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Nov 15, 2025</td>
-                            <td>Procurement Team</td>
-                        </tr>
-                        <tr>
-                            <td>NDP1086-25</td>
-                            <td>Diagnostic Reagents</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Nov 20, 2025</td>
-                            <td>Ziyad Alanzi</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Purchase Orders Table -->
-            <div class="table-container">
-                <h2 class="section-title">📦 Pending Purchase Orders</h2>
-                <input type="text" class="search-box" placeholder="Search POs..." onkeyup="searchTable(this, 'poTable')">
-                <table id="poTable">
-                    <thead>
-                        <tr>
-                            <th>PO Number</th>
-                            <th>Supplier</th>
-                            <th>Product</th>
-                            <th>Status</th>
-                            <th>Expected Delivery</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>PO-2025-001</td>
-                            <td>Medis (Tunisia)</td>
-                            <td>Fludarabine</td>
-                            <td><span class="status-badge status-overdue">Overdue</span></td>
-                            <td>Pending Response</td>
-                        </tr>
-                        <tr>
-                            <td>PO-2025-002</td>
-                            <td>Grindeks (Latvia)</td>
-                            <td>CISATREX FORT</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
-                            <td>To Be Confirmed</td>
-                        </tr>
-                        <tr>
-                            <td>PO-2025-003</td>
-                            <td>Pipeline Pharma</td>
-                            <td>Various Products</td>
-                            <td><span class="status-badge status-active">In Transit</span></td>
-                            <td>Nov 5, 2025</td>
-                        </tr>
-                        <tr>
-                            <td>PO-2025-004</td>
-                            <td>Huons (Korea)</td>
-                            <td>Pharmaceutical Batch</td>
-                            <td><span class="status-badge status-active">Processing</span></td>
-                            <td>Nov 12, 2025</td>
-                        </tr>
-                        <tr>
-                            <td>PO-2025-005</td>
-                            <td>Kalceks (Latvia)</td>
-                            <td>Medical Supplies</td>
-                            <td><span class="status-badge status-active">Processing</span></td>
-                            <td>Nov 18, 2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Supplier Communications Table -->
-            <div class="table-container">
-                <h2 class="section-title">📧 Recent Supplier Communications</h2>
-                <input type="text" class="search-box" placeholder="Search communications..." onkeyup="searchTable(this, 'commTable')">
-                <table id="commTable">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Supplier</th>
-                            <th>Subject</th>
-                            <th>Status</th>
-                            <th>Owner</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Oct 18, 2025</td>
-                            <td>Medis</td>
-                            <td>Fludarabine delivery inquiry</td>
-                            <td><span class="status-badge status-overdue">Awaiting Response</span></td>
-                            <td>Maria Rivera</td>
-                        </tr>
-                        <tr>
-                            <td>Oct 17, 2025</td>
-                            <td>Grindeks</td>
-                            <td>CISATREX FORT PO confirmation</td>
-                            <td><span class="status-badge status-pending">Follow-up Required</span></td>
-                            <td>Saad Alshahrani</td>
-                        </tr>
-                        <tr>
-                            <td>Oct 15, 2025</td>
-                            <td>Pipeline Pharma</td>
-                            <td>Shipment tracking update</td>
-                            <td><span class="status-badge status-active">Resolved</span></td>
-                            <td>Logistics Team</td>
-                        </tr>
-                        <tr>
-                            <td>Oct 14, 2025</td>
-                            <td>Huons</td>
-                            <td>Product specifications clarification</td>
-                            <td><span class="status-badge status-active">Resolved</span></td>
-                            <td>Procurement Team</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Regulatory Submissions Table -->
-            <div class="table-container">
-                <h2 class="section-title">🏥 Regulatory Submissions</h2>
-                <input type="text" class="search-box" placeholder="Search submissions..." onkeyup="searchTable(this, 'regTable')">
-                <table id="regTable">
-                    <thead>
-                        <tr>
-                            <th>Submission ID</th>
-                            <th>Product/Service</th>
-                            <th>Regulatory Body</th>
-                            <th>Status</th>
-                            <th>Submission Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>REG-2025-012</td>
-                            <td>New Pharmaceutical Line</td>
-                            <td>SFDA</td>
-                            <td><span class="status-badge status-active">Under Review</span></td>
-                            <td>Oct 10, 2025</td>
-                        </tr>
-                        <tr>
-                            <td>REG-2025-013</td>
-                            <td>Medical Device Registration</td>
-                            <td>SFDA</td>
-                            <td><span class="status-badge status-pending">Pending Documents</span></td>
-                            <td>Oct 12, 2025</td>
-                        </tr>
-                        <tr>
-                            <td>REG-2025-014</td>
-                            <td>Import License Renewal</td>
-                            <td>SFDA</td>
-                            <td><span class="status-badge status-active">Processing</span></td>
-                            <td>Oct 15, 2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Supplier Directory Table -->
-            <div class="table-container">
-                <h2 class="section-title">🌐 Active Supplier Directory</h2>
-                <input type="text" class="search-box" placeholder="Search suppliers..." onkeyup="searchTable(this, 'supplierTable')">
-                <table id="supplierTable">
-                    <thead>
-                        <tr>
-                            <th>Supplier Name</th>
-                            <th>Country</th>
-                            <th>Product Categories</th>
-                            <th>Status</th>
-                            <th>Contact Person</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Medis</td>
-                            <td>Tunisia</td>
-                            <td>Pharmaceuticals</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Maria Rivera</td>
-                        </tr>
-                        <tr>
-                            <td>Grindeks</td>
-                            <td>Latvia</td>
-                            <td>Oncology Products</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Saad Alshahrani</td>
-                        </tr>
-                        <tr>
-                            <td>Pipeline Pharma</td>
-                            <td>International</td>
-                            <td>Various Medical Supplies</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Procurement Team</td>
-                        </tr>
-                        <tr>
-                            <td>Huons</td>
-                            <td>South Korea</td>
-                            <td>Pharmaceuticals & Biologics</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Procurement Team</td>
-                        </tr>
-                        <tr>
-                            <td>Kalceks</td>
-                            <td>Latvia</td>
-                            <td>Generic Pharmaceuticals</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                            <td>Procurement Team</td>
-                        </tr>
+                        <tr><td>NDP1172-25</td><td>Medical Supplies A</td><td><span class="status-badge status-pending">Pending</span></td><td>Oct 25</td><td>Maria Rivera</td></tr>
+                        <tr><td>NDP0752-25</td><td>Lab Equipment</td><td><span class="status-badge status-active">Active</span></td><td>Nov 10</td><td>Procurement</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -964,180 +254,38 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>📊 Data Source: <a href="https://milemedical365.sharepoint.com/:x:/s/Milemedical2/EargtKysMAJDvKvCz5OqAyEBLmyngVlODEFfxFBnIv2yqQ?e=0dItdP" target="_blank" style="color: #3fabe6; text-decoration: none;">SharePoint Dashboard</a> | Team updates automatically sync</p>
-            <p style="margin-top: 0.5rem;">Mile Medical Company © 2025 | www.milemedical.com</p>
+            <p>📊 Data Source: <a href="https://milemedical365.sharepoint.com" target="_blank" style="color:#3fabe6;text-decoration:none;">SharePoint</a></p>
+            <p>Mile Medical © 2025 | www.milemedical.com</p>
         </div>
     </div>
 
     <script>
-        // Configuration
-        const SHAREPOINT_URL = 'https://milemedical365.sharepoint.com/:x:/s/Milemedical2/EargtKysMAJDvKvCz5OqAyEBLmyngVlODEFfxFBnIv2yqQ?e=0dItdP';
-        const AUTO_REFRESH_INTERVAL = 300000; // 5 minutes
+        // Inject shared header
+        fetch("partials/header.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("header-container").innerHTML = html;
+                const titleArea = document.querySelector(".subtitle");
+                if (titleArea) titleArea.textContent = "Operations Dashboard";
+            });
 
-        // Detect if running in iframe
-        const isInIframe = window.self !== window.top;
-        
-        if (isInIframe) {
-            console.log('Dashboard running in iframe mode');
-            // Send height to parent for dynamic iframe sizing
-            function sendHeight() {
-                const height = document.documentElement.scrollHeight;
-                window.parent.postMessage({
-                    type: 'dashboardHeight',
-                    height: height
-                }, '*');
-            }
-            
-            // Send height on load and resize
-            window.addEventListener('load', sendHeight);
-            window.addEventListener('resize', sendHeight);
-            
-            // Send height after images/charts load
-            setTimeout(sendHeight, 1000);
-        }
-
-        // Auto-refresh
-        setTimeout(() => {
-            location.reload();
-        }, AUTO_REFRESH_INTERVAL);
-
-        // Search function
-        function searchTable(input, tableId) {
+        // Table search function
+        function searchTable(input) {
             const filter = input.value.toUpperCase();
-            const table = document.getElementById(tableId);
-            const tr = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < tr.length; i++) {
-                let found = false;
-                const td = tr[i].getElementsByTagName('td');
-                
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                            found = true;
-                            break;
-                        }
+            const table = input.nextElementSibling;
+            const rows = table.getElementsByTagName("tr");
+            for (let i = 1; i < rows.length; i++) {
+                let match = false;
+                const cols = rows[i].getElementsByTagName("td");
+                for (let j = 0; j < cols.length; j++) {
+                    if (cols[j] && cols[j].textContent.toUpperCase().includes(filter)) {
+                        match = true;
+                        break;
                     }
                 }
-                
-                tr[i].style.display = found ? '' : 'none';
+                rows[i].style.display = match ? "" : "none";
             }
         }
-
-        // Chart configurations optimized for iframe
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 10,
-                        font: {
-                            family: 'Inter',
-                            size: 11
-                        }
-                    }
-                }
-            }
-        };
-
-        // Initialize charts after DOM loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // RFQ Status Chart
-            new Chart(document.getElementById('rfqChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Active', 'Pending Submission', 'Under Review'],
-                    datasets: [{
-                        data: [3, 2, 0],
-                        backgroundColor: ['#22c55e', '#f59e0b', '#3fabe6']
-                    }]
-                },
-                options: chartOptions
-            });
-
-            // Purchase Orders Chart
-            new Chart(document.getElementById('poChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Medis', 'Grindeks', 'Pipeline', 'Huons', 'Kalceks'],
-                    datasets: [{
-                        label: 'Pending POs',
-                        data: [2, 1, 2, 2, 1],
-                        backgroundColor: '#1b1464'
-                    }]
-                },
-                options: {
-                    ...chartOptions,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Deadlines Chart
-            new Chart(document.getElementById('deadlineChart'), {
-                type: 'line',
-                data: {
-                    labels: ['Oct 25', 'Oct 27', 'Nov 5', 'Nov 10', 'Nov 15', 'Nov 20'],
-                    datasets: [{
-                        label: 'Upcoming Deadlines',
-                        data: [2, 1, 1, 1, 1, 1],
-                        borderColor: '#3fabe6',
-                        backgroundColor: 'rgba(63, 171, 230, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    ...chartOptions,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Priority Chart
-            new Chart(document.getElementById('priorityChart'), {
-                type: 'pie',
-                data: {
-                    labels: ['High Priority', 'Medium Priority', 'Low Priority'],
-                    datasets: [{
-                        data: [3, 1, 1],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#22c55e']
-                    }]
-                },
-                options: chartOptions
-            });
-
-            // Notify parent about charts loaded
-            if (isInIframe) {
-                setTimeout(() => {
-                    const height = document.documentElement.scrollHeight;
-                    window.parent.postMessage({
-                        type: 'dashboardHeight',
-                        height: height
-                    }, '*');
-                }, 500);
-            }
-        });
-
-        console.log('Mile Medical Dashboard loaded successfully');
-        console.log('Data source:', SHAREPOINT_URL);
-        console.log('Auto-refresh enabled: every 5 minutes');
-        console.log('iframe mode:', isInIframe);
     </script>
 </body>
 </html>
