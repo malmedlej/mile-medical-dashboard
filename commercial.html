@@ -1,289 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mile Medical Company - Commercial Dashboard with Sales Pipeline, Revenue, and Customer Analytics">
-    <title>Commercial Dashboard | Mile Medical</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mile Medical - Commercial Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
-        <div id="sidebarContainer"></div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <div id="headerContainer"></div>
-            
-            <!-- Content Area -->
-            <main class="content">
-                <div class="page-header">
-                    <h1 class="page-title">Commercial Dashboard</h1>
-                    <p class="page-description">Sales pipeline, revenue performance, and customer relationship metrics</p>
-                </div>
-                
-                <!-- KPI Cards Grid -->
-                <div class="kpi-grid">
-                    <div class="kpi-card" data-detail-page="pages/sales-revenue-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Total Revenue</span>
-                            <div class="kpi-icon blue">💰</div>
-                        </div>
-                        <div class="kpi-value">$2.6M</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 16.8%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/pipeline-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Pipeline Value</span>
-                            <div class="kpi-icon green">📊</div>
-                        </div>
-                        <div class="kpi-value">$3.5M</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 12.3%</span>
-                            <span class="kpi-comparison">vs last quarter</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/deals-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Active Deals</span>
-                            <div class="kpi-icon purple">🤝</div>
-                        </div>
-                        <div class="kpi-value">87</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 9.5%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/win-rate-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Win Rate</span>
-                            <div class="kpi-icon orange">🎯</div>
-                        </div>
-                        <div class="kpi-value">68.5%</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 4.2%</span>
-                            <span class="kpi-comparison">vs last quarter</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                </div>
-                
-                <!-- Charts Grid -->
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Sales Pipeline by Stage</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="salesPipelineChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Revenue by Product Line</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="revenueProductChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Monthly Sales Trend vs Target</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="salesTrendChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Top Customers by Revenue</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="topCustomersChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Deals Table -->
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3 class="table-title">Recent Deals</h3>
-                        <div class="table-actions">
-                            <div class="search-box">
-                                <span class="search-icon">🔍</span>
-                                <input type="text" class="search-input" placeholder="Search deals..." data-table="dealsTable">
-                            </div>
-                            <button class="btn btn-primary" onclick="MileDashboard.exportTableToCSV('dealsTable', 'recent-deals')">
-                                📊 Export CSV
-                            </button>
-                        </div>
-                    </div>
-                    <table class="data-table" id="dealsTable">
-                        <thead>
-                            <tr>
-                                <th>Deal ID</th>
-                                <th>Customer</th>
-                                <th>Product Line</th>
-                                <th>Value</th>
-                                <th>Stage</th>
-                                <th>Close Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>DEAL-2024-1892</td>
-                                <td>General Hospital Network</td>
-                                <td>Surgical Supplies</td>
-                                <td>$145,000</td>
-                                <td>Negotiation</td>
-                                <td>2024-02-15</td>
-                                <td><span class="status-badge status-warning">In Progress</span></td>
-                            </tr>
-                            <tr>
-                                <td>DEAL-2024-1891</td>
-                                <td>City Medical Center</td>
-                                <td>Diagnostic Equipment</td>
-                                <td>$280,000</td>
-                                <td>Proposal</td>
-                                <td>2024-02-28</td>
-                                <td><span class="status-badge status-info">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>DEAL-2024-1890</td>
-                                <td>Regional Clinic Group</td>
-                                <td>Pharmaceuticals</td>
-                                <td>$95,000</td>
-                                <td>Closed Won</td>
-                                <td>2024-01-20</td>
-                                <td><span class="status-badge status-success">Won</span></td>
-                            </tr>
-                            <tr>
-                                <td>DEAL-2024-1889</td>
-                                <td>University Health System</td>
-                                <td>Medical Devices</td>
-                                <td>$420,000</td>
-                                <td>Negotiation</td>
-                                <td>2024-03-10</td>
-                                <td><span class="status-badge status-warning">In Progress</span></td>
-                            </tr>
-                            <tr>
-                                <td>DEAL-2024-1888</td>
-                                <td>Community Hospital Alliance</td>
-                                <td>Surgical Supplies</td>
-                                <td>$120,000</td>
-                                <td>Qualification</td>
-                                <td>2024-03-20</td>
-                                <td><span class="status-badge status-info">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>DEAL-2024-1887</td>
-                                <td>Metro Urgent Care</td>
-                                <td>Diagnostic Equipment</td>
-                                <td>$75,000</td>
-                                <td>Closed Won</td>
-                                <td>2024-01-18</td>
-                                <td><span class="status-badge status-success">Won</span></td>
-                            </tr>
-                            <tr>
-                                <td>DEAL-2024-1886</td>
-                                <td>Healthcare Partners LLC</td>
-                                <td>Medical Devices</td>
-                                <td>$195,000</td>
-                                <td>Proposal</td>
-                                <td>2024-02-25</td>
-                                <td><span class="status-badge status-info">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>DEAL-2024-1885</td>
-                                <td>Suburban Medical Center</td>
-                                <td>Pharmaceuticals</td>
-                                <td>$165,000</td>
-                                <td>Closed Won</td>
-                                <td>2024-01-17</td>
-                                <td><span class="status-badge status-success">Won</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </main>
-            
-            <!-- Footer -->
-            <div id="footerContainer"></div>
+  <div class="dashboard-container">
+    <div id="sidebar"></div>
+    <div class="main-content">
+      <div id="header"></div>
+      <main class="content">
+        <div class="page-header">
+          <h2>Commercial Dashboard</h2>
+          <p>Sales Performance, Products, Suppliers & Regulatory Management</p>
         </div>
+        
+        <div class="info-banner">
+          <span class="icon">🔗</span>
+          <p>Data live from <strong><a href="https://milemedical.sharepoint.com/:x:/s/MileMedical/EVq4q-YnW0JKjK-eikbGR5kBnAF0I3X4BcxqYcO0_4CdJQ" target="_blank" style="color: #3FABE6;">SharePoint Operations Sheet</a></strong></p>
+        </div>
+        
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">📝</div>
+              <div class="metric-change positive">↑ 12.5%</div>
+            </div>
+            <div class="metric-value">18</div>
+            <div class="metric-label">Active RFQs</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">🛒</div>
+              <div class="metric-change negative">↓ 8.3%</div>
+            </div>
+            <div class="metric-value">9</div>
+            <div class="metric-label">Pending POs</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">⚠️</div>
+              <div class="metric-change negative">↓ 15.2%</div>
+            </div>
+            <div class="metric-value">5</div>
+            <div class="metric-label">Open Issues</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">🏢</div>
+              <div class="metric-change positive">↑ 5.8%</div>
+            </div>
+            <div class="metric-value">34</div>
+            <div class="metric-label">Active Suppliers</div>
+          </div>
+        </div>
+        
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>RFQ Status Distribution</h3>
+              <p>Current status of all RFQs</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="rfqStatusChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Purchase Orders by Supplier</h3>
+              <p>Top suppliers by PO count</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="poSupplierChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+      <footer class="footer">
+        <p>&copy; 2025 Mile Medical Company | <a href="https://www.milemedical.com" target="_blank">www.milemedical.com</a></p>
+      </footer>
     </div>
-    
-    <!-- SharePoint Floating Action Button - Commercial Data -->
-    <a href="https://milemedical.sharepoint.com/:x:/s/MileMedical/EcnuIdF1jllMgZ7Fw2dQmYABfvRRMQkLJ36kXqeU0Oq6bg" target="_blank" class="sharepoint-fab" title="Open Commercial Data in SharePoint">
-        <span>☁️</span>
-        <span class="fab-tooltip">Open Commercial Data in SharePoint</span>
-    </a>
-    
-    <!-- Load Partials and Scripts -->
-    <script>
-        // Load sidebar
-        fetch('partials/sidebar.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('sidebarContainer').innerHTML = html;
-            });
-        
-        // Load header
-        fetch('partials/header.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('headerContainer').innerHTML = html;
-            });
-        
-        // Load footer
-        fetch('partials/footer.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('footerContainer').innerHTML = html;
-            });
-    </script>
-    
-    <!-- Main JavaScript -->
-    <script src="js/main.js"></script>
+  </div>
+  <script src="js/main.js"></script>
 </body>
 </html>

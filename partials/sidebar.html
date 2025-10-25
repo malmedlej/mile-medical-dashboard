@@ -1,60 +1,45 @@
-<!-- ================================================================
-     Mile Medical Dashboard - Sidebar Navigation
-     ================================================================ -->
 <aside class="sidebar">
-    <div class="sidebar-logo">
-        <h1>Mile Medical</h1>
-        <p>Empowering Healthcare Through Data</p>
+  <div class="sidebar-logo">
+    <img src="assets/logo.png" alt="Mile Medical Logo" onerror="this.style.display='none'">
+    <h2>Mile Medical</h2>
+    <p>DASHBOARD SYSTEM</p>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">Main</div>
+      <a href="index.html" class="nav-item">
+        <span class="icon">🏠</span>
+        <span>Main Dashboard</span>
+      </a>
     </div>
     
-    <nav class="sidebar-nav">
-        <div class="nav-section">
-            <div class="nav-section-title">Main</div>
-            <a href="index.html" class="nav-link" id="nav-executive">
-                <span class="nav-icon">📊</span>
-                <span>Executive Dashboard</span>
-            </a>
-        </div>
-        
-        <div class="nav-section">
-            <div class="nav-section-title">Departments</div>
-            <a href="operations.html" class="nav-link" id="nav-operations">
-                <span class="nav-icon">⚙️</span>
-                <span>Operations</span>
-            </a>
-            <a href="commercial.html" class="nav-link" id="nav-commercial">
-                <span class="nav-icon">💼</span>
-                <span>Commercial</span>
-            </a>
-            <a href="marketing.html" class="nav-link" id="nav-marketing">
-                <span class="nav-icon">📈</span>
-                <span>Marketing</span>
-            </a>
-        </div>
-        
-        <div class="nav-section">
-            <div class="nav-section-title">Resources</div>
-            <a href="https://milemedical.sharepoint.com/" target="_blank" class="nav-link">
-                <span class="nav-icon">☁️</span>
-                <span>SharePoint</span>
-            </a>
-        </div>
-    </nav>
+    <div class="nav-section">
+      <div class="nav-section-title">Departments</div>
+      <a href="operations.html" class="nav-item">
+        <span class="icon">⚙️</span>
+        <span>Operations</span>
+      </a>
+      <a href="commercial.html" class="nav-item">
+        <span class="icon">💼</span>
+        <span>Commercial</span>
+      </a>
+      <a href="marketing.html" class="nav-item">
+        <span class="icon">📈</span>
+        <span>Marketing</span>
+      </a>
+    </div>
+    
+    <div class="nav-section">
+      <div class="nav-section-title">Resources</div>
+      <a href="https://www.milemedical.com" target="_blank" class="nav-item">
+        <span class="icon">🌐</span>
+        <span>Company Website</span>
+      </a>
+      <a href="https://milemedical.sharepoint.com/sites/MileMedical" target="_blank" class="nav-item">
+        <span class="icon">📁</span>
+        <span>SharePoint</span>
+      </a>
+    </div>
+  </nav>
 </aside>
-
-<script>
-    // Highlight active navigation item
-    document.addEventListener('DOMContentLoaded', function() {
-        const currentPath = window.location.pathname;
-        
-        if (currentPath.includes('operations')) {
-            document.getElementById('nav-operations')?.classList.add('active');
-        } else if (currentPath.includes('commercial')) {
-            document.getElementById('nav-commercial')?.classList.add('active');
-        } else if (currentPath.includes('marketing')) {
-            document.getElementById('nav-marketing')?.classList.add('active');
-        } else if (currentPath.includes('index') || currentPath.endsWith('/')) {
-            document.getElementById('nav-executive')?.classList.add('active');
-        }
-    });
-</script>

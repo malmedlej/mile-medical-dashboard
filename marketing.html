@@ -1,298 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mile Medical Company - Marketing Dashboard with Campaign Performance, Leads, and ROI Analytics">
-    <title>Marketing Dashboard | Mile Medical</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mile Medical - Marketing Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
-        <div id="sidebarContainer"></div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <div id="headerContainer"></div>
-            
-            <!-- Content Area -->
-            <main class="content">
-                <div class="page-header">
-                    <h1 class="page-title">Marketing Dashboard</h1>
-                    <p class="page-description">Campaign performance, lead generation, and marketing ROI analytics</p>
-                </div>
-                
-                <!-- KPI Cards Grid -->
-                <div class="kpi-grid">
-                    <div class="kpi-card" data-detail-page="pages/leads-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Total Leads</span>
-                            <div class="kpi-icon blue">👥</div>
-                        </div>
-                        <div class="kpi-value">1,320</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 18.5%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/campaigns-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Active Campaigns</span>
-                            <div class="kpi-icon green">📢</div>
-                        </div>
-                        <div class="kpi-value">12</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 3</span>
-                            <span class="kpi-comparison">new this month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/conversion-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Conversion Rate</span>
-                            <div class="kpi-icon purple">🎯</div>
-                        </div>
-                        <div class="kpi-value">20.8%</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 3.2%</span>
-                            <span class="kpi-comparison">vs last quarter</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/marketing-roi-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Marketing ROI</span>
-                            <div class="kpi-icon orange">💹</div>
-                        </div>
-                        <div class="kpi-value">285%</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 22%</span>
-                            <span class="kpi-comparison">vs last quarter</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                </div>
-                
-                <!-- Charts Grid -->
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Campaign Performance</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="campaignPerformanceChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Lead Source Distribution</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="leadSourceChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Monthly Lead Generation Trend</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="leadTrendChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Channel ROI Comparison</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="channelROIChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Campaigns Table -->
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3 class="table-title">Recent Campaigns</h3>
-                        <div class="table-actions">
-                            <div class="search-box">
-                                <span class="search-icon">🔍</span>
-                                <input type="text" class="search-input" placeholder="Search campaigns..." data-table="campaignsTable">
-                            </div>
-                            <button class="btn btn-primary" onclick="MileDashboard.exportTableToCSV('campaignsTable', 'recent-campaigns')">
-                                📊 Export CSV
-                            </button>
-                        </div>
-                    </div>
-                    <table class="data-table" id="campaignsTable">
-                        <thead>
-                            <tr>
-                                <th>Campaign ID</th>
-                                <th>Campaign Name</th>
-                                <th>Channel</th>
-                                <th>Leads</th>
-                                <th>Conversions</th>
-                                <th>Budget</th>
-                                <th>ROI</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>CAMP-2024-089</td>
-                                <td>Q1 Healthcare Innovation Summit</td>
-                                <td>Events</td>
-                                <td>156</td>
-                                <td>42</td>
-                                <td>$25,000</td>
-                                <td>280%</td>
-                                <td><span class="status-badge status-info">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>CAMP-2024-088</td>
-                                <td>Winter Product Launch Email Series</td>
-                                <td>Email</td>
-                                <td>342</td>
-                                <td>87</td>
-                                <td>$8,500</td>
-                                <td>420%</td>
-                                <td><span class="status-badge status-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>CAMP-2024-087</td>
-                                <td>LinkedIn Healthcare Professional Ads</td>
-                                <td>Social Media</td>
-                                <td>284</td>
-                                <td>68</td>
-                                <td>$12,000</td>
-                                <td>315%</td>
-                                <td><span class="status-badge status-info">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>CAMP-2024-086</td>
-                                <td>Medical Supply Catalog Distribution</td>
-                                <td>Direct Mail</td>
-                                <td>198</td>
-                                <td>45</td>
-                                <td>$15,000</td>
-                                <td>220%</td>
-                                <td><span class="status-badge status-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>CAMP-2024-085</td>
-                                <td>Google Ads - Surgical Equipment</td>
-                                <td>PPC</td>
-                                <td>412</td>
-                                <td>89</td>
-                                <td>$18,500</td>
-                                <td>265%</td>
-                                <td><span class="status-badge status-info">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>CAMP-2024-084</td>
-                                <td>Healthcare Blog Content Series</td>
-                                <td>Content Marketing</td>
-                                <td>267</td>
-                                <td>58</td>
-                                <td>$6,000</td>
-                                <td>380%</td>
-                                <td><span class="status-badge status-info">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>CAMP-2024-083</td>
-                                <td>Webinar: Future of Medical Devices</td>
-                                <td>Events</td>
-                                <td>189</td>
-                                <td>52</td>
-                                <td>$9,500</td>
-                                <td>340%</td>
-                                <td><span class="status-badge status-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>CAMP-2024-082</td>
-                                <td>Partner Referral Program Launch</td>
-                                <td>Referral</td>
-                                <td>145</td>
-                                <td>38</td>
-                                <td>$5,000</td>
-                                <td>485%</td>
-                                <td><span class="status-badge status-info">Active</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </main>
-            
-            <!-- Footer -->
-            <div id="footerContainer"></div>
+  <div class="dashboard-container">
+    <div id="sidebar"></div>
+    <div class="main-content">
+      <div id="header"></div>
+      <main class="content">
+        <div class="page-header">
+          <h2>Marketing Dashboard</h2>
+          <p>Campaigns, Leads, Suppliers & Regulatory Management</p>
         </div>
+        
+        <div class="info-banner">
+          <span class="icon">🔗</span>
+          <p>Data live from <strong><a href="https://milemedical.sharepoint.com/:x:/s/MileMedical/EVq4q-YnW0JKjK-eikbGR5kBnAF0I3X4BcxqYcO0_4CdJQ" target="_blank" style="color: #3FABE6;">SharePoint Operations Sheet</a></strong></p>
+        </div>
+        
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">📝</div>
+              <div class="metric-change positive">↑ 12.5%</div>
+            </div>
+            <div class="metric-value">18</div>
+            <div class="metric-label">Active RFQs</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">🛒</div>
+              <div class="metric-change negative">↓ 8.3%</div>
+            </div>
+            <div class="metric-value">9</div>
+            <div class="metric-label">Pending POs</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">⚠️</div>
+              <div class="metric-change negative">↓ 15.2%</div>
+            </div>
+            <div class="metric-value">5</div>
+            <div class="metric-label">Open Issues</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">🏢</div>
+              <div class="metric-change positive">↑ 5.8%</div>
+            </div>
+            <div class="metric-value">34</div>
+            <div class="metric-label">Active Suppliers</div>
+          </div>
+        </div>
+        
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>RFQ Status Distribution</h3>
+              <p>Current status of all RFQs</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="rfqStatusChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Purchase Orders by Supplier</h3>
+              <p>Top suppliers by PO count</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="poSupplierChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+      <footer class="footer">
+        <p>&copy; 2025 Mile Medical Company | <a href="https://www.milemedical.com" target="_blank">www.milemedical.com</a></p>
+      </footer>
     </div>
-    
-    <!-- SharePoint Floating Action Button - Marketing Data -->
-    <a href="https://milemedical.sharepoint.com/:x:/s/MileMedical/EYN5ITx2xHxEjx_6-CXUfYIB2OMO2jG-l_xE2K0cJrPB-g" target="_blank" class="sharepoint-fab" title="Open Marketing Data in SharePoint">
-        <span>☁️</span>
-        <span class="fab-tooltip">Open Marketing Data in SharePoint</span>
-    </a>
-    
-    <!-- Load Partials and Scripts -->
-    <script>
-        // Load sidebar
-        fetch('partials/sidebar.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('sidebarContainer').innerHTML = html;
-            });
-        
-        // Load header
-        fetch('partials/header.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('headerContainer').innerHTML = html;
-            });
-        
-        // Load footer
-        fetch('partials/footer.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('footerContainer').innerHTML = html;
-            });
-    </script>
-    
-    <!-- Main JavaScript -->
-    <script src="js/main.js"></script>
+  </div>
+  <script src="js/main.js"></script>
 </body>
 </html>

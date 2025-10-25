@@ -1,271 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mile Medical Company - Executive Dashboard with real-time analytics and insights">
-    <title>Executive Dashboard | Mile Medical</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mile Medical - Executive Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
-        <div id="sidebarContainer"></div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <div id="headerContainer"></div>
-            
-            <!-- Content Area -->
-            <main class="content">
-                <div class="page-header">
-                    <h1 class="page-title">Executive Dashboard</h1>
-                    <p class="page-description">Real-time overview of Mile Medical Company performance metrics</p>
-                </div>
-                
-                <!-- KPI Cards Grid -->
-                <div class="kpi-grid">
-                    <div class="kpi-card" data-detail-page="pages/revenue-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Total Revenue</span>
-                            <div class="kpi-icon blue">💰</div>
-                        </div>
-                        <div class="kpi-value">$5.8M</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 12.5%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/orders-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Active Orders</span>
-                            <div class="kpi-icon green">📦</div>
-                        </div>
-                        <div class="kpi-value">1,248</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 8.3%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/customers-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Total Customers</span>
-                            <div class="kpi-icon purple">👥</div>
-                        </div>
-                        <div class="kpi-value">542</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 5.2%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/satisfaction-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Customer Satisfaction</span>
-                            <div class="kpi-icon orange">⭐</div>
-                        </div>
-                        <div class="kpi-value">94.5%</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 2.1%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                </div>
-                
-                <!-- Charts Grid -->
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Revenue Trend</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Department Performance</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="performanceChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Project Status Distribution</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="projectStatusChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Top Products by Sales</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="topProductsChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Activities Table -->
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3 class="table-title">Recent Activities</h3>
-                        <div class="table-actions">
-                            <div class="search-box">
-                                <span class="search-icon">🔍</span>
-                                <input type="text" class="search-input" placeholder="Search activities..." data-table="activitiesTable">
-                            </div>
-                            <button class="btn btn-primary" onclick="MileDashboard.exportTableToCSV('activitiesTable', 'recent-activities')">
-                                📊 Export CSV
-                            </button>
-                        </div>
-                    </div>
-                    <table class="data-table" id="activitiesTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Activity</th>
-                                <th>Department</th>
-                                <th>User</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>2024-01-20</td>
-                                <td>Purchase Order #PO-2024-1458 created</td>
-                                <td>Operations</td>
-                                <td>John Smith</td>
-                                <td><span class="status-badge status-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>2024-01-20</td>
-                                <td>New customer registration: Hospital ABC</td>
-                                <td>Commercial</td>
-                                <td>Sarah Johnson</td>
-                                <td><span class="status-badge status-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>2024-01-19</td>
-                                <td>Marketing campaign launch: Q1 2024</td>
-                                <td>Marketing</td>
-                                <td>Mike Davis</td>
-                                <td><span class="status-badge status-info">Active</span></td>
-                            </tr>
-                            <tr>
-                                <td>2024-01-19</td>
-                                <td>RFQ #RFQ-2024-3287 under review</td>
-                                <td>Operations</td>
-                                <td>Emily Brown</td>
-                                <td><span class="status-badge status-warning">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>2024-01-18</td>
-                                <td>Sales proposal sent to Medical Center XYZ</td>
-                                <td>Commercial</td>
-                                <td>David Wilson</td>
-                                <td><span class="status-badge status-info">In Progress</span></td>
-                            </tr>
-                            <tr>
-                                <td>2024-01-18</td>
-                                <td>Supplier performance review scheduled</td>
-                                <td>Operations</td>
-                                <td>Lisa Anderson</td>
-                                <td><span class="status-badge status-warning">Scheduled</span></td>
-                            </tr>
-                            <tr>
-                                <td>2024-01-17</td>
-                                <td>Q4 2023 financial report published</td>
-                                <td>Finance</td>
-                                <td>Robert Taylor</td>
-                                <td><span class="status-badge status-success">Completed</span></td>
-                            </tr>
-                            <tr>
-                                <td>2024-01-17</td>
-                                <td>Lead qualification: Clinic Network DEF</td>
-                                <td>Marketing</td>
-                                <td>Jennifer Martinez</td>
-                                <td><span class="status-badge status-info">In Progress</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </main>
-            
-            <!-- Footer -->
-            <div id="footerContainer"></div>
+  <div class="dashboard-container">
+    <div id="sidebar"></div>
+    <div class="main-content">
+      <div id="header"></div>
+      <main class="content">
+        <div class="page-header">
+          <h2>Executive Dashboard</h2>
+          <p>Comprehensive overview of all business verticals</p>
         </div>
+        
+        <div class="info-banner">
+          <span class="icon">ℹ️</span>
+          <p>Data synchronized from SharePoint every 5 minutes</p>
+        </div>
+        
+        <div class="metrics-grid">
+          <div class="metric-card" id="totalRevenue">
+            <div class="metric-header">
+              <div class="metric-icon">💰</div>
+              <div class="metric-change positive">↑ 15.3%</div>
+            </div>
+            <div class="metric-value">$2,847,500</div>
+            <div class="metric-label">Total Revenue</div>
+          </div>
+          <div class="metric-card" id="activeProjects">
+            <div class="metric-header">
+              <div class="metric-icon">📊</div>
+              <div class="metric-change positive">↑ 8.2%</div>
+            </div>
+            <div class="metric-value">24</div>
+            <div class="metric-label">Active Projects</div>
+          </div>
+          <div class="metric-card" id="pendingRFQs">
+            <div class="metric-header">
+              <div class="metric-icon">📝</div>
+              <div class="metric-change negative">↓ 5.1%</div>
+            </div>
+            <div class="metric-value">12</div>
+            <div class="metric-label">Pending RFQs</div>
+          </div>
+          <div class="metric-card" id="roi">
+            <div class="metric-header">
+              <div class="metric-icon">📈</div>
+              <div class="metric-change positive">↑ 3.4%</div>
+            </div>
+            <div class="metric-value">24.7%</div>
+            <div class="metric-label">Overall ROI</div>
+          </div>
+        </div>
+        
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Revenue Trend</h3>
+              <p>Monthly performance</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Vertical Contribution</h3>
+              <p>Revenue distribution</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="verticalChart"></canvas>
+            </div>
+          </div>
+        </div>
+        
+        <div class="nav-buttons">
+          <a href="operations.html" class="nav-button-card">
+            <div class="nav-button-icon">⚙️</div>
+            <div class="nav-button-content">
+              <h3>Operations</h3>
+              <p>RFQs, Purchase Orders & Suppliers</p>
+            </div>
+          </a>
+          <a href="commercial.html" class="nav-button-card">
+            <div class="nav-button-icon">💼</div>
+            <div class="nav-button-content">
+              <h3>Commercial</h3>
+              <p>Sales, Products & Clients</p>
+            </div>
+          </a>
+          <a href="marketing.html" class="nav-button-card">
+            <div class="nav-button-icon">📈</div>
+            <div class="nav-button-content">
+              <h3>Marketing</h3>
+              <p>Campaigns, Leads & Events</p>
+            </div>
+          </a>
+        </div>
+      </main>
+      <footer class="footer">
+        <p>&copy; 2025 Mile Medical Company | <a href="https://www.milemedical.com" target="_blank">www.milemedical.com</a></p>
+      </footer>
     </div>
-    
-    <!-- SharePoint Floating Action Button -->
-    <a href="https://milemedical.sharepoint.com/" target="_blank" class="sharepoint-fab" title="Open SharePoint Portal">
-        <span>☁️</span>
-        <span class="fab-tooltip">Open SharePoint Portal</span>
-    </a>
-    
-    <!-- Load Partials and Scripts -->
-    <script>
-        // Load sidebar
-        fetch('partials/sidebar.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('sidebarContainer').innerHTML = html;
-            });
-        
-        // Load header
-        fetch('partials/header.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('headerContainer').innerHTML = html;
-            });
-        
-        // Load footer
-        fetch('partials/footer.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('footerContainer').innerHTML = html;
-            });
-    </script>
-    
-    <!-- Main JavaScript -->
-    <script src="js/main.js"></script>
+  </div>
+  <script src="js/main.js"></script>
 </body>
 </html>

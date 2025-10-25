@@ -1,280 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mile Medical Company - Operations Dashboard with RFQ, Purchase Orders, and Supplier Analytics">
-    <title>Operations Dashboard | Mile Medical</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mile Medical - Operations Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar Navigation -->
-        <div id="sidebarContainer"></div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <div id="headerContainer"></div>
-            
-            <!-- Content Area -->
-            <main class="content">
-                <div class="page-header">
-                    <h1 class="page-title">Operations Dashboard</h1>
-                    <p class="page-description">Real-time operations metrics including RFQs, Purchase Orders, and Supplier Performance</p>
-                </div>
-                
-                <!-- KPI Cards Grid -->
-                <div class="kpi-grid">
-                    <div class="kpi-card" data-detail-page="pages/rfq-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Active RFQs</span>
-                            <div class="kpi-icon blue">📋</div>
-                        </div>
-                        <div class="kpi-value">178</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 15.2%</span>
-                            <span class="kpi-comparison">vs last week</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/purchase-orders-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Purchase Orders</span>
-                            <div class="kpi-icon green">📦</div>
-                        </div>
-                        <div class="kpi-value">830</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 8.7%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/suppliers-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">Active Suppliers</span>
-                            <div class="kpi-icon purple">🏭</div>
-                        </div>
-                        <div class="kpi-value">124</div>
-                        <div class="kpi-footer">
-                            <span class="trend up">↑ 3.5%</span>
-                            <span class="kpi-comparison">vs last quarter</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                    
-                    <div class="kpi-card" data-detail-page="pages/delivery-performance-detail.html">
-                        <div class="kpi-header">
-                            <span class="kpi-title">On-Time Delivery</span>
-                            <div class="kpi-icon green">✓</div>
-                        </div>
-                        <div class="kpi-value">92.3%</div>
-                        <div class="kpi-footer">
-                            <span class="trend down">↓ 1.2%</span>
-                            <span class="kpi-comparison">vs last month</span>
-                        </div>
-                        <div class="kpi-click-hint">Click for details →</div>
-                    </div>
-                </div>
-                
-                <!-- Charts Grid -->
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">RFQ Processing Trend</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="rfqTrendChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Purchase Order Status Distribution</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="poStatusChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Top Supplier Performance</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="supplierPerformanceChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3 class="chart-title">Monthly PO Volume</h3>
-                            <div class="chart-actions">
-                                <button class="chart-action-btn" title="Download">📥</button>
-                                <button class="chart-action-btn" title="Fullscreen">⛶</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="poVolumeChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent RFQs Table -->
-                <div class="table-card">
-                    <div class="table-header">
-                        <h3 class="table-title">Recent RFQs</h3>
-                        <div class="table-actions">
-                            <div class="search-box">
-                                <span class="search-icon">🔍</span>
-                                <input type="text" class="search-input" placeholder="Search RFQs..." data-table="rfqsTable">
-                            </div>
-                            <button class="btn btn-primary" onclick="MileDashboard.exportTableToCSV('rfqsTable', 'recent-rfqs')">
-                                📊 Export CSV
-                            </button>
-                        </div>
-                    </div>
-                    <table class="data-table" id="rfqsTable">
-                        <thead>
-                            <tr>
-                                <th>RFQ ID</th>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Supplier</th>
-                                <th>Requested Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>RFQ-2024-3287</td>
-                                <td>Surgical Masks (N95)</td>
-                                <td>5,000 units</td>
-                                <td>MedSupply Corp</td>
-                                <td>2024-01-20</td>
-                                <td><span class="status-badge status-warning">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>RFQ-2024-3286</td>
-                                <td>Disposable Gloves</td>
-                                <td>10,000 pairs</td>
-                                <td>HealthCare Supplies Inc</td>
-                                <td>2024-01-20</td>
-                                <td><span class="status-badge status-info">Under Review</span></td>
-                            </tr>
-                            <tr>
-                                <td>RFQ-2024-3285</td>
-                                <td>Diagnostic Test Kits</td>
-                                <td>2,500 units</td>
-                                <td>BioTest Solutions</td>
-                                <td>2024-01-19</td>
-                                <td><span class="status-badge status-success">Approved</span></td>
-                            </tr>
-                            <tr>
-                                <td>RFQ-2024-3284</td>
-                                <td>IV Fluids (Saline)</td>
-                                <td>1,200 bags</td>
-                                <td>PharmaCare Ltd</td>
-                                <td>2024-01-19</td>
-                                <td><span class="status-badge status-success">Approved</span></td>
-                            </tr>
-                            <tr>
-                                <td>RFQ-2024-3283</td>
-                                <td>Syringes (10ml)</td>
-                                <td>8,000 units</td>
-                                <td>MedEquip International</td>
-                                <td>2024-01-18</td>
-                                <td><span class="status-badge status-info">Under Review</span></td>
-                            </tr>
-                            <tr>
-                                <td>RFQ-2024-3282</td>
-                                <td>Hospital Bed Sheets</td>
-                                <td>3,500 sets</td>
-                                <td>TextileMed Corp</td>
-                                <td>2024-01-18</td>
-                                <td><span class="status-badge status-warning">Pending</span></td>
-                            </tr>
-                            <tr>
-                                <td>RFQ-2024-3281</td>
-                                <td>Blood Pressure Monitors</td>
-                                <td>150 units</td>
-                                <td>DiagnosticTech Ltd</td>
-                                <td>2024-01-17</td>
-                                <td><span class="status-badge status-success">Approved</span></td>
-                            </tr>
-                            <tr>
-                                <td>RFQ-2024-3280</td>
-                                <td>Wheelchairs (Manual)</td>
-                                <td>45 units</td>
-                                <td>MobilityAid Solutions</td>
-                                <td>2024-01-17</td>
-                                <td><span class="status-badge status-success">Approved</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </main>
-            
-            <!-- Footer -->
-            <div id="footerContainer"></div>
+  <div class="dashboard-container">
+    <div id="sidebar"></div>
+    <div class="main-content">
+      <div id="header"></div>
+      <main class="content">
+        <div class="page-header">
+          <h2>Operations Dashboard</h2>
+          <p>RFQs, Purchase Orders, Suppliers & Regulatory Management</p>
         </div>
+        
+        <div class="info-banner">
+          <span class="icon">🔗</span>
+          <p>Data live from <strong><a href="https://milemedical.sharepoint.com/:x:/s/MileMedical/EVq4q-YnW0JKjK-eikbGR5kBnAF0I3X4BcxqYcO0_4CdJQ" target="_blank" style="color: #3FABE6;">SharePoint Operations Sheet</a></strong></p>
+        </div>
+        
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">📝</div>
+              <div class="metric-change positive">↑ 12.5%</div>
+            </div>
+            <div class="metric-value">18</div>
+            <div class="metric-label">Active RFQs</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">🛒</div>
+              <div class="metric-change negative">↓ 8.3%</div>
+            </div>
+            <div class="metric-value">9</div>
+            <div class="metric-label">Pending POs</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">⚠️</div>
+              <div class="metric-change negative">↓ 15.2%</div>
+            </div>
+            <div class="metric-value">5</div>
+            <div class="metric-label">Open Issues</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">🏢</div>
+              <div class="metric-change positive">↑ 5.8%</div>
+            </div>
+            <div class="metric-value">34</div>
+            <div class="metric-label">Active Suppliers</div>
+          </div>
+        </div>
+        
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>RFQ Status Distribution</h3>
+              <p>Current status of all RFQs</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="rfqStatusChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Purchase Orders by Supplier</h3>
+              <p>Top suppliers by PO count</p>
+            </div>
+            <div class="chart-container">
+              <canvas id="poSupplierChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+      <footer class="footer">
+        <p>&copy; 2025 Mile Medical Company | <a href="https://www.milemedical.com" target="_blank">www.milemedical.com</a></p>
+      </footer>
     </div>
-    
-    <!-- SharePoint Floating Action Button - Operations Data -->
-    <a href="https://milemedical.sharepoint.com/:x:/s/MileMedical/EVq4q-YnW0JKjK-eikbGR5kBnAF0I3X4BcxqYcO0_4CdJQ" target="_blank" class="sharepoint-fab" title="Open Operations Data in SharePoint">
-        <span>☁️</span>
-        <span class="fab-tooltip">Open Operations Data in SharePoint</span>
-    </a>
-    
-    <!-- Load Partials and Scripts -->
-    <script>
-        // Load sidebar
-        fetch('partials/sidebar.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('sidebarContainer').innerHTML = html;
-            });
-        
-        // Load header
-        fetch('partials/header.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('headerContainer').innerHTML = html;
-            });
-        
-        // Load footer
-        fetch('partials/footer.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('footerContainer').innerHTML = html;
-            });
-    </script>
-    
-    <!-- Main JavaScript -->
-    <script src="js/main.js"></script>
+  </div>
+  <script src="js/main.js"></script>
 </body>
 </html>
