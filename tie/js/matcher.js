@@ -25,16 +25,57 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
 });
 
-// Load permanent vendor list
+// Load permanent vendor list from Excel
 async function loadVendorItems() {
     try {
-        const response = await fetch('data/vendor_items.json');
-        if (!response.ok) throw new Error('Failed to load vendor items');
-        vendorItems = await response.json();
-        console.log(`✓ Loaded ${vendorItems.length} vendor items from permanent catalog`);
+        console.log('Loading vendor catalog from Excel...');
+        
+        // Fetch Excel file
+        const response = await fetch('data/vendor_items.xlsx');
+        if (!response.ok) throw new Error('Failed to load vendor items Excel file');
+        
+        // Read as array buffer
+        const arrayBuffer = await response.arrayBuffer();
+        
+        // Parse Excel file with SheetJS
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        
+        // Get first sheet
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // Convert to JSON
+        const rawData = XLSX.utils.sheet_to_json(worksheet, { 
+            header: 1,
+            defval: '',
+            blankrows: false 
+        });
+        
+        // Parse vendor data (skip header row)
+        vendorItems = [];
+        for (let i = 1; i < rawData.length; i++) {
+            const row = rawData[i];
+            
+            // Skip empty rows
+            if (!row[0]) continue;
+            
+            vendorItems.push({
+                nupco_code: String(row[0] || '').trim(),
+                product_name: String(row[1] || '').trim(),
+                pack: String(row[2] || '').trim(),
+                supplier: String(row[3] || '').trim()
+            });
+        }
+        
+        console.log(`✓ Loaded ${vendorItems.length} vendor items from Excel catalog`);
+        
+        if (vendorItems.length === 0) {
+            throw new Error('Vendor catalog is empty');
+        }
+        
     } catch (error) {
         console.error('Error loading vendor items:', error);
-        showToast('⚠️ Could not load vendor catalog. Please refresh the page.', 'error');
+        showToast('⚠️ Could not load vendor catalog Excel file. Please refresh the page.', 'error');
         vendorItems = [];
     }
 }
