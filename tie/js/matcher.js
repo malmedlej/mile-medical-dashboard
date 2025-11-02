@@ -20,7 +20,7 @@ const COLUMN_PATTERNS = {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 TIE Matcher v3.0 - Full Matching System');
+    console.log('🚀 TIE Matcher v3.0.1-DEBUG - Full Matching System [BUILD: 2024-11-02-01]');
     await loadVendorItems();
     setupEventListeners();
 });
@@ -408,11 +408,15 @@ function displayResults() {
     console.log('   currentRFQId to display:', currentRFQId);
     console.log('   currentRFQId length:', currentRFQId.length);
     
+    // TEMPORARY DEBUG ALERT IN DISPLAY
+    console.warn(`⚠️ DEBUG DISPLAY: currentRFQId = "${currentRFQId}" (length: ${currentRFQId.length})`);
+    
     const displayElement = document.getElementById('rfqIdDisplay');
     displayElement.textContent = currentRFQId;
     
     console.log('   Element textContent after set:', displayElement.textContent);
     console.log('   Element textContent length:', displayElement.textContent.length);
+    console.warn(`⚠️ DEBUG: Element shows "${displayElement.textContent}" (length: ${displayElement.textContent.length})`);
     
     document.getElementById('rfqInfo').classList.remove('hidden');
     
