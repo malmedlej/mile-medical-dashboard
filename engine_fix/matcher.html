@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFQ Matcher & Price Memory - Mile Medical</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#0D0D10] text-gray-100 font-['Inter']">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="./assets/logo-white.png" class="w-10 h-auto object-contain rounded-md bg-white/5 p-1" alt="Mile Medical Logo" />
+            <div class="ml-3">
+                <h1 class="text-sm font-semibold text-white">Tender Intelligence</h1>
+                <p class="text-xs text-gray-400">Engine</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="matcher.html" class="nav-item active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+                <span>Matcher</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Pipeline</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>P&L</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                </svg>
+                <span>Workflow</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Analytics</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#F6B17A] to-[#f49347] flex items-center justify-center text-sm font-semibold">
+                    MM
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Mile Medical</p>
+                    <p class="text-xs text-gray-400">Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-3xl font-bold font-['Poppins'] text-white">RFQ Matcher & Price Memory</h2>
+                    <p class="text-gray-400 mt-1">Intelligent matching engine with historical price tracking</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="autoSaveToggle" class="w-4 h-4 rounded bg-white/10 border-white/20 text-[#F6B17A] focus:ring-[#F6B17A]" checked>
+                        <span class="text-sm text-gray-300">💾 Auto-save history</span>
+                    </label>
+                </div>
+            </div>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="glass-card mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">Upload RFQ File</h3>
+                <div id="rfqInfo" class="hidden">
+                    <span class="text-sm text-gray-400">RFQ ID: </span>
+                    <span id="rfqIdDisplay" class="text-lg font-semibold text-[#F6B17A]"></span>
+                </div>
+            </div>
+            
+            <div class="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-[#F6B17A]/50 transition-all duration-300" id="uploadZone">
+                <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden">
+                <div id="uploadPrompt">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-[#F6B17A]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <p class="text-lg font-medium text-white mb-2">Upload NUPCO RFQ Excel File</p>
+                    <p class="text-sm text-gray-400 mb-4">Click to browse or drag & drop your .xlsx file</p>
+                    <button id="uploadBtn" class="btn-primary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        Select File
+                    </button>
+                </div>
+                <div id="uploadingIndicator" class="hidden">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-[#F6B17A] mx-auto mb-4"></div>
+                    <p class="text-lg font-medium text-white">Processing file...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div id="statsSection" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Total Items</span>
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <p id="totalItems" class="text-3xl font-bold text-white">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Matched</span>
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p id="matchedItems" class="text-3xl font-bold text-green-400">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Not Found</span>
+                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p id="notFoundItems" class="text-3xl font-bold text-red-400">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Match Rate</span>
+                    <svg class="w-5 h-5 text-[#F6B17A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <p id="matchRate" class="text-3xl font-bold text-[#F6B17A]">0%</p>
+            </div>
+        </div>
+
+        <!-- Matched Items Table -->
+        <div id="matchedSection" class="hidden glass-card mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">Matched Items</h3>
+                <div class="flex space-x-3">
+                    <button id="savePricesBtn" class="btn-primary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                        </svg>
+                        Save Prices
+                    </button>
+                    <button id="exportBtn" class="btn-secondary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export Results
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">NUPCO Code</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Product Name</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Pack</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Status</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Supplier</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Price (SAR)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matchedTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Not Found Items -->
+        <div id="notFoundSection" class="hidden glass-card">
+            <div class="flex items-center justify-between cursor-pointer" id="notFoundToggle">
+                <div class="flex items-center space-x-3">
+                    <h3 class="text-xl font-semibold text-white">Not Found Items</h3>
+                    <span id="notFoundCount" class="text-sm bg-red-500/20 text-red-400 px-3 py-1 rounded-full font-semibold">0</span>
+                </div>
+                <svg id="notFoundChevron" class="w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            
+            <div id="notFoundContent" class="mt-6 hidden">
+                <p class="text-sm text-gray-400 mb-4">The following NUPCO codes were not found in your vendor catalog:</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="notFoundList">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pb-8 text-center text-sm text-gray-500">
+            <p>&copy; 2024 Mile Medical. Tender Intelligence Engine v1.0</p>
+        </footer>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 transform translate-x-full transition-transform duration-300 z-50">
+        <div class="glass-card flex items-center space-x-3 min-w-[300px] shadow-2xl">
+            <div id="toastIcon" class="w-10 h-10 rounded-full flex items-center justify-center">
+                <!-- Icon will be inserted dynamically -->
+            </div>
+            <div>
+                <p id="toastMessage" class="text-white font-medium"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/matcher.js"></script>
+</body>
+</html>

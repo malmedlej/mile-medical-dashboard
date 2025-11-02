@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Sample NUPCO RFQ</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1>Sample NUPCO RFQ Generator</h1>
+    <button onclick="generateSampleRFQ()">Download Sample NUPCO-1420.xlsx</button>
+    
+    <script>
+        function generateSampleRFQ() {
+            // Sample data that matches some items in vendor_items.json
+            const data = [
+                ['NUPCO Item Code', 'Item Description', 'Unit', 'Quantity'],
+                ['12345-01', 'Surgical Gloves Sterile Size 7.5', 'Box', 100],
+                ['12346-02', 'Disposable Face Mask 3-Ply', 'Box', 500],
+                ['12347-03', 'Alcohol Hand Sanitizer 500ml', 'Bottle', 200],
+                ['12348-04', 'Digital Thermometer Infrared', 'Unit', 50],
+                ['12349-05', 'Sterile Gauze Pads 10x10cm', 'Pack', 150],
+                ['12350-06', 'Medical Adhesive Tape 2.5cm x 5m', 'Roll', 300],
+                ['12351-07', 'Disposable Syringe 5ml with Needle', 'Box', 250],
+                ['12352-08', 'Blood Pressure Monitor Digital', 'Unit', 75],
+                ['23456-21', 'ECG Electrodes Disposable', 'Pack', 200],
+                ['23457-22', 'Foley Catheter 16FR Silicone', 'Pack', 100],
+                ['34567-31', 'Surgical Gown Sterile XL', 'Pack', 150],
+                ['45678-41', 'Ultrasound Gel 250ml', 'Bottle', 100],
+                ['56789-51', 'Infusion Pump Volumetric', 'Unit', 10],
+                ['67890-61', 'Phototherapy Unit Neonatal', 'Unit', 5],
+                // Some codes that won't match (to test "Not Found" feature)
+                ['99999-99', 'Non-existent Item 1', 'Unit', 10],
+                ['88888-88', 'Non-existent Item 2', 'Box', 50],
+                ['77777-77', 'Non-existent Item 3', 'Pack', 25]
+            ];
+            
+            // Create worksheet
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 20 },
+                { wch: 40 },
+                { wch: 10 },
+                { wch: 12 }
+            ];
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'RFQ Items');
+            
+            // Download
+            XLSX.writeFile(wb, 'NUPCO-1420.xlsx');
+        }
+    </script>
+</body>
+</html>

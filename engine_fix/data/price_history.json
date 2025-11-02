@@ -1,0 +1,72 @@
+[
+  {
+    "NUPCO_Code": "12345-01",
+    "RFQ_ID": "1415",
+    "Supplier": "Medis",
+    "Price": 230.50,
+    "Date": "2024-09-15"
+  },
+  {
+    "NUPCO_Code": "12346-02",
+    "RFQ_ID": "1415",
+    "Supplier": "Medis",
+    "Price": 45.00,
+    "Date": "2024-09-15"
+  },
+  {
+    "NUPCO_Code": "12347-03",
+    "RFQ_ID": "1416",
+    "Supplier": "AlJazira Medical",
+    "Price": 28.75,
+    "Date": "2024-10-01"
+  },
+  {
+    "NUPCO_Code": "12348-04",
+    "RFQ_ID": "1416",
+    "Supplier": "AlJazira Medical",
+    "Price": 185.00,
+    "Date": "2024-10-01"
+  },
+  {
+    "NUPCO_Code": "12349-05",
+    "RFQ_ID": "1417",
+    "Supplier": "Saudi Medical",
+    "Price": 65.50,
+    "Date": "2024-10-10"
+  },
+  {
+    "NUPCO_Code": "12350-06",
+    "RFQ_ID": "1417",
+    "Supplier": "Saudi Medical",
+    "Price": 12.25,
+    "Date": "2024-10-10"
+  },
+  {
+    "NUPCO_Code": "12351-07",
+    "RFQ_ID": "1418",
+    "Supplier": "Medis",
+    "Price": 95.00,
+    "Date": "2024-10-20"
+  },
+  {
+    "NUPCO_Code": "12352-08",
+    "RFQ_ID": "1418",
+    "Supplier": "Medis",
+    "Price": 425.00,
+    "Date": "2024-10-20"
+  },
+  {
+    "NUPCO_Code": "23456-21",
+    "RFQ_ID": "1419",
+    "Supplier": "AlJazira Medical",
+    "Price": 75.50,
+    "Date": "2024-10-25"
+  },
+  {
+    "NUPCO_Code": "23457-22",
+    "RFQ_ID": "1419",
+    "Supplier": "AlJazira Medical",
+    "Price": 145.00,
+    "Date": "2024-10-25"
+  }
+]

@@ -1,0 +1,322 @@
+[
+  {
+    "nupco_code": "12345-01",
+    "product_name": "Surgical Gloves Sterile Size 7.5",
+    "pack": "Box of 50 pairs"
+  },
+  {
+    "nupco_code": "12346-02",
+    "product_name": "Disposable Face Mask 3-Ply",
+    "pack": "Box of 50 pcs"
+  },
+  {
+    "nupco_code": "12347-03",
+    "product_name": "Alcohol Hand Sanitizer 500ml",
+    "pack": "Bottle"
+  },
+  {
+    "nupco_code": "12348-04",
+    "product_name": "Digital Thermometer Infrared",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "12349-05",
+    "product_name": "Sterile Gauze Pads 10x10cm",
+    "pack": "Pack of 100"
+  },
+  {
+    "nupco_code": "12350-06",
+    "product_name": "Medical Adhesive Tape 2.5cm x 5m",
+    "pack": "Roll"
+  },
+  {
+    "nupco_code": "12351-07",
+    "product_name": "Disposable Syringe 5ml with Needle",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "12352-08",
+    "product_name": "Blood Pressure Monitor Digital",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "12353-09",
+    "product_name": "Wheelchair Standard Adult",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "12354-10",
+    "product_name": "Oxygen Mask Adult Non-Rebreather",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "12355-11",
+    "product_name": "IV Cannula 18G",
+    "pack": "Box of 50"
+  },
+  {
+    "nupco_code": "12356-12",
+    "product_name": "Surgical Blade #15",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "12357-13",
+    "product_name": "Examination Gloves Nitrile Large",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "12358-14",
+    "product_name": "Cotton Wool Roll 500g",
+    "pack": "Roll"
+  },
+  {
+    "nupco_code": "12359-15",
+    "product_name": "Bandage Elastic 10cm x 4.5m",
+    "pack": "Roll"
+  },
+  {
+    "nupco_code": "12360-16",
+    "product_name": "Nasogastric Tube 16FR",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "12361-17",
+    "product_name": "Urine Bag 2000ml",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "12362-18",
+    "product_name": "Stethoscope Dual Head",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "12363-19",
+    "product_name": "Pulse Oximeter Fingertip",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "12364-20",
+    "product_name": "Suture Silk 2-0 with Needle",
+    "pack": "Box of 12"
+  },
+  {
+    "nupco_code": "23456-21",
+    "product_name": "ECG Electrodes Disposable",
+    "pack": "Pack of 50"
+  },
+  {
+    "nupco_code": "23457-22",
+    "product_name": "Foley Catheter 16FR Silicone",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "23458-23",
+    "product_name": "Specimen Container Sterile 60ml",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "23459-24",
+    "product_name": "Safety Lancet 23G",
+    "pack": "Box of 200"
+  },
+  {
+    "nupco_code": "23460-25",
+    "product_name": "Insulin Syringe 1ml with Needle",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "23461-26",
+    "product_name": "Wound Dressing Adhesive 10x12cm",
+    "pack": "Box of 50"
+  },
+  {
+    "nupco_code": "23462-27",
+    "product_name": "Endotracheal Tube 7.5mm",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "23463-28",
+    "product_name": "Blood Collection Tube EDTA 5ml",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "23464-29",
+    "product_name": "Nebulizer Mask Adult",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "23465-30",
+    "product_name": "Surgical Cap Disposable",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "34567-31",
+    "product_name": "Surgical Gown Sterile XL",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "34568-32",
+    "product_name": "Central Venous Catheter Kit",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "34569-33",
+    "product_name": "Tracheostomy Tube 8.0mm",
+    "pack": "Pack of 5"
+  },
+  {
+    "nupco_code": "34570-34",
+    "product_name": "Arterial Blood Gas Syringe",
+    "pack": "Box of 50"
+  },
+  {
+    "nupco_code": "34571-35",
+    "product_name": "Urinary Catheter 14FR",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "34572-36",
+    "product_name": "Chest Drainage System",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "34573-37",
+    "product_name": "Laryngoscope Blade Miller Size 3",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "34574-38",
+    "product_name": "Suction Catheter 12FR",
+    "pack": "Box of 50"
+  },
+  {
+    "nupco_code": "34575-39",
+    "product_name": "Feeding Tube 8FR Pediatric",
+    "pack": "Pack of 10"
+  },
+  {
+    "nupco_code": "34576-40",
+    "product_name": "IV Extension Set",
+    "pack": "Box of 50"
+  },
+  {
+    "nupco_code": "45678-41",
+    "product_name": "Ultrasound Gel 250ml",
+    "pack": "Bottle"
+  },
+  {
+    "nupco_code": "45679-42",
+    "product_name": "Bedpan Plastic",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "45680-43",
+    "product_name": "Patient Monitor 5-Parameter",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "45681-44",
+    "product_name": "Defibrillator Pads Adult",
+    "pack": "Pair"
+  },
+  {
+    "nupco_code": "45682-45",
+    "product_name": "Tourniquets Disposable",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "45683-46",
+    "product_name": "Scalpel Handle #4",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "45684-47",
+    "product_name": "Forceps Tissue Kelly",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "45685-48",
+    "product_name": "Scissors Surgical Mayo",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "45686-49",
+    "product_name": "Needle Holder 15cm",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "45687-50",
+    "product_name": "Hospital Bed Electric 3-Function",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56789-51",
+    "product_name": "Infusion Pump Volumetric",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56790-52",
+    "product_name": "Syringe Pump",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56791-53",
+    "product_name": "Ventilator ICU",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56792-54",
+    "product_name": "Anesthesia Machine",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56793-55",
+    "product_name": "X-Ray Film 14x17 inch",
+    "pack": "Box of 100"
+  },
+  {
+    "nupco_code": "56794-56",
+    "product_name": "Ultrasound Machine Portable",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56795-57",
+    "product_name": "Autoclave Steam Sterilizer",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56796-58",
+    "product_name": "Microscope Binocular",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56797-59",
+    "product_name": "Centrifuge Laboratory",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "56798-60",
+    "product_name": "Incubator Infant",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "67890-61",
+    "product_name": "Phototherapy Unit Neonatal",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "67891-62",
+    "product_name": "Surgical Light LED Ceiling",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "67892-63",
+    "product_name": "Operating Table Hydraulic",
+    "pack": "Unit"
+  },
+  {
+    "nupco_code": "67893-64",
+    "product_name": "Suction Machine Electric",
+    "pack": "Unit"
+  }
+]
