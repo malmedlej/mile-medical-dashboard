@@ -14,7 +14,7 @@ let rfqData = [];
 // Column header variations for flexible parsing
 const COLUMN_PATTERNS = {
     code: ['nupco code', 'item code', 'code', 'nupco', 'product code', 'material code'],
-    quantity: ['quantity', 'qty', 'rfq qty', 'order quantity', 'req qty', 'required qty', 'required quantity'],
+    quantity: ['quantity', 'qty', 'rfq qty', 'order quantity', 'req qty', 'required qty', 'required quantity', 'needed qty', 'needed quantity'],
     description: ['description', 'product name', 'item name', 'item description', 'product description', 'material description']
 };
 
