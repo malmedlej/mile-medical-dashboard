@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tender Intelligence Engine | Mile Medical</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/lucide-static@0.276.0/font/lucide.css" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+</head>
+<body class="bg-[#0D0D10] text-gray-200 font-inter flex min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-[#15151C] border-r border-gray-800 flex flex-col justify-between">
+    <div>
+      <div class="flex items-center gap-3 p-6 border-b border-gray-800">
+        <img src="assets/logo-white.png" class="w-9 h-9" alt="Mile Medical Logo" />
+        <h1 class="font-extrabold text-lg text-white leading-tight">Tender Intelligence Engine</h1>
+      </div>
+
+      <nav class="p-4 space-y-2">
+        <a href="#" class="nav-btn active"><i class="lucide lucide-grid"></i> Dashboard</a>
+        <a href="#" class="nav-btn"><i class="lucide lucide-search"></i> Matcher</a>
+        <a href="#" class="nav-btn"><i class="lucide lucide-clipboard-list"></i> Pipeline</a>
+        <a href="#" class="nav-btn"><i class="lucide lucide-line-chart"></i> P&amp;L</a>
+        <a href="#" class="nav-btn"><i class="lucide lucide-network"></i> Workflow</a>
+        <a href="#" class="nav-btn"><i class="lucide lucide-bar-chart-3"></i> Analytics</a>
+      </nav>
+    </div>
+    <div class="p-4 text-xs text-gray-500 border-t border-gray-800">
+      © 2025 Mile Medical
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <h2 class="text-2xl font-bold mb-6">Dashboard Overview</h2>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="card">
+        <div class="text-gray-400 text-sm">Total RFQs</div>
+        <div class="text-2xl font-bold text-white">132</div>
+        <div class="text-xs text-green-400 mt-1">+12% this month</div>
+      </div>
+      <div class="card">
+        <div class="text-gray-400 text-sm">Matched Items</div>
+        <div class="text-2xl font-bold text-white">87%</div>
+        <div class="text-xs text-orange-400 mt-1">Based on uploaded catalogs</div>
+      </div>
+      <div class="card">
+        <div class="text-gray-400 text-sm">Participated Tenders</div>
+        <div class="text-2xl font-bold text-white">64</div>
+        <div class="text-xs text-green-400 mt-1">Active RFQs</div>
+      </div>
+      <div class="card">
+        <div class="text-gray-400 text-sm">Average Margin</div>
+        <div class="text-2xl font-bold text-white">23%</div>
+        <div class="text-xs text-yellow-400 mt-1">Across current P&L</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+      <div class="card col-span-2">
+        <h3 class="text-lg font-semibold mb-3">RFQ Trend</h3>
+        <canvas id="rfqTrendChart" height="120"></canvas>
+      </div>
+      <div class="card">
+        <h3 class="text-lg font-semibold mb-3">Vendor Contribution</h3>
+        <canvas id="vendorChart" height="120"></canvas>
+      </div>
+    </div>
+
+    <!-- Table Placeholder -->
+    <div class="card mt-8">
+      <h3 class="text-lg font-semibold mb-4">Recent RFQs</h3>
+      <table class="w-full text-sm">
+        <thead class="text-gray-400 border-b border-gray-700">
+          <tr>
+            <th class="text-left py-2">RFQ</th>
+            <th class="text-left py-2">Buyer</th>
+            <th class="text-left py-2">Status</th>
+            <th class="text-left py-2">Owner</th>
+            <th class="text-right py-2">Margin</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+          <tr>
+            <td class="py-2">NUPCO-1342</td>
+            <td>MOH</td>
+            <td><span class="badge badge-green">Submitted</span></td>
+            <td>Ahmed</td>
+            <td class="text-right text-green-400 font-semibold">+22%</td>
+          </tr>
+          <tr>
+            <td class="py-2">NUPCO-1420</td>
+            <td>SFDA</td>
+            <td><span class="badge badge-orange">Matching</span></td>
+            <td>Ali</td>
+            <td class="text-right text-yellow-400 font-semibold">+15%</td>
+          </tr>
+          <tr>
+            <td class="py-2">NUPCO-1511</td>
+            <td>MODA</td>
+            <td><span class="badge badge-red">Lost</span></td>
+            <td>Fahad</td>
+            <td class="text-right text-red-400 font-semibold">-5%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // RFQ Trend
+    const ctx1 = document.getElementById('rfqTrendChart');
+    new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [{
+          label: 'RFQs',
+          data: [12, 19, 13, 25, 22, 30, 28],
+          borderColor: '#F6B17A',
+          backgroundColor: 'rgba(246,177,122,0.2)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: { plugins:{ legend:{ display:false }}, scales:{ y:{ grid:{ color:'#1F1F28' }}, x:{ grid:{ display:false }}}}
+    });
+
+    // Vendor Contribution
+    const ctx2 = document.getElementById('vendorChart');
+    new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Vendor A', 'Vendor B', 'Vendor C'],
+        datasets: [{
+          data: [40, 35, 25],
+          backgroundColor: ['#2B2E83', '#F6B17A', '#EAB308'],
+          borderWidth: 0
+        }]
+      },
+      options: { plugins:{ legend:{ labels:{ color:'#ddd' }}}}
+    });
+  </script>
+
+</body>
+</html>
+
