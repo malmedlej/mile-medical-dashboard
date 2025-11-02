@@ -167,6 +167,9 @@ async function handleFileUpload(event) {
         console.log(`📋 Processing RFQ: ${currentRFQId}`);
         console.log(`   currentRFQId length: ${currentRFQId.length}`);
         
+        // TEMPORARY DEBUG ALERT
+        alert(`DEBUG:\nOriginal filename: ${file.name}\nExtracted RFQ ID: ${currentRFQId}\nLength: ${currentRFQId.length}`);
+        
         // Parse RFQ Excel file
         rfqData = await parseRFQExcel(file);
         console.log(`📊 Parsed ${rfqData.length} items from RFQ`);
