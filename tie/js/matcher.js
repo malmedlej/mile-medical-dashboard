@@ -136,7 +136,9 @@ function setupEventListeners() {
 
 // Extract RFQ ID from filename (full name without extension)
 function extractRFQId(filename) {
-    return filename.replace(/\.(xlsx|xls)$/i, '');
+    const rfqId = filename.replace(/\.(xlsx|xls)$/i, '');
+    console.log(`🔍 RFQ ID Extraction - Original: "${filename}" → Extracted: "${rfqId}"`);
+    return rfqId;
 }
 
 // Handle RFQ file upload
@@ -301,9 +303,28 @@ function performMatching() {
     notFoundItems = [];
     
     console.log('🔍 Starting matching process...');
+    console.log(`📊 RFQ Items to match: ${rfqData.length}`);
+    console.log(`📦 Vendor catalog items: ${vendorItems.length}`);
     
-    rfqData.forEach(rfqItem => {
+    // Debug: Show sample vendor codes
+    console.log('📋 Sample vendor codes (first 5):');
+    vendorItems.slice(0, 5).forEach(v => {
+        console.log(`  - Original: "${v.nupco_code}" → Normalized: "${normalizeCode(v.nupco_code)}"`);
+    });
+    
+    // Debug: Show sample RFQ codes
+    console.log('📋 Sample RFQ codes (first 5):');
+    rfqData.slice(0, 5).forEach(r => {
+        console.log(`  - Original: "${r.code}" → Normalized: "${normalizeCode(r.code)}"`);
+    });
+    
+    rfqData.forEach((rfqItem, index) => {
         const normalizedCode = normalizeCode(rfqItem.code);
+        
+        // Debug first 3 items in detail
+        if (index < 3) {
+            console.log(`\n🔎 Matching item #${index + 1}: "${rfqItem.code}" (normalized: "${normalizedCode}")`);
+        }
         
         // Try to find match in vendor catalog
         const vendorMatch = vendorItems.find(vendor => {
@@ -312,6 +333,7 @@ function performMatching() {
         });
         
         if (vendorMatch) {
+            if (index < 3) console.log(`✅ MATCH FOUND: "${vendorMatch.nupco_code}"`);
             matchedItems.push({
                 nupco_code: rfqItem.code,
                 product_name: vendorMatch.product_name,
@@ -322,6 +344,7 @@ function performMatching() {
                 status: 'Matched'
             });
         } else {
+            if (index < 3) console.log(`❌ NO MATCH for "${rfqItem.code}"`);
             notFoundItems.push({
                 code: rfqItem.code,
                 quantity: rfqItem.quantity,
@@ -330,15 +353,16 @@ function performMatching() {
         }
     });
     
-    console.log(`✅ Matching complete: ${matchedItems.length} matched, ${notFoundItems.length} not found`);
+    console.log(`\n✅ Matching complete: ${matchedItems.length} matched, ${notFoundItems.length} not found`);
 }
 
 // Normalize NUPCO code for matching (ignore case, spaces, dashes)
 function normalizeCode(code) {
-    return String(code)
+    const normalized = String(code)
         .toLowerCase()
         .replace(/[\s\-_]/g, '')
         .trim();
+    return normalized;
 }
 
 // Display results
