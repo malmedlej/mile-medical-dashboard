@@ -1,0 +1,19 @@
+IMPORTANT: Place your Mile Medical logo file here
+
+Filename: logo-white.png
+Recommended specs:
+- Format: PNG with transparent background
+- Size: 200x200px (will be scaled automatically)
+- Color: White or light colored logo for dark background
+- Quality: High resolution for crisp display
+
+The logo will be displayed in the sidebar header with:
+- Width: 40px (auto-scaled)
+- Rounded corners
+- Subtle background glow
+- White background with 5% opacity
+
+If you don't have the logo file yet, you can:
+1. Create a temporary placeholder logo
+2. Use a text-based logo temporarily
+3. Or leave the img element in the HTML - it will gracefully fail without breaking the layout

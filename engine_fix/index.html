@@ -1,162 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tender Intelligence Engine | Mile Medical</title>
-
-  <!-- TailwindCSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/lucide-static@0.276.0/font/lucide.css" rel="stylesheet">
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="css/style.css" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Intelligence Engine - Mile Medical</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-[#0D0D10] text-gray-200 font-inter flex min-h-screen">
+<body class="bg-[#0D0D10] text-gray-100 font-['Inter']">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="./assets/logo-white.png" class="w-10 h-auto object-contain rounded-md bg-white/5 p-1" alt="Mile Medical Logo" />
+            <div class="ml-3">
+                <h1 class="text-sm font-semibold text-white">Tender Intelligence</h1>
+                <p class="text-xs text-gray-400">Engine</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+                <span>Matcher</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Pipeline</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>P&L</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                </svg>
+                <span>Workflow</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Analytics</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#F6B17A] to-[#f49347] flex items-center justify-center text-sm font-semibold">
+                    MM
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Mile Medical</p>
+                    <p class="text-xs text-gray-400">Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-[#15151C] border-r border-gray-800 flex flex-col justify-between">
-    <div>
-      <div class="flex items-center gap-3 p-6 border-b border-gray-800">
-        <img src="./assets/logo-white.png" class="w-10 h-auto object-contain rounded-md bg-white/5 p-1" alt="Mile Medical Logo" />
-        <h1 class="font-extrabold text-lg text-white leading-tight">Tender Intelligence Engine</h1>
-      </div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="mb-8">
+            <h2 class="text-3xl font-bold font-['Poppins'] text-white">Dashboard Overview</h2>
+            <p class="text-gray-400 mt-1">Real-time tender performance and vendor participation insights</p>
+        </header>
 
-      <nav class="p-4 space-y-2">
-        <a href="#" class="nav-btn active"><i class="lucide lucide-grid"></i> Dashboard</a>
-        <a href="#" class="nav-btn"><i class="lucide lucide-search"></i> Matcher</a>
-        <a href="#" class="nav-btn"><i class="lucide lucide-clipboard-list"></i> Pipeline</a>
-        <a href="#" class="nav-btn"><i class="lucide lucide-line-chart"></i> P&amp;L</a>
-        <a href="#" class="nav-btn"><i class="lucide lucide-network"></i> Workflow</a>
-        <a href="#" class="nav-btn"><i class="lucide lucide-bar-chart-3"></i> Analytics</a>
-      </nav>
-    </div>
-    <div class="p-4 text-xs text-gray-500 border-t border-gray-800">
-      © 2025 Mile Medical
-    </div>
-  </aside>
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total RFQs -->
+            <div class="glass-card">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="p-3 rounded-lg bg-gradient-to-br from-[#F6B17A]/20 to-[#f49347]/10">
+                        <svg class="w-6 h-6 text-[#F6B17A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-semibold text-green-400 bg-green-400/10 px-2 py-1 rounded-full">+12%</span>
+                </div>
+                <h3 class="text-gray-400 text-sm font-medium mb-1">Total RFQs</h3>
+                <p class="text-3xl font-bold text-white">132</p>
+                <p class="text-xs text-gray-500 mt-2">Active this month</p>
+            </div>
 
-  <!-- Main Content -->
-  <main class="flex-1 p-8 overflow-y-auto">
-    <h2 class="text-2xl font-bold mb-6">Dashboard Overview</h2>
+            <!-- Matched Items -->
+            <div class="glass-card">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="p-3 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-gray-400 text-sm font-medium mb-1">Matched Items</h3>
+                <p class="text-3xl font-bold text-white">87%</p>
+                <p class="text-xs text-gray-500 mt-2">Based on uploaded catalogs</p>
+            </div>
 
-    <!-- KPIs -->
-    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6">
-      <div class="card">
-        <div class="text-gray-400 text-sm">Total RFQs</div>
-        <div class="text-2xl font-bold text-white">132</div>
-        <div class="text-xs text-green-400 mt-1">+12% this month</div>
-      </div>
-      <div class="card">
-        <div class="text-gray-400 text-sm">Matched Items</div>
-        <div class="text-2xl font-bold text-white">87%</div>
-        <div class="text-xs text-orange-400 mt-1">Based on uploaded catalogs</div>
-      </div>
-      <div class="card">
-        <div class="text-gray-400 text-sm">Participated Tenders</div>
-        <div class="text-2xl font-bold text-white">64</div>
-        <div class="text-xs text-green-400 mt-1">Active RFQs</div>
-      </div>
-      <div class="card">
-        <div class="text-gray-400 text-sm">Average Margin</div>
-        <div class="text-2xl font-bold text-white">23%</div>
-        <div class="text-xs text-yellow-400 mt-1">Across current P&L</div>
-      </div>
-    </div>
+            <!-- Participated Tenders -->
+            <div class="glass-card">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="p-3 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-600/10">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-gray-400 text-sm font-medium mb-1">Participated Tenders</h3>
+                <p class="text-3xl font-bold text-white">64</p>
+                <p class="text-xs text-gray-500 mt-2">Active RFQs</p>
+            </div>
 
-    <!-- Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
-      <div class="card col-span-2">
-        <h3 class="text-lg font-semibold mb-3">RFQ Trend</h3>
-        <canvas id="rfqTrendChart" height="120"></canvas>
-      </div>
-      <div class="card">
-        <h3 class="text-lg font-semibold mb-3">Vendor Contribution</h3>
-        <canvas id="vendorChart" height="120"></canvas>
-      </div>
-    </div>
+            <!-- Average Margin -->
+            <div class="glass-card">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="p-3 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-600/10">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-gray-400 text-sm font-medium mb-1">Average Margin</h3>
+                <p class="text-3xl font-bold text-white">23%</p>
+                <p class="text-xs text-gray-500 mt-2">Across current P&L</p>
+            </div>
+        </div>
 
-    <!-- Table Placeholder -->
-    <div class="card mt-8">
-      <h3 class="text-lg font-semibold mb-4">Recent RFQs</h3>
-      <table class="w-full text-sm">
-        <thead class="text-gray-400 border-b border-gray-700">
-          <tr>
-            <th class="text-left py-2">RFQ</th>
-            <th class="text-left py-2">Buyer</th>
-            <th class="text-left py-2">Status</th>
-            <th class="text-left py-2">Owner</th>
-            <th class="text-right py-2">Margin</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800">
-          <tr>
-            <td class="py-2">NUPCO-1342</td>
-            <td>MOH</td>
-            <td><span class="badge badge-green">Submitted</span></td>
-            <td>Ahmed</td>
-            <td class="text-right text-green-400 font-semibold">+22%</td>
-          </tr>
-          <tr>
-            <td class="py-2">NUPCO-1420</td>
-            <td>SFDA</td>
-            <td><span class="badge badge-orange">Matching</span></td>
-            <td>Ali</td>
-            <td class="text-right text-yellow-400 font-semibold">+15%</td>
-          </tr>
-          <tr>
-            <td class="py-2">NUPCO-1511</td>
-            <td>MODA</td>
-            <td><span class="badge badge-red">Lost</span></td>
-            <td>Fahad</td>
-            <td class="text-right text-red-400 font-semibold">-5%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </main>
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- RFQ Trend -->
+            <div class="glass-card lg:col-span-2">
+                <h3 class="text-lg font-semibold text-white mb-4">RFQ Trend</h3>
+                <div class="chart-container">
+                    <canvas id="rfqTrendChart"></canvas>
+                </div>
+            </div>
 
-  <script>
-    // RFQ Trend
-    const ctx1 = document.getElementById('rfqTrendChart');
-    new Chart(ctx1, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        datasets: [{
-          label: 'RFQs',
-          data: [12, 19, 13, 25, 22, 30, 28],
-          borderColor: '#F6B17A',
-          backgroundColor: 'rgba(246,177,122,0.2)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: { plugins:{ legend:{ display:false }}, scales:{ y:{ grid:{ color:'#1F1F28' }}, x:{ grid:{ display:false }}}}
-    });
+            <!-- Vendor Contribution -->
+            <div class="glass-card">
+                <h3 class="text-lg font-semibold text-white mb-4">Vendor Contribution</h3>
+                <div class="chart-container">
+                    <canvas id="vendorChart"></canvas>
+                </div>
+            </div>
+        </div>
 
-    // Vendor Contribution
-    const ctx2 = document.getElementById('vendorChart');
-    new Chart(ctx2, {
-      type: 'doughnut',
-      data: {
-        labels: ['Vendor A', 'Vendor B', 'Vendor C'],
-        datasets: [{
-          data: [40, 35, 25],
-          backgroundColor: ['#2B2E83', '#F6B17A', '#EAB308'],
-          borderWidth: 0
-        }]
-      },
-      options: { plugins:{ legend:{ labels:{ color:'#ddd' }}}}
-    });
-  </script>
+        <!-- Recent RFQs Table -->
+        <div class="glass-card">
+            <h3 class="text-lg font-semibold text-white mb-4">Recent RFQs</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">RFQ ID</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Status</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Owner</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Margin %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-sm font-medium text-white">RFQ-2024-0847</td>
+                            <td class="py-4 px-4"><span class="status-badge status-submitted">Submitted</span></td>
+                            <td class="py-4 px-4 text-sm text-gray-300">Sarah Johnson</td>
+                            <td class="py-4 px-4 text-sm font-semibold text-emerald-400">24.5%</td>
+                        </tr>
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-sm font-medium text-white">RFQ-2024-0846</td>
+                            <td class="py-4 px-4"><span class="status-badge status-matching">Matching</span></td>
+                            <td class="py-4 px-4 text-sm text-gray-300">Ahmed Al-Rashid</td>
+                            <td class="py-4 px-4 text-sm font-semibold text-emerald-400">21.2%</td>
+                        </tr>
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-sm font-medium text-white">RFQ-2024-0845</td>
+                            <td class="py-4 px-4"><span class="status-badge status-submitted">Submitted</span></td>
+                            <td class="py-4 px-4 text-sm text-gray-300">Maria Garcia</td>
+                            <td class="py-4 px-4 text-sm font-semibold text-emerald-400">26.8%</td>
+                        </tr>
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-sm font-medium text-white">RFQ-2024-0844</td>
+                            <td class="py-4 px-4"><span class="status-badge status-lost">Lost</span></td>
+                            <td class="py-4 px-4 text-sm text-gray-300">John Chen</td>
+                            <td class="py-4 px-4 text-sm font-semibold text-gray-500">18.3%</td>
+                        </tr>
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-sm font-medium text-white">RFQ-2024-0843</td>
+                            <td class="py-4 px-4"><span class="status-badge status-matching">Matching</span></td>
+                            <td class="py-4 px-4 text-sm text-gray-300">Lisa Anderson</td>
+                            <td class="py-4 px-4 text-sm font-semibold text-emerald-400">22.7%</td>
+                        </tr>
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-sm font-medium text-white">RFQ-2024-0842</td>
+                            <td class="py-4 px-4"><span class="status-badge status-submitted">Submitted</span></td>
+                            <td class="py-4 px-4 text-sm text-gray-300">Fatima Hassan</td>
+                            <td class="py-4 px-4 text-sm font-semibold text-emerald-400">25.1%</td>
+                        </tr>
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="py-4 px-4 text-sm font-medium text-white">RFQ-2024-0841</td>
+                            <td class="py-4 px-4"><span class="status-badge status-matching">Matching</span></td>
+                            <td class="py-4 px-4 text-sm text-gray-300">David Park</td>
+                            <td class="py-4 px-4 text-sm font-semibold text-emerald-400">20.9%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
+        <!-- Footer -->
+        <footer class="mt-12 pb-8 text-center text-sm text-gray-500">
+            <p>&copy; 2024 Mile Medical. Tender Intelligence Engine v1.0</p>
+        </footer>
+    </main>
+
+    <script src="js/charts.js"></script>
 </body>
 </html>
-
