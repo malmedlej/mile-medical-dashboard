@@ -16,8 +16,12 @@
   "routes": [
     {
       "route": "/tie",
-      "redirect": "/tie/",
-      "statusCode": 301
+      "rewrite": "/tie/index.html",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/tie/",
+      "allowedRoles": ["authenticated"]
     },
     {
       "route": "/*",
