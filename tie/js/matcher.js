@@ -1,7 +1,7 @@
 /**
  * RFQ Matcher Module - Tender Intelligence Engine
- * Auto-detects columns and matches against permanent vendor list
- * Version: 2.0
+ * Fully matches RFQ Excel files with vendor catalog Excel data
+ * Version: 3.0 - Complete Matching System
  */
 
 // Global variables
@@ -11,26 +11,26 @@ let notFoundItems = [];
 let currentRFQId = '';
 let rfqData = [];
 
-// Column header variations
+// Column header variations for flexible parsing
 const COLUMN_PATTERNS = {
     code: ['nupco code', 'item code', 'code', 'nupco', 'product code', 'material code'],
-    quantity: ['quantity', 'qty', 'rfq qty', 'order quantity', 'req qty'],
+    quantity: ['quantity', 'qty', 'rfq qty', 'order quantity', 'req qty', 'required qty', 'required quantity'],
     description: ['description', 'product name', 'item name', 'item description', 'product description', 'material description']
 };
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('TIE Matcher v2.0 Initializing...');
+    console.log('🚀 TIE Matcher v3.0 - Full Matching System');
     await loadVendorItems();
     setupEventListeners();
 });
 
-// Load permanent vendor list from Excel
+// Load permanent vendor catalog from Excel
 async function loadVendorItems() {
     try {
-        console.log('Loading vendor catalog from Excel...');
+        console.log('📂 Loading vendor catalog from Excel...');
         
-        // Fetch Excel file
+        // Fetch vendor catalog Excel file
         const response = await fetch('data/vendor_items.xlsx');
         if (!response.ok) throw new Error('Failed to load vendor items Excel file');
         
@@ -44,7 +44,7 @@ async function loadVendorItems() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
-        // Convert to JSON
+        // Convert to JSON (array of arrays)
         const rawData = XLSX.utils.sheet_to_json(worksheet, { 
             header: 1,
             defval: '',
@@ -67,15 +67,15 @@ async function loadVendorItems() {
             });
         }
         
-        console.log(`✓ Loaded ${vendorItems.length} vendor items from Excel catalog`);
+        console.log(`✅ Loaded ${vendorItems.length} vendor items from Excel catalog`);
         
         if (vendorItems.length === 0) {
             throw new Error('Vendor catalog is empty');
         }
         
     } catch (error) {
-        console.error('Error loading vendor items:', error);
-        showToast('⚠️ Could not load vendor catalog Excel file. Please refresh the page.', 'error');
+        console.error('❌ Error loading vendor items:', error);
+        showToast('⚠️ Could not load vendor catalog. Please refresh the page.', 'error');
         vendorItems = [];
     }
 }
@@ -136,11 +136,10 @@ function setupEventListeners() {
 
 // Extract RFQ ID from filename (full name without extension)
 function extractRFQId(filename) {
-    // Remove file extension
     return filename.replace(/\.(xlsx|xls)$/i, '');
 }
 
-// Handle file upload
+// Handle RFQ file upload
 async function handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -156,24 +155,24 @@ async function handleFileUpload(event) {
     document.getElementById('uploadingIndicator').classList.remove('hidden');
 
     try {
-        // Extract RFQ ID from full filename
+        // Extract RFQ ID from filename
         currentRFQId = extractRFQId(file.name);
-        console.log(`Processing RFQ: ${currentRFQId}`);
+        console.log(`📋 Processing RFQ: ${currentRFQId}`);
         
-        // Read and parse Excel file
-        rfqData = await readExcelFile(file);
-        console.log(`Parsed ${rfqData.length} items from RFQ`);
+        // Parse RFQ Excel file
+        rfqData = await parseRFQExcel(file);
+        console.log(`📊 Parsed ${rfqData.length} items from RFQ`);
         
-        // Match items against vendor catalog
+        // Perform matching against vendor catalog
         performMatching();
         
         // Display results
         displayResults();
         
-        showToast(`✅ Successfully processed ${rfqData.length} items`, 'success');
+        showToast(`✅ Successfully matched ${matchedItems.length} of ${rfqData.length} items`, 'success');
         
     } catch (error) {
-        console.error('Error processing file:', error);
+        console.error('❌ Error processing RFQ file:', error);
         showToast(`❌ Error: ${error.message}`, 'error');
         
         // Reset UI
@@ -182,8 +181,8 @@ async function handleFileUpload(event) {
     }
 }
 
-// Read Excel file with auto-detection of columns
-async function readExcelFile(file) {
+// Parse RFQ Excel file with auto-detection of columns
+async function parseRFQExcel(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         
@@ -204,28 +203,28 @@ async function readExcelFile(file) {
                 });
                 
                 // Auto-detect columns and parse data
-                const parsedData = autoDetectAndParse(jsonData);
+                const parsedData = autoDetectAndParseRFQ(jsonData);
                 
                 if (parsedData.length === 0) {
-                    throw new Error('No valid data found in Excel file');
+                    throw new Error('No valid data found in RFQ Excel file');
                 }
                 
                 resolve(parsedData);
                 
             } catch (error) {
-                reject(new Error(`Failed to parse Excel: ${error.message}`));
+                reject(new Error(`Failed to parse RFQ Excel: ${error.message}`));
             }
         };
         
-        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.onerror = () => reject(new Error('Failed to read RFQ file'));
         reader.readAsArrayBuffer(file);
     });
 }
 
-// Auto-detect columns and parse data
-function autoDetectAndParse(rawData) {
+// Auto-detect columns and parse RFQ data
+function autoDetectAndParseRFQ(rawData) {
     if (rawData.length < 2) {
-        throw new Error('Excel file must have at least a header row and one data row');
+        throw new Error('RFQ Excel file must have at least a header row and one data row');
     }
     
     // Find header row and column indices
@@ -268,8 +267,8 @@ function autoDetectAndParse(rawData) {
         codeColIndex = 0; // Assume first column is code
     }
     
-    console.log(`Header detected at row ${headerRowIndex + 1}`);
-    console.log(`Columns - Code: ${codeColIndex}, Qty: ${qtyColIndex}, Desc: ${descColIndex}`);
+    console.log(`📍 Header detected at row ${headerRowIndex + 1}`);
+    console.log(`📋 Columns - Code: ${codeColIndex}, Qty: ${qtyColIndex}, Desc: ${descColIndex}`);
     
     // Parse data rows
     const parsedItems = [];
@@ -286,7 +285,7 @@ function autoDetectAndParse(rawData) {
         
         const item = {
             code: code,
-            quantity: qtyColIndex !== -1 ? String(row[qtyColIndex] || '').trim() : '',
+            quantity: qtyColIndex !== -1 ? String(row[qtyColIndex] || '').trim() : '1',
             description: descColIndex !== -1 ? String(row[descColIndex] || '').trim() : ''
         };
         
@@ -296,12 +295,12 @@ function autoDetectAndParse(rawData) {
     return parsedItems;
 }
 
-// Perform matching against vendor catalog
+// Perform matching between RFQ and vendor catalog
 function performMatching() {
     matchedItems = [];
     notFoundItems = [];
     
-    console.log('Starting matching process...');
+    console.log('🔍 Starting matching process...');
     
     rfqData.forEach(rfqItem => {
         const normalizedCode = normalizeCode(rfqItem.code);
@@ -317,17 +316,21 @@ function performMatching() {
                 nupco_code: rfqItem.code,
                 product_name: vendorMatch.product_name,
                 pack: vendorMatch.pack || 'N/A',
-                supplier: '',
-                quantity: rfqItem.quantity,
-                description: rfqItem.description,
+                supplier: vendorMatch.supplier || '-',
+                required_qty: rfqItem.quantity || '1',
+                rfq_description: rfqItem.description,
                 status: 'Matched'
             });
         } else {
-            notFoundItems.push(rfqItem.code);
+            notFoundItems.push({
+                code: rfqItem.code,
+                quantity: rfqItem.quantity,
+                description: rfqItem.description
+            });
         }
     });
     
-    console.log(`Matching complete: ${matchedItems.length} matched, ${notFoundItems.length} not found`);
+    console.log(`✅ Matching complete: ${matchedItems.length} matched, ${notFoundItems.length} not found`);
 }
 
 // Normalize NUPCO code for matching (ignore case, spaces, dashes)
@@ -351,10 +354,10 @@ function displayResults() {
     const totalItems = matchedItems.length + notFoundItems.length;
     const matchRate = totalItems > 0 ? Math.round((matchedItems.length / totalItems) * 100) : 0;
     
-    // Update KPI counters
-    document.getElementById('totalItems').textContent = totalItems;
-    document.getElementById('matchedItems').textContent = matchedItems.length;
-    document.getElementById('notFoundItems').textContent = notFoundItems.length;
+    // Update KPI counters with animation
+    animateCounter('totalItems', totalItems);
+    animateCounter('matchedItems', matchedItems.length);
+    animateCounter('notFoundItems', notFoundItems.length);
     document.getElementById('matchRate').textContent = `${matchRate}%`;
     
     // Show statistics section
@@ -371,6 +374,25 @@ function displayResults() {
     }
 }
 
+// Animate counter (count up effect)
+function animateCounter(elementId, targetValue) {
+    const element = document.getElementById(elementId);
+    const duration = 1000; // 1 second
+    const steps = 20;
+    const increment = targetValue / steps;
+    let current = 0;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= targetValue) {
+            element.textContent = targetValue;
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.floor(current);
+        }
+    }, duration / steps);
+}
+
 // Display matched items in table
 function displayMatchedTable() {
     const tbody = document.getElementById('matchedTableBody');
@@ -382,24 +404,15 @@ function displayMatchedTable() {
         
         row.innerHTML = `
             <td class="py-4 px-4 text-sm font-mono text-white">${escapeHtml(item.nupco_code)}</td>
-            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.product_name)}</td>
+            <td class="py-4 px-4 text-sm text-gray-300">
+                <div class="font-medium">${escapeHtml(item.product_name)}</div>
+                ${item.rfq_description ? `<div class="text-xs text-gray-500 mt-1">${escapeHtml(item.rfq_description)}</div>` : ''}
+            </td>
             <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.pack)}</td>
+            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.supplier)}</td>
+            <td class="py-4 px-4 text-sm font-semibold text-[#F6B17A]">${escapeHtml(item.required_qty)}</td>
             <td class="py-4 px-4">
                 <span class="status-badge status-submitted">✓ Matched</span>
-            </td>
-            <td class="py-4 px-4">
-                <input type="text" 
-                       class="supplier-input" 
-                       placeholder="Enter supplier"
-                       data-index="${index}">
-            </td>
-            <td class="py-4 px-4">
-                <input type="number" 
-                       class="price-input" 
-                       placeholder="0.00"
-                       step="0.01"
-                       min="0"
-                       data-index="${index}">
             </td>
         `;
         
@@ -410,8 +423,9 @@ function displayMatchedTable() {
     document.getElementById('matchedSection').classList.remove('hidden');
     
     // Disable save prices button (feature not ready)
-    document.getElementById('savePricesBtn').disabled = true;
-    document.getElementById('savePricesBtn').classList.add('opacity-50', 'cursor-not-allowed');
+    const savePricesBtn = document.getElementById('savePricesBtn');
+    savePricesBtn.disabled = true;
+    savePricesBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
 // Display not found items as chips
@@ -419,14 +433,20 @@ function displayNotFoundItems() {
     const list = document.getElementById('notFoundList');
     list.innerHTML = '';
     
-    notFoundItems.forEach(code => {
+    notFoundItems.forEach(item => {
         const chip = document.createElement('div');
-        chip.className = 'inline-flex items-center bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-2';
+        chip.className = 'bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 mb-2';
         chip.innerHTML = `
-            <svg class="w-4 h-4 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-            <span class="text-sm font-mono text-red-300">${escapeHtml(code)}</span>
+            <div class="flex items-start space-x-2">
+                <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <div class="flex-1">
+                    <div class="text-sm font-mono text-red-300 font-semibold">${escapeHtml(item.code)}</div>
+                    ${item.quantity ? `<div class="text-xs text-red-400 mt-1">Qty: ${escapeHtml(item.quantity)}</div>` : ''}
+                    ${item.description ? `<div class="text-xs text-gray-400 mt-1">${escapeHtml(item.description)}</div>` : ''}
+                </div>
+            </div>
         `;
         list.appendChild(chip);
     });
@@ -463,20 +483,20 @@ function exportResults() {
             'NUPCO Code': item.nupco_code,
             'Product Name': item.product_name,
             'Pack': item.pack,
-            'Status': item.status,
-            'Supplier': item.supplier || '',
-            'Price (SAR)': ''
+            'Supplier': item.supplier,
+            'Required Qty': item.required_qty,
+            'Status': item.status
         }));
         
         // Add not found items
-        notFoundItems.forEach(code => {
+        notFoundItems.forEach(item => {
             exportData.push({
-                'NUPCO Code': code,
-                'Product Name': 'NOT FOUND',
+                'NUPCO Code': item.code,
+                'Product Name': 'NOT FOUND IN CATALOG',
                 'Pack': '-',
-                'Status': 'Not Found',
                 'Supplier': '-',
-                'Price (SAR)': '-'
+                'Required Qty': item.quantity || '1',
+                'Status': 'Not Found'
             });
         });
         
@@ -486,11 +506,11 @@ function exportResults() {
         // Set column widths
         ws['!cols'] = [
             { wch: 15 },  // NUPCO Code
-            { wch: 40 },  // Product Name
+            { wch: 45 },  // Product Name
             { wch: 20 },  // Pack
-            { wch: 12 },  // Status
             { wch: 25 },  // Supplier
-            { wch: 12 }   // Price
+            { wch: 12 },  // Required Qty
+            { wch: 12 }   // Status
         ];
         
         // Create workbook
@@ -506,7 +526,7 @@ function exportResults() {
         showToast(`✅ Results exported: ${filename}`, 'success');
         
     } catch (error) {
-        console.error('Export error:', error);
+        console.error('❌ Export error:', error);
         showToast('❌ Failed to export results', 'error');
     }
 }
