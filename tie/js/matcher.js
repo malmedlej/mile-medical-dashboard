@@ -146,6 +146,11 @@ async function handleFileUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
 
+    console.log('📂 File upload started');
+    console.log('   Original file.name:', file.name);
+    console.log('   File.name type:', typeof file.name);
+    console.log('   File.name length:', file.name.length);
+
     // Validate file type
     if (!file.name.match(/\.(xlsx|xls)$/i)) {
         showToast('⚠️ Please upload an Excel file (.xlsx or .xls)', 'warning');
@@ -160,6 +165,7 @@ async function handleFileUpload(event) {
         // Extract RFQ ID from filename
         currentRFQId = extractRFQId(file.name);
         console.log(`📋 Processing RFQ: ${currentRFQId}`);
+        console.log(`   currentRFQId length: ${currentRFQId.length}`);
         
         // Parse RFQ Excel file
         rfqData = await parseRFQExcel(file);
@@ -229,6 +235,13 @@ function autoDetectAndParseRFQ(rawData) {
         throw new Error('RFQ Excel file must have at least a header row and one data row');
     }
     
+    console.log('\n🔍 === RFQ FILE STRUCTURE ANALYSIS ===');
+    console.log(`Total rows in file: ${rawData.length}`);
+    console.log('\n📋 First row (potential header):');
+    console.log(rawData[0]);
+    console.log('\n📋 Second row (first data row):');
+    console.log(rawData[1]);
+    
     // Find header row and column indices
     let headerRowIndex = -1;
     let codeColIndex = -1;
@@ -239,6 +252,8 @@ function autoDetectAndParseRFQ(rawData) {
     for (let i = 0; i < Math.min(5, rawData.length); i++) {
         const row = rawData[i];
         
+        console.log(`\n🔎 Checking row ${i}:`, row);
+        
         for (let j = 0; j < row.length; j++) {
             const cellValue = String(row[j]).toLowerCase().trim();
             
@@ -246,16 +261,19 @@ function autoDetectAndParseRFQ(rawData) {
             if (codeColIndex === -1 && COLUMN_PATTERNS.code.some(pattern => cellValue.includes(pattern))) {
                 codeColIndex = j;
                 headerRowIndex = i;
+                console.log(`   ✅ Found NUPCO Code column at index ${j}: "${row[j]}"`);
             }
             
             // Check for Quantity column
             if (qtyColIndex === -1 && COLUMN_PATTERNS.quantity.some(pattern => cellValue.includes(pattern))) {
                 qtyColIndex = j;
+                console.log(`   ✅ Found Quantity column at index ${j}: "${row[j]}"`);
             }
             
             // Check for Description column
             if (descColIndex === -1 && COLUMN_PATTERNS.description.some(pattern => cellValue.includes(pattern))) {
                 descColIndex = j;
+                console.log(`   ✅ Found Description column at index ${j}: "${row[j]}"`);
             }
         }
         
@@ -265,15 +283,18 @@ function autoDetectAndParseRFQ(rawData) {
     
     // Fallback: if no header detected, assume first row is header
     if (headerRowIndex === -1) {
+        console.warn('⚠️ No header row detected! Using fallback: assuming row 0 is header and column 0 is code');
         headerRowIndex = 0;
         codeColIndex = 0; // Assume first column is code
     }
     
-    console.log(`📍 Header detected at row ${headerRowIndex + 1}`);
+    console.log(`\n📍 Header detected at row ${headerRowIndex + 1}`);
     console.log(`📋 Columns - Code: ${codeColIndex}, Qty: ${qtyColIndex}, Desc: ${descColIndex}`);
     
     // Parse data rows
     const parsedItems = [];
+    console.log(`\n📊 Parsing data rows starting from row ${headerRowIndex + 2}...`);
+    
     for (let i = headerRowIndex + 1; i < rawData.length; i++) {
         const row = rawData[i];
         
@@ -291,8 +312,20 @@ function autoDetectAndParseRFQ(rawData) {
             description: descColIndex !== -1 ? String(row[descColIndex] || '').trim() : ''
         };
         
+        // Log first 3 items in detail
+        if (parsedItems.length < 3) {
+            console.log(`\n   Item #${parsedItems.length + 1}:`);
+            console.log(`      Raw row:`, row);
+            console.log(`      Parsed code: "${item.code}"`);
+            console.log(`      Quantity: "${item.quantity}"`);
+            console.log(`      Description: "${item.description}"`);
+        }
+        
         parsedItems.push(item);
     }
+    
+    console.log(`\n✅ Parsed ${parsedItems.length} valid items from RFQ`);
+    console.log('='.repeat(50) + '\n');
     
     return parsedItems;
 }
@@ -368,7 +401,16 @@ function normalizeCode(code) {
 // Display results
 function displayResults() {
     // Update RFQ ID display
-    document.getElementById('rfqIdDisplay').textContent = currentRFQId;
+    console.log('📺 Displaying results...');
+    console.log('   currentRFQId to display:', currentRFQId);
+    console.log('   currentRFQId length:', currentRFQId.length);
+    
+    const displayElement = document.getElementById('rfqIdDisplay');
+    displayElement.textContent = currentRFQId;
+    
+    console.log('   Element textContent after set:', displayElement.textContent);
+    console.log('   Element textContent length:', displayElement.textContent.length);
+    
     document.getElementById('rfqInfo').classList.remove('hidden');
     
     // Hide upload zone
