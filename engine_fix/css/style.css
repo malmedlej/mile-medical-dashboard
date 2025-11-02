@@ -11,6 +11,23 @@ body {
     overflow-x: hidden;
 }
 
+/* Prevent text selection on UI elements */
+.sidebar,
+.sidebar-header,
+.sidebar-nav,
+.nav-item,
+.sidebar-footer,
+.glass-card,
+button,
+.btn-primary,
+.btn-secondary,
+.status-badge {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
 /* Sidebar Styles */
 .sidebar {
     position: fixed;
@@ -51,6 +68,7 @@ body {
     transition: all 0.3s ease;
     font-size: 14px;
     font-weight: 500;
+    cursor: pointer;
 }
 
 .nav-item:hover {
