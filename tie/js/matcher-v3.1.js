@@ -165,10 +165,6 @@ async function handleFileUpload(event) {
         // Extract RFQ ID from filename
         currentRFQId = extractRFQId(file.name);
         console.log(`📋 Processing RFQ: ${currentRFQId}`);
-        console.log(`   currentRFQId length: ${currentRFQId.length}`);
-        
-        // TEMPORARY DEBUG ALERT
-        alert(`DEBUG:\nOriginal filename: ${file.name}\nExtracted RFQ ID: ${currentRFQId}\nLength: ${currentRFQId.length}`);
         
         // Parse RFQ Excel file
         rfqData = await parseRFQExcel(file);
@@ -410,20 +406,8 @@ function normalizeCode(code) {
 // Display results
 function displayResults() {
     // Update RFQ ID display
-    console.log('📺 Displaying results...');
-    console.log('   currentRFQId to display:', currentRFQId);
-    console.log('   currentRFQId length:', currentRFQId.length);
-    
-    // TEMPORARY DEBUG ALERT IN DISPLAY
-    console.warn(`⚠️ DEBUG DISPLAY: currentRFQId = "${currentRFQId}" (length: ${currentRFQId.length})`);
-    
     const displayElement = document.getElementById('rfqIdDisplay');
     displayElement.textContent = currentRFQId;
-    
-    console.log('   Element textContent after set:', displayElement.textContent);
-    console.log('   Element textContent length:', displayElement.textContent.length);
-    console.warn(`⚠️ DEBUG: Element shows "${displayElement.textContent}" (length: ${displayElement.textContent.length})`);
-    
     document.getElementById('rfqInfo').classList.remove('hidden');
     
     // Hide upload zone
