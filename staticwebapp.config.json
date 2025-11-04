@@ -15,12 +15,7 @@
   },
   "routes": [
     {
-      "route": "/tie",
-      "rewrite": "/tie/index.html",
-      "allowedRoles": ["authenticated"]
-    },
-    {
-      "route": "/tie/",
+      "route": "/tie/*",
       "allowedRoles": ["authenticated"]
     },
     {
