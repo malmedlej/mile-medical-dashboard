@@ -62,7 +62,7 @@ async function loadVendorItems() {
             vendorItems.push({
                 nupco_code: String(row[0] || '').trim(),
                 product_name: String(row[1] || '').trim(),
-                pack: String(row[2] || '').trim(),
+                uom: String(row[2] || '').trim(),
                 supplier: String(row[3] || '').trim()
             });
         }
@@ -179,6 +179,12 @@ async function handleFileUpload(event) {
         
         // Display results
         displayResults();
+        
+        // Auto-save to archive if enabled
+        const autoSaveEnabled = document.getElementById('autoSaveToggle').checked;
+        if (autoSaveEnabled && matchedItems.length > 0) {
+            saveToArchive();
+        }
         
         showToast(`✅ Successfully matched ${matchedItems.length} of ${rfqData.length} items`, 'success');
         
@@ -373,7 +379,7 @@ function performMatching() {
             matchedItems.push({
                 nupco_code: rfqItem.code,
                 product_name: vendorMatch.product_name,
-                pack: vendorMatch.pack || 'N/A',
+                uom: vendorMatch.uom || 'N/A',
                 supplier: vendorMatch.supplier || '-',
                 required_qty: rfqItem.quantity || '1',
                 rfq_description: rfqItem.description,
@@ -481,7 +487,7 @@ function displayMatchedTable() {
                 <div class="font-medium">${escapeHtml(item.product_name)}</div>
                 ${item.rfq_description ? `<div class="text-xs text-gray-500 mt-1">${escapeHtml(item.rfq_description)}</div>` : ''}
             </td>
-            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.pack)}</td>
+            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.uom)}</td>
             <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.supplier)}</td>
             <td class="py-4 px-4 text-sm font-semibold text-[#F6B17A]">${escapeHtml(item.required_qty)}</td>
             <td class="py-4 px-4">
@@ -555,7 +561,7 @@ function exportResults() {
         const exportData = matchedItems.map(item => ({
             'NUPCO Code': item.nupco_code,
             'Product Name': item.product_name,
-            'Pack': item.pack,
+            'UOM': item.uom,
             'Supplier': item.supplier,
             'Required Qty': item.required_qty,
             'Status': item.status
@@ -566,7 +572,7 @@ function exportResults() {
             exportData.push({
                 'NUPCO Code': item.code,
                 'Product Name': 'NOT FOUND IN CATALOG',
-                'Pack': '-',
+                'UOM': '-',
                 'Supplier': '-',
                 'Required Qty': item.quantity || '1',
                 'Status': 'Not Found'
@@ -580,7 +586,7 @@ function exportResults() {
         ws['!cols'] = [
             { wch: 15 },  // NUPCO Code
             { wch: 45 },  // Product Name
-            { wch: 20 },  // Pack
+            { wch: 20 },  // UOM
             { wch: 25 },  // Supplier
             { wch: 12 },  // Required Qty
             { wch: 12 }   // Status
@@ -654,4 +660,50 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Save current RFQ to archive
+function saveToArchive() {
+    try {
+        const ARCHIVE_STORAGE_KEY = 'tie_rfq_archive';
+        
+        // Load existing archive
+        let archivedRFQs = [];
+        const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+        if (stored) {
+            archivedRFQs = JSON.parse(stored);
+        }
+        
+        // Check if RFQ already exists
+        const existingIndex = archivedRFQs.findIndex(rfq => rfq.rfqId === currentRFQId);
+        
+        // Create RFQ object
+        const rfqObject = {
+            rfqId: currentRFQId,
+            date: new Date().toISOString(),
+            matchedItems: matchedItems.map(item => ({...item, price: ''})),
+            matchedCount: matchedItems.length,
+            totalCount: matchedItems.length + notFoundItems.length,
+            status: 'New'
+        };
+        
+        // Update or add
+        if (existingIndex !== -1) {
+            archivedRFQs[existingIndex] = rfqObject;
+            console.log(`📝 Updated existing RFQ in archive: ${currentRFQId}`);
+        } else {
+            archivedRFQs.unshift(rfqObject);
+            console.log(`💾 Saved new RFQ to archive: ${currentRFQId}`);
+        }
+        
+        // Save to localStorage
+        localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archivedRFQs));
+        
+        // Show notification
+        const notification = existingIndex !== -1 ? 'RFQ updated in archive' : 'RFQ saved to archive';
+        console.log(`✅ ${notification}`);
+        
+    } catch (error) {
+        console.error('❌ Error saving to archive:', error);
+    }
 }
