@@ -27,9 +27,14 @@ function setupComingSoonLinks() {
     comingSoonLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            showToast('🚧 This feature is coming soon!', 'warning');
+            showComingSoonToast();
         });
     });
+}
+
+// Show coming soon as toast
+function showComingSoonToast() {
+    showToast('🚧 This feature is coming soon!', 'warning');
 }
 
 // Load archived RFQs from localStorage
@@ -313,13 +318,20 @@ function closeModal() {
 function showStatusUpdateDialog() {
     if (!currentRFQ) return;
 
-    const statuses = ['New', 'Pending Quotes', 'Quoted', 'Submitted'];
-    const currentStatus = currentRFQ.status;
+    const modal = document.getElementById('statusModal');
+    const currentStatusDisplay = document.getElementById('currentStatusDisplay');
+    const statusOptions = document.querySelectorAll('.status-option');
+    const cancelBtn = document.getElementById('statusCancelBtn');
+    const closeBtn = document.getElementById('statusCloseBtn');
 
-    // Create simple prompt dialog
-    const newStatus = prompt(`Update RFQ Status\n\nCurrent: ${currentStatus}\n\nAvailable statuses:\n1. New\n2. Pending Quotes\n3. Quoted\n4. Submitted\n\nEnter status name:`, currentStatus);
+    currentStatusDisplay.textContent = currentRFQ.status;
+    modal.classList.remove('hidden');
 
-    if (newStatus && statuses.includes(newStatus)) {
+    const handleStatusSelect = (e) => {
+        const button = e.target.closest('.status-option');
+        if (!button) return;
+
+        const newStatus = button.dataset.status;
         currentRFQ.status = newStatus;
         
         // Update in archive
@@ -338,10 +350,37 @@ function showStatusUpdateDialog() {
             renderArchiveTable();
             
             showToast('✅ Status updated successfully', 'success');
+            modal.classList.add('hidden');
         }
-    } else if (newStatus) {
-        showToast('⚠️ Invalid status. Please use one of the available options.', 'warning');
-    }
+        
+        cleanup();
+    };
+
+    const handleClose = () => {
+        modal.classList.add('hidden');
+        cleanup();
+    };
+
+    const cleanup = () => {
+        statusOptions.forEach(option => {
+            option.removeEventListener('click', handleStatusSelect);
+        });
+        cancelBtn.removeEventListener('click', handleClose);
+        closeBtn.removeEventListener('click', handleClose);
+    };
+
+    statusOptions.forEach(option => {
+        option.addEventListener('click', handleStatusSelect);
+    });
+    cancelBtn.addEventListener('click', handleClose);
+    closeBtn.addEventListener('click', handleClose);
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            handleClose();
+        }
+    });
 }
 
 // Export current RFQ
@@ -392,7 +431,7 @@ function exportCurrentRFQ() {
 }
 
 // Delete RFQ
-function deleteRFQ(index) {
+async function deleteRFQ(index) {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
     const statusFilter = document.getElementById('statusFilter').value;
     const sortFilter = document.getElementById('sortFilter').value;
@@ -423,7 +462,12 @@ function deleteRFQ(index) {
     
     if (!rfqToDelete) return;
 
-    if (confirm(`Delete RFQ "${rfqToDelete.rfqId}"?\n\nThis action cannot be undone.`)) {
+    const confirmed = await showConfirm(
+        `Delete RFQ "${rfqToDelete.rfqId}"?`,
+        'This action cannot be undone.'
+    );
+
+    if (confirmed) {
         // Find index in original array
         const originalIndex = archivedRFQs.findIndex(r => r.rfqId === rfqToDelete.rfqId);
         
@@ -438,9 +482,19 @@ function deleteRFQ(index) {
 }
 
 // Clear entire archive
-function clearArchive() {
-    if (confirm('Clear entire archive?\n\nThis will delete ALL archived RFQs and cannot be undone.')) {
-        if (confirm('Are you absolutely sure? This action is permanent!')) {
+async function clearArchive() {
+    const confirmed1 = await showConfirm(
+        'Clear entire archive?',
+        'This will delete ALL archived RFQs and cannot be undone.'
+    );
+    
+    if (confirmed1) {
+        const confirmed2 = await showConfirm(
+            'Are you absolutely sure?',
+            'This action is permanent and cannot be reversed!'
+        );
+        
+        if (confirmed2) {
             archivedRFQs = [];
             saveArchive();
             updateStatistics();
@@ -550,6 +604,51 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Custom confirmation dialog
+function showConfirm(title, message) {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirmModal');
+        const titleEl = document.getElementById('confirmTitle');
+        const messageEl = document.getElementById('confirmMessage');
+        const okBtn = document.getElementById('confirmOkBtn');
+        const cancelBtn = document.getElementById('confirmCancelBtn');
+        const closeBtn = document.getElementById('confirmCloseBtn');
+
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        modal.classList.remove('hidden');
+
+        const handleOk = () => {
+            modal.classList.add('hidden');
+            cleanup();
+            resolve(true);
+        };
+
+        const handleCancel = () => {
+            modal.classList.add('hidden');
+            cleanup();
+            resolve(false);
+        };
+
+        const cleanup = () => {
+            okBtn.removeEventListener('click', handleOk);
+            cancelBtn.removeEventListener('click', handleCancel);
+            closeBtn.removeEventListener('click', handleCancel);
+        };
+
+        okBtn.addEventListener('click', handleOk);
+        cancelBtn.addEventListener('click', handleCancel);
+        closeBtn.addEventListener('click', handleCancel);
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                handleCancel();
+            }
+        });
+    });
 }
 
 // Export function to be called from matcher.js

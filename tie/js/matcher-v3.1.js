@@ -32,9 +32,14 @@ function setupComingSoonLinks() {
     comingSoonLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            showToast('🚧 This feature is coming soon!', 'warning');
+            showComingSoonToast();
         });
     });
+}
+
+// Show coming soon as toast
+function showComingSoonToast() {
+    showToast('🚧 This feature is coming soon!', 'warning');
 }
 
 // Load permanent vendor catalog from Excel

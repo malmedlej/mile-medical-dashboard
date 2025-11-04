@@ -282,6 +282,61 @@
         </div>
     </div>
 
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 id="confirmTitle" class="text-xl font-bold text-white">Confirm Action</h3>
+                <button id="confirmCloseBtn" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <p id="confirmMessage" class="text-gray-300 mb-6"></p>
+            <div class="flex justify-end space-x-3">
+                <button id="confirmCancelBtn" class="btn-secondary">Cancel</button>
+                <button id="confirmOkBtn" class="btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Update Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-white">Update RFQ Status</h3>
+                <button id="statusCloseBtn" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <p class="text-gray-400 text-sm mb-4">Current Status: <span id="currentStatusDisplay" class="font-semibold text-[#F6B17A]"></span></p>
+            <div class="space-y-2 mb-6">
+                <button class="status-option w-full px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-left transition-colors border border-white/10 hover:border-[#F6B17A]" data-status="New">
+                    <span class="font-medium text-white">New</span>
+                    <p class="text-xs text-gray-400 mt-1">Just uploaded to system</p>
+                </button>
+                <button class="status-option w-full px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-left transition-colors border border-white/10 hover:border-[#F6B17A]" data-status="Pending Quotes">
+                    <span class="font-medium text-white">Pending Quotes</span>
+                    <p class="text-xs text-gray-400 mt-1">Waiting for vendor prices</p>
+                </button>
+                <button class="status-option w-full px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-left transition-colors border border-white/10 hover:border-[#F6B17A]" data-status="Quoted">
+                    <span class="font-medium text-white">Quoted</span>
+                    <p class="text-xs text-gray-400 mt-1">Prices received and entered</p>
+                </button>
+                <button class="status-option w-full px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-left transition-colors border border-white/10 hover:border-[#F6B17A]" data-status="Submitted">
+                    <span class="font-medium text-white">Submitted</span>
+                    <p class="text-xs text-gray-400 mt-1">Final quote submitted to customer</p>
+                </button>
+            </div>
+            <div class="flex justify-end">
+                <button id="statusCancelBtn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast" class="fixed top-4 right-4 transform translate-x-full transition-transform duration-300 z-50">
         <div class="glass-card flex items-center space-x-3 min-w-[300px] shadow-2xl">
