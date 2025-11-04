@@ -6,12 +6,12 @@
 
 // Configuration
 const SHAREPOINT_CONFIG = {
-    // Original share link
+    // Azure Blob Storage URL (synced from SharePoint automatically)
+    blobStorageUrl: 'https://STORAGE_ACCOUNT_NAME.blob.core.windows.net/tie-vendor-catalog/vendor_items.xlsx',
+    // Fallback: Original SharePoint share link
     vendorCatalogUrl: 'https://milemedical365.sharepoint.com/:x:/s/Milemedical2/EXUb3LmgUKtEijkKxESkSxMBM18ryASwuHIuSqLJvCFAfQ?e=moNDnQ',
-    // Embedded view link (can be accessed without authentication if shared publicly)
-    vendorCatalogEmbedUrl: 'https://milemedical365.sharepoint.com/sites/Milemedical2/_layouts/15/Doc.aspx?sourcedoc={155BDD1B-A840-4A8A-88A4-44A441CB0301}&action=embedview',
-    // Alternative: Direct download URL (requires proper permissions)
-    vendorCatalogDownloadUrl: 'https://milemedical365.sharepoint.com/sites/Milemedical2/_layouts/15/download.aspx?UniqueId=155bdd1b-a840-4a8a-88a4-44a441cb0301'
+    // Local backup file
+    localBackupUrl: 'data/vendor_items.xlsx'
 };
 
 // Global variables
@@ -52,39 +52,45 @@ function showComingSoonToast() {
     showToast('🚧 This feature is coming soon!', 'warning');
 }
 
-// Load vendor catalog from SharePoint Excel
+// Load vendor catalog from Azure Blob Storage (synced from SharePoint)
 async function loadVendorItems() {
     try {
-        console.log('📂 Loading vendor catalog from SharePoint...');
-        showToast('📡 Connecting to SharePoint...', 'info');
+        console.log('📂 Loading vendor catalog...');
+        showToast('📡 Loading vendor catalog...', 'info');
         
-        // Try to fetch from SharePoint
         let arrayBuffer;
+        let loadSource = 'unknown';
+        
+        // Priority 1: Try Azure Blob Storage (fastest, no CORS issues)
         try {
-            // First try: Direct download URL
-            const response = await fetch(SHAREPOINT_CONFIG.vendorCatalogDownloadUrl, {
+            console.log('🔷 Trying Azure Blob Storage...');
+            const response = await fetch(SHAREPOINT_CONFIG.blobStorageUrl, {
                 method: 'GET',
-                headers: {
-                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                },
-                mode: 'cors'
+                cache: 'no-cache' // Always get latest version
             });
             
-            if (!response.ok) throw new Error('SharePoint fetch failed');
-            arrayBuffer = await response.arrayBuffer();
-            console.log('✅ Successfully loaded from SharePoint');
-        } catch (spError) {
-            console.warn('⚠️ SharePoint direct access failed, trying fallback methods...', spError);
+            if (response.ok) {
+                arrayBuffer = await response.arrayBuffer();
+                loadSource = 'azure-blob';
+                console.log('✅ Loaded from Azure Blob Storage');
+            } else {
+                throw new Error(`Blob storage returned: ${response.status}`);
+            }
+        } catch (blobError) {
+            console.warn('⚠️ Azure Blob Storage failed:', blobError.message);
             
-            // Fallback: Try local backup file
+            // Priority 2: Try local backup file
             try {
-                const localResponse = await fetch('data/vendor_items.xlsx');
-                if (!localResponse.ok) throw new Error('Local backup also failed');
+                console.log('📁 Trying local backup file...');
+                const localResponse = await fetch(SHAREPOINT_CONFIG.localBackupUrl);
+                if (!localResponse.ok) throw new Error('Local backup not found');
                 arrayBuffer = await localResponse.arrayBuffer();
+                loadSource = 'local-backup';
                 console.log('✅ Loaded from local backup file');
-                showToast('⚠️ Using local catalog backup. Update SharePoint permissions for real-time sync.', 'warning');
+                showToast('⚠️ Using local catalog backup. Azure Blob Storage unavailable.', 'warning');
             } catch (localError) {
-                throw new Error('Both SharePoint and local backup failed. Please check file permissions.');
+                console.error('❌ Local backup also failed:', localError.message);
+                throw new Error('All sources failed. Please check configuration.');
             }
         }
         
@@ -122,13 +128,15 @@ async function loadVendorItems() {
             });
         }
         
-        console.log(`✅ Loaded ${vendorItems.length} vendor items`);
+        console.log(`✅ Loaded ${vendorItems.length} vendor items from ${loadSource}`);
         
         if (vendorItems.length === 0) {
             throw new Error('Vendor catalog is empty');
         }
         
-        showToast(`✅ Loaded ${vendorItems.length} items from vendor catalog`, 'success');
+        const sourceLabel = loadSource === 'azure-blob' ? 'Azure Blob (synced from SharePoint)' : 
+                           loadSource === 'local-backup' ? 'local backup' : 'unknown source';
+        showToast(`✅ Loaded ${vendorItems.length} items from ${sourceLabel}`, 'success');
         
     } catch (error) {
         console.error('❌ Error loading vendor items:', error);

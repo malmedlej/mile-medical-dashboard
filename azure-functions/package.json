@@ -1,0 +1,16 @@
+{
+  "name": "tie-sharepoint-sync",
+  "version": "1.0.0",
+  "description": "Azure Functions to sync SharePoint vendor catalog to Blob Storage",
+  "main": "index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests specified\""
+  },
+  "dependencies": {
+    "@azure/storage-blob": "^12.17.0"
+  },
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.0.5"
+  }
+}
