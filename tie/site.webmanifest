@@ -1,0 +1,21 @@
+{
+    "name": "Tender Intelligence Engine",
+    "short_name": "TIE",
+    "description": "Mile Medical Tender Intelligence Engine - RFQ matching and price management",
+    "icons": [
+        {
+            "src": "assets/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#F6B17A",
+    "background_color": "#0D0D10",
+    "display": "standalone",
+    "start_url": "/tie/index.html"
+}
