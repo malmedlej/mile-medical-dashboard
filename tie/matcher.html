@@ -23,6 +23,16 @@
 </head>
 <body class="bg-[#0D0D10] text-gray-100 font-['Inter']">
     
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+    
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -259,6 +269,7 @@
     </div>
 
     <script src="js/user-auth.js"></script>
+    <script src="js/mobile-menu.js"></script>
     <script src="js/matcher-v3.1.js"></script>
 </body>
 </html>
