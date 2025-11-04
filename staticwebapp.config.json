@@ -16,7 +16,8 @@
   "routes": [
     {
       "route": "/tie",
-      "rewrite": "/tie/index.html"
+      "rewrite": "/tie/index.html",
+      "allowedRoles": ["authenticated"]
     },
     {
       "route": "/tie/*",
