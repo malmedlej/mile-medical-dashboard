@@ -39,9 +39,15 @@ function updateUserDisplay(user) {
         const nameParts = emailName.split('.');
         
         if (nameParts.length >= 2) {
-            displayName = nameParts.map(part => 
-                part.charAt(0).toUpperCase() + part.slice(1)
-            ).join(' ');
+            // Format: m.wael -> M. Wael
+            displayName = nameParts.map((part, index) => {
+                if (index === 0 && part.length === 1) {
+                    // First part is initial: keep as "M."
+                    return part.toUpperCase() + '.';
+                }
+                // Capitalize first letter of each part
+                return part.charAt(0).toUpperCase() + part.slice(1);
+            }).join(' ');
             initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
         } else {
             displayName = emailName.charAt(0).toUpperCase() + emailName.slice(1);
@@ -64,10 +70,19 @@ function updateUserDisplay(user) {
     
     if (roleEl) {
         // Try to extract role from user claims
-        const role = user.userRoles && user.userRoles.length > 0 
-            ? user.userRoles[0] 
-            : 'User';
-        roleEl.textContent = role === 'authenticated' ? 'User' : role;
+        let role = 'User';
+        
+        if (user.userRoles && user.userRoles.length > 0) {
+            role = user.userRoles[0];
+            // Map technical roles to friendly names
+            if (role === 'authenticated' || role === 'anonymous') {
+                role = 'Team Member';
+            }
+        } else {
+            role = 'Team Member';
+        }
+        
+        roleEl.textContent = role;
     }
     
     console.log(`✅ User loaded: ${displayName} (${userEmail})`);
