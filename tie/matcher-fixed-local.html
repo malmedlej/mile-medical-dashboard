@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFQ Matcher - Fixed Version (Local Test)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Prevent text selection on UI elements */
+        .sidebar,
+        .sidebar-header,
+        .sidebar-nav,
+        .nav-item,
+        .sidebar-footer,
+        .glass-card,
+        button,
+        .btn-primary,
+        .btn-secondary,
+        .status-badge {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(20, 20, 25, 0.95) 0%, rgba(13, 13, 16, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(246, 177, 122, 0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            color: #9CA3AF;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #F6B17A;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(246, 177, 122, 0.15) 0%, rgba(244, 147, 71, 0.1) 100%);
+            color: #F6B17A;
+            box-shadow: 0 4px 12px rgba(246, 177, 122, 0.15);
+        }
+
+        .nav-item svg {
+            margin-right: 12px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background: #0D0D10;
+        }
+
+        /* Glass Card Effect */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(30, 30, 35, 0.8) 0%, rgba(20, 20, 25, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(246, 177, 122, 0.1);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-submitted {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #F6B17A 0%, #f49347 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(246, 177, 122, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(246, 177, 122, 0.4);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #9CA3AF;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .test-warning {
+            background: linear-gradient(135deg, #ff6b00 0%, #ff8800 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-[#0D0D10] text-gray-100">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="ml-3">
+                <h1 class="text-sm font-semibold text-white">Tender Intelligence</h1>
+                <p class="text-xs text-gray-400">Engine - Fixed Version</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+                <span>Matcher (Fixed)</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#F6B17A] to-[#f49347] flex items-center justify-center text-sm font-semibold">
+                    MM
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Mile Medical</p>
+                    <p class="text-xs text-gray-400">Local Test</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Test Warning -->
+        <div class="test-warning">
+            🧪 LOCAL TEST VERSION - Loading Fixed Code Directly (No Azure Required)
+        </div>
+
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-3xl font-bold font-['Poppins'] text-white">RFQ Matcher - Fixed Version</h2>
+                    <p class="text-gray-400 mt-1">Testing with corrected RFQ ID extraction and matching logic</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="glass-card mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">Upload RFQ File</h3>
+                <div id="rfqInfo" class="hidden">
+                    <span class="text-sm text-gray-400">RFQ ID: </span>
+                    <span id="rfqIdDisplay" class="text-lg font-semibold text-[#F6B17A]"></span>
+                </div>
+            </div>
+            
+            <div class="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-[#F6B17A]/50 transition-all duration-300" id="uploadZone">
+                <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden">
+                <div id="uploadPrompt">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-[#F6B17A]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <p class="text-lg font-medium text-white mb-2">Upload NUPCO RFQ Excel File</p>
+                    <p class="text-sm text-gray-400 mb-4">Click to browse or drag & drop your .xlsx file</p>
+                    <button id="uploadBtn" class="btn-primary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        Select File
+                    </button>
+                </div>
+                <div id="uploadingIndicator" class="hidden">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-[#F6B17A] mx-auto mb-4"></div>
+                    <p class="text-lg font-medium text-white">Processing file...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div id="statsSection" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Total Items</span>
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <p id="totalItems" class="text-3xl font-bold text-white">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Matched</span>
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p id="matchedItems" class="text-3xl font-bold text-green-400">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Not Found</span>
+                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p id="notFoundItems" class="text-3xl font-bold text-red-400">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Match Rate</span>
+                    <svg class="w-5 h-5 text-[#F6B17A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <p id="matchRate" class="text-3xl font-bold text-[#F6B17A]">0%</p>
+            </div>
+        </div>
+
+        <!-- Matched Items Table -->
+        <div id="matchedSection" class="hidden glass-card mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">Matched Items</h3>
+                <div class="flex space-x-3">
+                    <button id="exportBtn" class="btn-secondary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export Results
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">NUPCO Code</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Product Name</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Pack</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Supplier</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Required Qty</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matchedTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Not Found Items -->
+        <div id="notFoundSection" class="hidden glass-card">
+            <div class="flex items-center justify-between cursor-pointer" id="notFoundToggle">
+                <div class="flex items-center space-x-3">
+                    <h3 class="text-xl font-semibold text-white">Not Found Items</h3>
+                    <span id="notFoundCount" class="text-sm bg-red-500/20 text-red-400 px-3 py-1 rounded-full font-semibold">0</span>
+                </div>
+                <svg id="notFoundChevron" class="w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            
+            <div id="notFoundContent" class="mt-6 hidden">
+                <p class="text-sm text-gray-400 mb-4">The following NUPCO codes were not found in your vendor catalog:</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="notFoundList">
+                    <!-- Dynamically populated -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pb-8 text-center text-sm text-gray-500">
+            <p>&copy; 2024 Mile Medical. Tender Intelligence Engine v3.1 (Local Test Build)</p>
+        </footer>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 transform translate-x-full transition-transform duration-300 z-50">
+        <div class="glass-card flex items-center space-x-3 min-w-[300px] shadow-2xl">
+            <div id="toastIcon" class="w-10 h-10 rounded-full flex items-center justify-center">
+                <!-- Icon will be inserted dynamically -->
+            </div>
+            <div>
+                <p id="toastMessage" class="text-white font-medium"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Fixed Matcher Script from GitHub -->
+    <script src="https://cdn.jsdelivr.net/gh/malmedlej/mile-medical-dashboard@340758a/tie/js/matcher-v3.1.js"></script>
+</body>
+</html>
