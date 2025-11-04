@@ -15,6 +15,11 @@
   },
   "routes": [
     {
+      "route": "/tie",
+      "redirect": "/tie/",
+      "statusCode": 301
+    },
+    {
       "route": "/tie/*",
       "allowedRoles": ["authenticated"]
     },
