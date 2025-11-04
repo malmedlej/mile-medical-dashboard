@@ -15,6 +15,10 @@
   },
   "routes": [
     {
+      "route": "/tie",
+      "rewrite": "/tie/index.html"
+    },
+    {
       "route": "/tie/*",
       "allowedRoles": ["authenticated"]
     },
@@ -37,6 +41,6 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,gif}", "/css/*", "/js/*", "/tie/*"]
+    "exclude": ["/tie/*"]
   }
 }

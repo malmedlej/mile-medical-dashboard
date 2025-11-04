@@ -179,4 +179,68 @@ document.addEventListener('DOMContentLoaded', () => {
             this.style.transform = 'scale(1)';
         });
     });
+
+    // Setup coming soon link handlers
+    setupComingSoonLinks();
 });
+
+// Setup coming soon link handlers
+function setupComingSoonLinks() {
+    const comingSoonLinks = document.querySelectorAll('.nav-item.opacity-50');
+    comingSoonLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showComingSoonMessage();
+        });
+    });
+}
+
+// Show coming soon message with toast-like notification
+function showComingSoonMessage() {
+    // Create a custom modal for coming soon
+    const existingModal = document.getElementById('comingSoonModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'comingSoonModal';
+    modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="glass-card max-w-md w-full" style="background: linear-gradient(135deg, rgba(30, 30, 35, 0.95) 0%, rgba(20, 20, 25, 0.98) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 24px;">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-white">🚧 Coming Soon</h3>
+            </div>
+            <p class="text-gray-300 mb-4">This feature is under development and will be available soon.</p>
+            <div class="mb-4">
+                <p class="text-sm text-gray-400 mb-2">Currently Available:</p>
+                <div class="space-y-1">
+                    <div class="flex items-center text-sm text-gray-300">
+                        <span class="mr-2">✅</span>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-300">
+                        <span class="mr-2">✅</span>
+                        <span>Matcher</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-300">
+                        <span class="mr-2">✅</span>
+                        <span>Archive</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button class="btn-primary" onclick="document.getElementById('comingSoonModal').remove()" style="display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; background: linear-gradient(135deg, #F6B17A 0%, #f49347 100%); color: white; font-weight: 600; font-size: 14px; border-radius: 10px; border: none; cursor: pointer;">OK</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}

@@ -5,27 +5,46 @@
     box-sizing: border-box;
 }
 
-body {
-    display: flex;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-
-/* Prevent text selection on UI elements */
-.sidebar,
-.sidebar-header,
-.sidebar-nav,
-.nav-item,
-.sidebar-footer,
-.glass-card,
-button,
-.btn-primary,
-.btn-secondary,
-.status-badge {
+/* Prevent text selection on ALL elements by default */
+* {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    cursor: default;
+}
+
+/* Allow text selection only for actual text content and inputs */
+p, span, h1, h2, h3, h4, h5, h6, 
+input, textarea, 
+[contenteditable="true"],
+.selectable-text {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    cursor: text;
+}
+
+/* Input fields should have text cursor */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea {
+    cursor: text;
+}
+
+/* Clickable elements should have pointer cursor */
+a, button, 
+.btn-primary, .btn-secondary,
+.nav-item,
+[role="button"],
+.clickable {
+    cursor: pointer !important;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* Sidebar Styles */

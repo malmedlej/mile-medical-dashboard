@@ -23,7 +23,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 TIE Matcher v3.0.1-DEBUG - Full Matching System [BUILD: 2024-11-02-01]');
     await loadVendorItems();
     setupEventListeners();
+    setupComingSoonLinks();
 });
+
+// Setup coming soon link handlers
+function setupComingSoonLinks() {
+    const comingSoonLinks = document.querySelectorAll('.nav-item.opacity-50');
+    comingSoonLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showComingSoonToast();
+        });
+    });
+}
+
+// Show coming soon as toast
+function showComingSoonToast() {
+    showToast('🚧 This feature is coming soon!', 'warning');
+}
 
 // Load permanent vendor catalog from Excel
 async function loadVendorItems() {
@@ -165,10 +182,6 @@ async function handleFileUpload(event) {
         // Extract RFQ ID from filename
         currentRFQId = extractRFQId(file.name);
         console.log(`📋 Processing RFQ: ${currentRFQId}`);
-        console.log(`   currentRFQId length: ${currentRFQId.length}`);
-        
-        // TEMPORARY DEBUG ALERT
-        alert(`DEBUG:\nOriginal filename: ${file.name}\nExtracted RFQ ID: ${currentRFQId}\nLength: ${currentRFQId.length}`);
         
         // Parse RFQ Excel file
         rfqData = await parseRFQExcel(file);
@@ -410,20 +423,8 @@ function normalizeCode(code) {
 // Display results
 function displayResults() {
     // Update RFQ ID display
-    console.log('📺 Displaying results...');
-    console.log('   currentRFQId to display:', currentRFQId);
-    console.log('   currentRFQId length:', currentRFQId.length);
-    
-    // TEMPORARY DEBUG ALERT IN DISPLAY
-    console.warn(`⚠️ DEBUG DISPLAY: currentRFQId = "${currentRFQId}" (length: ${currentRFQId.length})`);
-    
     const displayElement = document.getElementById('rfqIdDisplay');
     displayElement.textContent = currentRFQId;
-    
-    console.log('   Element textContent after set:', displayElement.textContent);
-    console.log('   Element textContent length:', displayElement.textContent.length);
-    console.warn(`⚠️ DEBUG: Element shows "${displayElement.textContent}" (length: ${displayElement.textContent.length})`);
-    
     document.getElementById('rfqInfo').classList.remove('hidden');
     
     // Hide upload zone
