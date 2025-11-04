@@ -1,8 +1,18 @@
 /**
  * RFQ Matcher Module - Tender Intelligence Engine
  * Fully matches RFQ Excel files with vendor catalog Excel data
- * Version: 3.0 - Complete Matching System
+ * Version: 3.2 - SharePoint Integration
  */
+
+// Configuration
+const SHAREPOINT_CONFIG = {
+    // Original share link
+    vendorCatalogUrl: 'https://milemedical365.sharepoint.com/:x:/s/Milemedical2/EXUb3LmgUKtEijkKxESkSxMBM18ryASwuHIuSqLJvCFAfQ?e=moNDnQ',
+    // Embedded view link (can be accessed without authentication if shared publicly)
+    vendorCatalogEmbedUrl: 'https://milemedical365.sharepoint.com/sites/Milemedical2/_layouts/15/Doc.aspx?sourcedoc={155BDD1B-A840-4A8A-88A4-44A441CB0301}&action=embedview',
+    // Alternative: Direct download URL (requires proper permissions)
+    vendorCatalogDownloadUrl: 'https://milemedical365.sharepoint.com/sites/Milemedical2/_layouts/15/download.aspx?UniqueId=155bdd1b-a840-4a8a-88a4-44a441cb0301'
+};
 
 // Global variables
 let vendorItems = [];
@@ -42,17 +52,41 @@ function showComingSoonToast() {
     showToast('🚧 This feature is coming soon!', 'warning');
 }
 
-// Load permanent vendor catalog from Excel
+// Load vendor catalog from SharePoint Excel
 async function loadVendorItems() {
     try {
-        console.log('📂 Loading vendor catalog from Excel...');
+        console.log('📂 Loading vendor catalog from SharePoint...');
+        showToast('📡 Connecting to SharePoint...', 'info');
         
-        // Fetch vendor catalog Excel file
-        const response = await fetch('data/vendor_items.xlsx');
-        if (!response.ok) throw new Error('Failed to load vendor items Excel file');
-        
-        // Read as array buffer
-        const arrayBuffer = await response.arrayBuffer();
+        // Try to fetch from SharePoint
+        let arrayBuffer;
+        try {
+            // First try: Direct download URL
+            const response = await fetch(SHAREPOINT_CONFIG.vendorCatalogDownloadUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                },
+                mode: 'cors'
+            });
+            
+            if (!response.ok) throw new Error('SharePoint fetch failed');
+            arrayBuffer = await response.arrayBuffer();
+            console.log('✅ Successfully loaded from SharePoint');
+        } catch (spError) {
+            console.warn('⚠️ SharePoint direct access failed, trying fallback methods...', spError);
+            
+            // Fallback: Try local backup file
+            try {
+                const localResponse = await fetch('data/vendor_items.xlsx');
+                if (!localResponse.ok) throw new Error('Local backup also failed');
+                arrayBuffer = await localResponse.arrayBuffer();
+                console.log('✅ Loaded from local backup file');
+                showToast('⚠️ Using local catalog backup. Update SharePoint permissions for real-time sync.', 'warning');
+            } catch (localError) {
+                throw new Error('Both SharePoint and local backup failed. Please check file permissions.');
+            }
+        }
         
         // Parse Excel file with SheetJS
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
@@ -61,12 +95,16 @@ async function loadVendorItems() {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         
+        console.log(`📊 Reading sheet: "${sheetName}"`);
+        
         // Convert to JSON (array of arrays)
         const rawData = XLSX.utils.sheet_to_json(worksheet, { 
             header: 1,
             defval: '',
             blankrows: false 
         });
+        
+        console.log(`📋 Total rows found: ${rawData.length}`);
         
         // Parse vendor data (skip header row)
         vendorItems = [];
@@ -84,15 +122,17 @@ async function loadVendorItems() {
             });
         }
         
-        console.log(`✅ Loaded ${vendorItems.length} vendor items from Excel catalog`);
+        console.log(`✅ Loaded ${vendorItems.length} vendor items`);
         
         if (vendorItems.length === 0) {
             throw new Error('Vendor catalog is empty');
         }
         
+        showToast(`✅ Loaded ${vendorItems.length} items from vendor catalog`, 'success');
+        
     } catch (error) {
         console.error('❌ Error loading vendor items:', error);
-        showToast('⚠️ Could not load vendor catalog. Please refresh the page.', 'error');
+        showToast('⚠️ Could not load vendor catalog. Please check SharePoint permissions or refresh the page.', 'error');
         vendorItems = [];
     }
 }
@@ -105,6 +145,20 @@ function setupEventListeners() {
     const exportBtn = document.getElementById('exportBtn');
     const savePricesBtn = document.getElementById('savePricesBtn');
     const notFoundToggle = document.getElementById('notFoundToggle');
+    const reloadCatalogBtn = document.getElementById('reloadCatalogBtn');
+
+    // Reload catalog button
+    if (reloadCatalogBtn) {
+        reloadCatalogBtn.addEventListener('click', async () => {
+            reloadCatalogBtn.disabled = true;
+            reloadCatalogBtn.innerHTML = '<svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg><span class="text-xs">Reloading...</span>';
+            
+            await loadVendorItems();
+            
+            reloadCatalogBtn.disabled = false;
+            reloadCatalogBtn.innerHTML = '<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg><span class="text-xs">Reload Catalog</span>';
+        });
+    }
 
     // Upload button click
     uploadBtn.addEventListener('click', () => fileInput.click());
