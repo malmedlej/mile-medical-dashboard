@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFQ Archive - Mile Medical</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-[#0D0D10] text-gray-100 font-['Inter']">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="./assets/logo-white.png" class="w-10 h-auto object-contain rounded-md bg-white/5 p-1" alt="Mile Medical Logo" />
+            <div class="ml-3">
+                <h1 class="text-sm font-semibold text-white">Tender Intelligence</h1>
+                <p class="text-xs text-gray-400">Engine</p>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="matcher.html" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+                <span>Matcher</span>
+            </a>
+            <a href="archive.html" class="nav-item active">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                </svg>
+                <span>Archive</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Pipeline</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>P&L</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                </svg>
+                <span>Workflow</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span>Analytics</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#F6B17A] to-[#f49347] flex items-center justify-center text-sm font-semibold">
+                    MM
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Mile Medical</p>
+                    <p class="text-xs text-gray-400">Admin</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-3xl font-bold font-['Poppins'] text-white">RFQ Archive</h2>
+                    <p class="text-gray-400 mt-1">Track and manage all your RFQ submissions</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="clearArchiveBtn" class="btn-secondary">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Clear Archive
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Total RFQs</span>
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <p id="totalRFQs" class="text-3xl font-bold text-white">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Pending Quotes</span>
+                    <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p id="pendingRFQs" class="text-3xl font-bold text-yellow-400">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Quoted</span>
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <p id="quotedRFQs" class="text-3xl font-bold text-green-400">0</p>
+            </div>
+            <div class="glass-card">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-gray-400 text-sm">Total Items</span>
+                    <svg class="w-5 h-5 text-[#F6B17A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                </div>
+                <p id="totalMatchedItems" class="text-3xl font-bold text-[#F6B17A]">0</p>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="glass-card mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block">Search RFQ ID</label>
+                    <input type="text" id="searchInput" placeholder="Search by RFQ ID..." class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#F6B17A]">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block">Filter by Status</label>
+                    <select id="statusFilter" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#F6B17A]">
+                        <option value="all">All Status</option>
+                        <option value="New">New</option>
+                        <option value="Pending Quotes">Pending Quotes</option>
+                        <option value="Quoted">Quoted</option>
+                        <option value="Submitted">Submitted</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block">Sort by</label>
+                    <select id="sortFilter" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:border-[#F6B17A]">
+                        <option value="date-desc">Latest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="items-desc">Most Items</option>
+                        <option value="items-asc">Least Items</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- RFQ Archive Table -->
+        <div class="glass-card">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-white">Archived RFQs</h3>
+                <span id="rfqCount" class="text-sm text-gray-400">0 RFQs</span>
+            </div>
+            
+            <div id="emptyState" class="text-center py-16">
+                <svg class="w-20 h-20 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-400 mb-2">No RFQs Yet</h3>
+                <p class="text-gray-500 mb-6">Upload your first RFQ in the Matcher to get started</p>
+                <a href="matcher.html" class="btn-primary inline-flex">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Go to Matcher
+                </a>
+            </div>
+
+            <div id="archiveTable" class="hidden overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">RFQ ID</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Date</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Matched Items</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Total Items</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Match Rate</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Status</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-400">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="archiveTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pb-8 text-center text-sm text-gray-500">
+            <p>&copy; 2024 Mile Medical. Tender Intelligence Engine v1.0</p>
+        </footer>
+    </main>
+
+    <!-- View RFQ Modal -->
+    <div id="viewModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="glass-card max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-white" id="modalRFQId">RFQ Details</h3>
+                    <p class="text-sm text-gray-400 mt-1" id="modalDate"></p>
+                </div>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex items-center space-x-4 text-sm">
+                    <div>
+                        <span class="text-gray-400">Status:</span>
+                        <span id="modalStatus" class="ml-2 status-badge"></span>
+                    </div>
+                    <div>
+                        <span class="text-gray-400">Match Rate:</span>
+                        <span id="modalMatchRate" class="ml-2 font-semibold text-[#F6B17A]"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matched Items in Modal -->
+            <div class="overflow-x-auto">
+                <h4 class="text-lg font-semibold text-white mb-4">Matched Items</h4>
+                <table class="w-full mb-6">
+                    <thead>
+                        <tr class="border-b border-white/10">
+                            <th class="text-left py-2 px-3 text-xs font-semibold text-gray-400">NUPCO Code</th>
+                            <th class="text-left py-2 px-3 text-xs font-semibold text-gray-400">Product Name</th>
+                            <th class="text-left py-2 px-3 text-xs font-semibold text-gray-400">UOM</th>
+                            <th class="text-left py-2 px-3 text-xs font-semibold text-gray-400">Supplier</th>
+                            <th class="text-left py-2 px-3 text-xs font-semibold text-gray-400">Qty</th>
+                            <th class="text-left py-2 px-3 text-xs font-semibold text-gray-400">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalItemsBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button id="exportModalBtn" class="btn-secondary">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Export
+                </button>
+                <button id="updateStatusBtn" class="btn-primary">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 transform translate-x-full transition-transform duration-300 z-50">
+        <div class="glass-card flex items-center space-x-3 min-w-[300px] shadow-2xl">
+            <div id="toastIcon" class="w-10 h-10 rounded-full flex items-center justify-center">
+                <!-- Icon will be inserted dynamically -->
+            </div>
+            <div>
+                <p id="toastMessage" class="text-white font-medium"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/archive.js"></script>
+</body>
+</html>
