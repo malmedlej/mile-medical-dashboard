@@ -26,7 +26,7 @@ echo "✅ Azure CLI authenticated"
 
 # Configuration
 FUNCTION_APP_NAME="func-tie-sharepoint-sync"
-RESOURCE_GROUP="rg-mile-medical-dashboard"
+RESOURCE_GROUP="mile-medical-rg"
 
 echo ""
 echo "📦 Installing dependencies..."

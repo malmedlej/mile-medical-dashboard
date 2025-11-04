@@ -51,7 +51,7 @@ az login
 # Create storage account
 az storage account create \
   --name stmilemedicaltic \
-  --resource-group rg-mile-medical-dashboard \
+  --resource-group mile-medical-rg \
   --location eastus \
   --sku Standard_LRS \
   --kind StorageV2
@@ -59,7 +59,7 @@ az storage account create \
 # Get connection string (save this!)
 az storage account show-connection-string \
   --name stmilemedicaltic \
-  --resource-group rg-mile-medical-dashboard \
+  --resource-group mile-medical-rg \
   --output tsv
 ```
 

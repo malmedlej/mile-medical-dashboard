@@ -18,7 +18,7 @@ Follow these steps IN ORDER. I've simplified everything to make it super easy.
 ### Fill in the form:
 ```
 Subscription: [Your Mile Medical subscription]
-Resource Group: rg-mile-medical-dashboard (select existing)
+Resource Group: mile-medical-rg (select existing)
 Storage account name: stmilemedicaltic
 Region: East US (or same as your dashboard)
 Performance: Standard
@@ -174,7 +174,7 @@ If Graph Explorer is confusing, just tell me and I'll provide alternative PowerS
 ### Fill in:
 ```
 Subscription: [Your subscription]
-Resource Group: rg-mile-medical-dashboard (existing)
+Resource Group: mile-medical-rg (existing)
 Function App name: func-tie-sharepoint-sync
 Publish: Code
 Runtime stack: Node.js
