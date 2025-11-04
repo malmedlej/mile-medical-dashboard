@@ -179,4 +179,18 @@ document.addEventListener('DOMContentLoaded', () => {
             this.style.transform = 'scale(1)';
         });
     });
+
+    // Setup coming soon link handlers
+    setupComingSoonLinks();
 });
+
+// Setup coming soon link handlers
+function setupComingSoonLinks() {
+    const comingSoonLinks = document.querySelectorAll('.nav-item.opacity-50');
+    comingSoonLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('🚧 This feature is coming soon!\n\nCurrently available:\n✅ Dashboard\n✅ Matcher\n✅ Archive');
+        });
+    });
+}

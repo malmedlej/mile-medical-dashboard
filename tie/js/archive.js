@@ -18,7 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     updateStatistics();
     renderArchiveTable();
+    setupComingSoonLinks();
 });
+
+// Setup coming soon link handlers
+function setupComingSoonLinks() {
+    const comingSoonLinks = document.querySelectorAll('.nav-item.opacity-50');
+    comingSoonLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showToast('🚧 This feature is coming soon!', 'warning');
+        });
+    });
+}
 
 // Load archived RFQs from localStorage
 function loadArchive() {

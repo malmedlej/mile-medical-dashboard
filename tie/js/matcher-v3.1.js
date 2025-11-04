@@ -23,7 +23,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 TIE Matcher v3.0.1-DEBUG - Full Matching System [BUILD: 2024-11-02-01]');
     await loadVendorItems();
     setupEventListeners();
+    setupComingSoonLinks();
 });
+
+// Setup coming soon link handlers
+function setupComingSoonLinks() {
+    const comingSoonLinks = document.querySelectorAll('.nav-item.opacity-50');
+    comingSoonLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showToast('🚧 This feature is coming soon!', 'warning');
+        });
+    });
+}
 
 // Load permanent vendor catalog from Excel
 async function loadVendorItems() {
