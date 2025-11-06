@@ -55,11 +55,26 @@ module.exports = async function (context, req) {
         // Initialize SharePoint connection
         await initializeSharePoint(context);
 
-        // Get action from route parameters
-        const action = req.params.action || 'create';
+        // Get action from route parameters or infer from HTTP method
+        let action = req.params.action;
         const id = req.params.id;
 
-        context.log(`📌 Action: ${action}, ID: ${id || 'N/A'}`);
+        // Smart routing: if no action specified, infer from HTTP method
+        if (!action) {
+            if (req.method === 'POST') {
+                action = 'create';
+            } else if (req.method === 'GET') {
+                action = id ? 'get' : 'list';
+            } else if (req.method === 'PATCH' || req.method === 'PUT') {
+                action = 'update';
+            } else if (req.method === 'DELETE') {
+                action = 'delete';
+            } else {
+                action = 'create'; // Default fallback
+            }
+        }
+
+        context.log(`📌 Method: ${req.method}, Action: ${action}, ID: ${id || 'N/A'}`);
 
         // Route to appropriate handler
         let result;
