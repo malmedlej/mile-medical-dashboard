@@ -601,3 +601,24 @@ label.btn-primary {
 .glass-card:hover::before {
     opacity: 1;
 }
+
+/* Toast Notification Styles */
+#toast {
+    pointer-events: none !important;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+    z-index: 9999 !important;
+}
+
+#toast .glass-card {
+    pointer-events: auto;
+}
+
+/* Ensure toast is above everything on mobile */
+@media (max-width: 768px) {
+    #toast {
+        top: 70px !important; /* Below mobile menu button */
+        max-width: calc(100vw - 32px);
+        left: 50% !important;
+    }
+}

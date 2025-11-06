@@ -263,13 +263,13 @@
     </main>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-4 right-4 transform translate-x-full transition-transform duration-300 z-50">
-        <div class="glass-card flex items-center space-x-3 min-w-[300px] shadow-2xl">
-            <div id="toastIcon" class="w-10 h-10 rounded-full flex items-center justify-center">
+    <div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 translate-y-[-200%] transition-all duration-300 z-[9999] pointer-events-none">
+        <div class="glass-card flex items-center space-x-3 min-w-[280px] max-w-[90vw] shadow-2xl pointer-events-auto">
+            <div id="toastIcon" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
                 <!-- Icon will be inserted dynamically -->
             </div>
-            <div>
-                <p id="toastMessage" class="text-white font-medium"></p>
+            <div class="flex-1 min-w-0">
+                <p id="toastMessage" class="text-white font-medium text-sm break-words"></p>
             </div>
         </div>
     </div>

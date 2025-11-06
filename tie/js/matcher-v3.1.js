@@ -707,16 +707,18 @@ function showToast(message, type = 'success') {
             break;
     }
     
-    toastIcon.className = `w-10 h-10 rounded-full flex items-center justify-center ${bgColor}`;
+    toastIcon.className = `w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${bgColor}`;
     toastIcon.innerHTML = iconHTML;
     
-    // Show toast
-    toast.classList.remove('translate-x-full');
+    // Show toast (slide down from top center)
+    toast.style.transform = 'translate(-50%, 0)';
+    toast.style.opacity = '1';
     
-    // Hide after 4 seconds
+    // Hide after 3 seconds (faster to not block interaction)
     setTimeout(() => {
-        toast.classList.add('translate-x-full');
-    }, 4000);
+        toast.style.transform = 'translate(-50%, -200%)';
+        toast.style.opacity = '0';
+    }, 3000);
 }
 
 // Escape HTML to prevent XSS
