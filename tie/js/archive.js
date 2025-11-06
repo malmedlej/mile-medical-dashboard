@@ -12,13 +12,24 @@ let archivedRFQs = [];
 let currentRFQ = null;
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🗄️ TIE Archive v1.0 - RFQ Archive System');
-    loadArchive();
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🗄️ TIE Archive v1.0 - RFQ Archive System (SharePoint Edition)');
+    
+    await loadArchive();
     setupEventListeners();
     updateStatistics();
     renderArchiveTable();
     setupComingSoonLinks();
+    
+    // Show SharePoint status
+    if (window.storageManager) {
+        const isAvailable = await window.storageManager.isSharePointAvailable();
+        if (isAvailable) {
+            console.log('✅ SharePoint integration: Active');
+        } else {
+            console.log('⚠️ SharePoint integration: Unavailable (using local storage)');
+        }
+    }
 });
 
 // Setup coming soon link handlers
@@ -37,19 +48,55 @@ function showComingSoonToast() {
     showToast('🚧 This feature is coming soon!', 'warning');
 }
 
-// Load archived RFQs from localStorage
-function loadArchive() {
+// Load archived RFQs from SharePoint (with localStorage fallback)
+async function loadArchive() {
+    try {
+        // Try loading from SharePoint first
+        if (window.storageManager) {
+            console.log('📂 Loading RFQs from SharePoint...');
+            
+            const rfqs = await window.storageManager.loadRFQs();
+            
+            // Transform SharePoint format to legacy format for compatibility
+            archivedRFQs = rfqs.map(rfq => ({
+                rfqId: rfq.rfqId || rfq.Title,
+                date: rfq.date || rfq.RFQDate,
+                matchedItems: rfq.matchedItems || [],
+                matchedCount: rfq.matchedCount || rfq.MatchedCount,
+                totalCount: rfq.totalCount || rfq.TotalCount,
+                status: rfq.status || rfq.Status || 'New',
+                sharePointId: rfq.id || rfq.Id,
+                synced: true
+            }));
+            
+            console.log(`✅ Loaded ${archivedRFQs.length} RFQs from SharePoint`);
+            
+        } else {
+            // Fallback to localStorage
+            console.log('⚠️ SharePoint client not available, loading from localStorage');
+            loadArchiveFromLocalStorage();
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading from SharePoint:', error);
+        console.log('⚠️ Falling back to localStorage');
+        loadArchiveFromLocalStorage();
+    }
+}
+
+// Fallback: Load from localStorage only
+function loadArchiveFromLocalStorage() {
     try {
         const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
         if (stored) {
             archivedRFQs = JSON.parse(stored);
-            console.log(`📦 Loaded ${archivedRFQs.length} archived RFQs`);
+            console.log(`📦 Loaded ${archivedRFQs.length} archived RFQs from localStorage`);
         } else {
             archivedRFQs = [];
-            console.log('📦 No archived RFQs found');
+            console.log('📦 No archived RFQs found in localStorage');
         }
     } catch (error) {
-        console.error('❌ Error loading archive:', error);
+        console.error('❌ Error loading from localStorage:', error);
         archivedRFQs = [];
         showToast('⚠️ Error loading archive', 'error');
     }

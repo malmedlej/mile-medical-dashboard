@@ -1,0 +1,24 @@
+{
+  "name": "sharepoint-rfq-function",
+  "version": "1.0.0",
+  "description": "Azure Function for SharePoint RFQ storage operations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@pnp/sp": "^3.18.0",
+    "@pnp/common": "^3.18.0",
+    "@pnp/logging": "^3.18.0",
+    "@pnp/odata": "^3.18.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "azure",
+    "function",
+    "sharepoint",
+    "rfq"
+  ],
+  "author": "Mile Medical",
+  "license": "ISC"
+}

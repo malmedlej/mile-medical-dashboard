@@ -732,48 +732,79 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// Save current RFQ to archive
-function saveToArchive() {
+// Save current RFQ to archive (SharePoint + localStorage backup)
+async function saveToArchive() {
     try {
-        const ARCHIVE_STORAGE_KEY = 'tie_rfq_archive';
-        
-        // Load existing archive
-        let archivedRFQs = [];
-        const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
-        if (stored) {
-            archivedRFQs = JSON.parse(stored);
-        }
-        
-        // Check if RFQ already exists
-        const existingIndex = archivedRFQs.findIndex(rfq => rfq.rfqId === currentRFQId);
-        
         // Create RFQ object
         const rfqObject = {
             rfqId: currentRFQId,
             date: new Date().toISOString(),
-            matchedItems: matchedItems.map(item => ({...item, price: ''})),
+            matchedItems: matchedItems.map(item => ({
+                ...item,
+                unit_price: item.price || '',
+                total_price: ''
+            })),
+            notFoundItems: notFoundItems,
             matchedCount: matchedItems.length,
             totalCount: matchedItems.length + notFoundItems.length,
             status: 'New'
         };
         
-        // Update or add
-        if (existingIndex !== -1) {
-            archivedRFQs[existingIndex] = rfqObject;
-            console.log(`📝 Updated existing RFQ in archive: ${currentRFQId}`);
+        // Try to save to SharePoint (if storageManager available)
+        if (window.storageManager) {
+            console.log('💾 Saving to SharePoint...');
+            const result = await window.storageManager.saveRFQ(rfqObject);
+            
+            if (result.success) {
+                showToast('✅ RFQ saved to SharePoint', 'success');
+                console.log(`✅ Saved to SharePoint (ID: ${result.sharePointId})`);
+            } else if (result.localOnly) {
+                showToast('⚠️ Saved locally. Will sync to SharePoint later.', 'warning');
+                console.log('⚠️ Saved to localStorage only, SharePoint unavailable');
+            }
         } else {
-            archivedRFQs.unshift(rfqObject);
-            console.log(`💾 Saved new RFQ to archive: ${currentRFQId}`);
+            // Fallback: localStorage only (legacy mode)
+            console.log('⚠️ SharePoint client not available, using localStorage only');
+            saveToLocalStorageOnly(rfqObject);
+            showToast('💾 RFQ saved locally', 'success');
         }
-        
-        // Save to localStorage
-        localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archivedRFQs));
-        
-        // Show notification
-        const notification = existingIndex !== -1 ? 'RFQ updated in archive' : 'RFQ saved to archive';
-        console.log(`✅ ${notification}`);
         
     } catch (error) {
         console.error('❌ Error saving to archive:', error);
+        
+        // Last resort: try localStorage
+        try {
+            saveToLocalStorageOnly(rfqObject);
+            showToast('⚠️ Saved locally only (error with SharePoint)', 'warning');
+        } catch (localError) {
+            showToast('❌ Failed to save RFQ', 'error');
+        }
     }
+}
+
+// Fallback: Save to localStorage only (legacy method)
+function saveToLocalStorageOnly(rfqObject) {
+    const ARCHIVE_STORAGE_KEY = 'tie_rfq_archive';
+    
+    // Load existing archive
+    let archivedRFQs = [];
+    const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+    if (stored) {
+        archivedRFQs = JSON.parse(stored);
+    }
+    
+    // Check if RFQ already exists
+    const existingIndex = archivedRFQs.findIndex(rfq => rfq.rfqId === rfqObject.rfqId);
+    
+    // Update or add
+    if (existingIndex !== -1) {
+        archivedRFQs[existingIndex] = rfqObject;
+        console.log(`📝 Updated existing RFQ in localStorage: ${rfqObject.rfqId}`);
+    } else {
+        archivedRFQs.unshift(rfqObject);
+        console.log(`💾 Saved new RFQ to localStorage: ${rfqObject.rfqId}`);
+    }
+    
+    // Save to localStorage
+    localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archivedRFQs));
 }
