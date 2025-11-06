@@ -168,38 +168,51 @@ function setupEventListeners() {
         });
     }
 
-    // Upload button click - works for both desktop and mobile
-    uploadBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        fileInput.click();
-    });
-    
-    // Add touch event for mobile
-    uploadBtn.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        fileInput.click();
-    });
-    
-    // Upload zone click - make entire zone clickable on mobile
-    uploadZone.addEventListener('click', (e) => {
-        // Only trigger if clicking the zone itself, not the button
-        if (e.target === uploadZone || e.target.closest('#uploadPrompt')) {
-            e.preventDefault();
-            fileInput.click();
-        }
-    });
-    
-    // Upload zone touch event for mobile
-    uploadZone.addEventListener('touchend', (e) => {
-        // Only trigger if touching the zone itself, not the button
-        if (e.target === uploadZone || e.target.closest('#uploadPrompt')) {
+    // Upload button click handler - simplified for better mobile support
+    const triggerFileInput = (e) => {
+        if (e) {
             e.preventDefault();
             e.stopPropagation();
-            fileInput.click();
+        }
+        console.log('Triggering file input...');
+        fileInput.click();
+    };
+    
+    // Button click - desktop and mobile
+    uploadBtn.addEventListener('click', triggerFileInput, { passive: false });
+    
+    // Button touch - mobile specific
+    uploadBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, { passive: false });
+    
+    uploadBtn.addEventListener('touchend', (e) => {
+        triggerFileInput(e);
+    }, { passive: false });
+    
+    // Upload zone click - make entire zone clickable
+    uploadZone.addEventListener('click', (e) => {
+        // Don't trigger if clicking the button itself
+        if (!e.target.closest('#uploadBtn')) {
+            triggerFileInput(e);
         }
     });
+    
+    // Upload zone touch for mobile
+    let touchStartTarget = null;
+    
+    uploadZone.addEventListener('touchstart', (e) => {
+        touchStartTarget = e.target;
+    }, { passive: true });
+    
+    uploadZone.addEventListener('touchend', (e) => {
+        // Only trigger if not tapping the button and touch didn't move
+        if (!e.target.closest('#uploadBtn') && touchStartTarget === e.target) {
+            triggerFileInput(e);
+        }
+        touchStartTarget = null;
+    }, { passive: false });
     
     // File input change
     fileInput.addEventListener('change', handleFileUpload);
