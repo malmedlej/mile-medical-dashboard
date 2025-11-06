@@ -144,9 +144,9 @@
                     <p class="text-sm text-gray-400 mb-4">Tap the button below to browse for your .xlsx file</p>
                     
                     <!-- Styled file input wrapper -->
-                    <div class="inline-block relative">
-                        <input type="file" id="fileInput" accept=".xlsx,.xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50" style="cursor: pointer !important;">
-                        <div class="btn-primary inline-flex pointer-events-none">
+                    <div class="inline-block relative" style="cursor: pointer !important; pointer-events: auto !important;">
+                        <input type="file" id="fileInput" accept=".xlsx,.xls" class="absolute inset-0 w-full h-full opacity-0" style="cursor: pointer !important; pointer-events: auto !important; z-index: 100 !important; touch-action: manipulation !important; -webkit-tap-highlight-color: rgba(246, 177, 122, 0.3) !important;">
+                        <div class="btn-primary inline-flex" style="pointer-events: none !important; position: relative; z-index: 10;">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                             </svg>
@@ -157,7 +157,7 @@
                     <!-- Fallback: Show native file input if styled one doesn't work -->
                     <div class="mt-6">
                         <p class="text-xs text-gray-500 mb-2">If button above doesn't work, use this:</p>
-                        <input type="file" id="fileInputFallback" accept=".xlsx,.xls" class="text-sm text-gray-400 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#F6B17A] file:text-white hover:file:bg-[#f49347] file:cursor-pointer cursor-pointer mx-auto" style="max-width: 100%;">
+                        <input type="file" id="fileInputFallback" accept=".xlsx,.xls" class="text-sm text-gray-400 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#F6B17A] file:text-white hover:file:bg-[#f49347] file:cursor-pointer cursor-pointer mx-auto" style="max-width: 100%; pointer-events: auto !important; touch-action: manipulation !important;">
                     </div>
                 </div>
                 <div id="uploadingIndicator" class="hidden">
