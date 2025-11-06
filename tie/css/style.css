@@ -15,7 +15,7 @@
 }
 
 /* Allow text selection only for actual text content and inputs */
-p, span, h1, h2, h3, h4, h5, h6, 
+p, span,
 input, textarea, 
 [contenteditable="true"],
 .selectable-text {
@@ -24,6 +24,15 @@ input, textarea,
     -moz-user-select: text;
     -ms-user-select: text;
     cursor: text;
+}
+
+/* Headings should NOT have text cursor - they're display elements */
+h1, h2, h3, h4, h5, h6 {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    cursor: default !important;
 }
 
 /* Explicitly prevent selection on logo and header elements */
@@ -359,6 +368,52 @@ table {
     .btn-secondary {
         font-size: 12px;
         padding: 8px 16px;
+    }
+    
+    /* Mobile Upload Zone - Better Touch Support */
+    #uploadZone {
+        cursor: pointer !important;
+        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.2);
+        touch-action: manipulation;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #uploadBtn {
+        cursor: pointer !important;
+        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.3);
+        touch-action: manipulation;
+        min-height: 48px;
+        font-size: 16px !important;
+        padding: 12px 24px !important;
+        pointer-events: auto !important;
+    }
+    
+    #uploadZone:active {
+        transform: scale(0.98);
+    }
+    
+    #uploadBtn:active {
+        transform: scale(0.95);
+    }
+    
+    /* Mobile Header - Stack buttons vertically */
+    header .flex.items-center.space-x-3 {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    header .flex.items-center.space-x-3 > * {
+        width: 100%;
+    }
+    
+    #reloadCatalogBtn {
+        width: 100% !important;
+        justify-content: center;
     }
 }
 

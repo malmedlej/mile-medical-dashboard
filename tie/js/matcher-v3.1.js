@@ -168,13 +168,43 @@ function setupEventListeners() {
         });
     }
 
-    // Upload button click
-    uploadBtn.addEventListener('click', () => fileInput.click());
+    // Upload button click - works for both desktop and mobile
+    uploadBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileInput.click();
+    });
+    
+    // Add touch event for mobile
+    uploadBtn.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileInput.click();
+    });
+    
+    // Upload zone click - make entire zone clickable on mobile
+    uploadZone.addEventListener('click', (e) => {
+        // Only trigger if clicking the zone itself, not the button
+        if (e.target === uploadZone || e.target.closest('#uploadPrompt')) {
+            e.preventDefault();
+            fileInput.click();
+        }
+    });
+    
+    // Upload zone touch event for mobile
+    uploadZone.addEventListener('touchend', (e) => {
+        // Only trigger if touching the zone itself, not the button
+        if (e.target === uploadZone || e.target.closest('#uploadPrompt')) {
+            e.preventDefault();
+            e.stopPropagation();
+            fileInput.click();
+        }
+    });
     
     // File input change
     fileInput.addEventListener('change', handleFileUpload);
     
-    // Drag and drop handlers
+    // Drag and drop handlers (for desktop)
     uploadZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.stopPropagation();
