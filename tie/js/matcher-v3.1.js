@@ -168,16 +168,9 @@ function setupEventListeners() {
         });
     }
 
-    // Note: Using <label for="fileInput"> instead of button for better mobile compatibility
-    // The label element is natively associated with the file input and works reliably on all devices
-    
-    // Upload zone click - make entire zone clickable (except the label)
-    uploadZone.addEventListener('click', (e) => {
-        // Don't trigger if clicking the label (it handles its own click)
-        if (!e.target.closest('label[for="fileInput"]')) {
-            fileInput.click();
-        }
-    });
+    // Note: The entire upload zone is now a <label for="fileInput"> element
+    // This provides the largest possible tap target and uses native HTML behavior
+    // No JavaScript event handlers needed - the browser handles everything
     
     // File input change
     fileInput.addEventListener('change', handleFileUpload);

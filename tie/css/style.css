@@ -370,15 +370,22 @@ table {
         padding: 8px 16px;
     }
     
-    /* Mobile Upload Zone - Better Touch Support */
+    /* Mobile Upload Zone - Entire zone is now a label */
     #uploadZone {
         cursor: pointer !important;
-        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.2);
-        touch-action: manipulation;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.2) !important;
+        touch-action: manipulation !important;
+        min-height: 250px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        pointer-events: auto !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+    }
+    
+    #uploadZone * {
+        pointer-events: none !important;
     }
     
     /* Label upload button - native mobile support */
@@ -415,24 +422,16 @@ table {
     }
     
     #uploadZone:active {
-        transform: scale(0.98);
-        background: rgba(246, 177, 122, 0.05) !important;
+        transform: scale(0.99) !important;
+        background: rgba(246, 177, 122, 0.08) !important;
+        border-color: rgba(246, 177, 122, 0.8) !important;
     }
     
-    #uploadBtn:active {
-        transform: scale(0.95) !important;
-        opacity: 0.8 !important;
-        background: linear-gradient(135deg, #f49347 0%, #F6B17A 100%) !important;
-    }
-    
-    /* Prevent any overlay or pseudo-elements from blocking clicks */
-    #uploadPrompt > * {
+    /* Change the button text on mobile for clarity */
+    #uploadZone .btn-primary {
+        font-size: 18px !important;
+        padding: 18px 36px !important;
         pointer-events: none !important;
-    }
-    
-    #uploadBtn,
-    #uploadZone {
-        pointer-events: auto !important;
     }
     
     /* Mobile Header - Stack buttons vertically */
