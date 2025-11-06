@@ -168,51 +168,16 @@ function setupEventListeners() {
         });
     }
 
-    // Upload button click handler - simplified for better mobile support
-    const triggerFileInput = (e) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        console.log('Triggering file input...');
-        fileInput.click();
-    };
+    // Note: Using <label for="fileInput"> instead of button for better mobile compatibility
+    // The label element is natively associated with the file input and works reliably on all devices
     
-    // Button click - desktop and mobile
-    uploadBtn.addEventListener('click', triggerFileInput, { passive: false });
-    
-    // Button touch - mobile specific
-    uploadBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-    }, { passive: false });
-    
-    uploadBtn.addEventListener('touchend', (e) => {
-        triggerFileInput(e);
-    }, { passive: false });
-    
-    // Upload zone click - make entire zone clickable
+    // Upload zone click - make entire zone clickable (except the label)
     uploadZone.addEventListener('click', (e) => {
-        // Don't trigger if clicking the button itself
-        if (!e.target.closest('#uploadBtn')) {
-            triggerFileInput(e);
+        // Don't trigger if clicking the label (it handles its own click)
+        if (!e.target.closest('label[for="fileInput"]')) {
+            fileInput.click();
         }
     });
-    
-    // Upload zone touch for mobile
-    let touchStartTarget = null;
-    
-    uploadZone.addEventListener('touchstart', (e) => {
-        touchStartTarget = e.target;
-    }, { passive: true });
-    
-    uploadZone.addEventListener('touchend', (e) => {
-        // Only trigger if not tapping the button and touch didn't move
-        if (!e.target.closest('#uploadBtn') && touchStartTarget === e.target) {
-            triggerFileInput(e);
-        }
-        touchStartTarget = null;
-    }, { passive: false });
     
     // File input change
     fileInput.addEventListener('change', handleFileUpload);
