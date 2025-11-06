@@ -7,12 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@pnp/sp": "^3.18.0",
-    "@pnp/common": "^3.18.0",
-    "@pnp/logging": "^3.18.0",
-    "@pnp/odata": "^3.18.0"
+    "@pnp/common": "^2.15.0",
+    "@pnp/graph": "^2.15.0",
+    "@pnp/logging": "^2.15.0",
+    "@pnp/odata": "^2.15.0",
+    "@pnp/sp": "^2.15.0",
+    "node-fetch": "^2.6.9"
   },
-  "devDependencies": {},
   "keywords": [
     "azure",
     "function",
