@@ -168,47 +168,16 @@ function setupEventListeners() {
         });
     }
 
-    // Multiple fallback methods to ensure file input can be triggered
+    // Handle both primary and fallback file inputs
+    const fileInputFallback = document.getElementById('fileInputFallback');
     
-    // Method 1: Fallback link handler
-    const uploadLinkFallback = document.getElementById('uploadLinkFallback');
-    if (uploadLinkFallback) {
-        uploadLinkFallback.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Fallback link clicked - triggering file input');
-            fileInput.click();
-        });
-        
-        uploadLinkFallback.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Fallback link touched - triggering file input');
-            fileInput.click();
-        }, { passive: false });
-    }
-    
-    // Method 2: Upload zone click (backup)
-    uploadZone.addEventListener('click', function(e) {
-        // Don't trigger if clicking on the label or link directly
-        if (!e.target.closest('label') && !e.target.closest('#uploadLinkFallback')) {
-            console.log('Upload zone clicked - triggering file input');
-            fileInput.click();
-        }
-    });
-    
-    // Method 3: Touch handler for upload zone
-    uploadZone.addEventListener('touchend', function(e) {
-        // Don't trigger if touching the label or link directly
-        if (!e.target.closest('label') && !e.target.closest('#uploadLinkFallback')) {
-            e.preventDefault();
-            console.log('Upload zone touched - triggering file input');
-            fileInput.click();
-        }
-    }, { passive: false });
-    
-    // File input change
+    // Primary file input (styled with opacity overlay)
     fileInput.addEventListener('change', handleFileUpload);
+    
+    // Fallback file input (native browser styling - always works)
+    if (fileInputFallback) {
+        fileInputFallback.addEventListener('change', handleFileUpload);
+    }
     
     // Drag and drop handlers (for desktop)
     uploadZone.addEventListener('dragover', (e) => {

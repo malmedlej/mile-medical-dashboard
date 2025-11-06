@@ -136,7 +136,6 @@
             </div>
             
             <div class="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-[#F6B17A]/50 transition-all duration-300" id="uploadZone">
-                <input type="file" id="fileInput" accept=".xlsx,.xls" style="position: absolute; left: -9999px;">
                 <div id="uploadPrompt">
                     <svg class="w-16 h-16 mx-auto mb-4 text-[#F6B17A]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -144,19 +143,21 @@
                     <p class="text-lg font-medium text-white mb-2">Upload NUPCO RFQ Excel File</p>
                     <p class="text-sm text-gray-400 mb-4">Tap the button below to browse for your .xlsx file</p>
                     
-                    <!-- Method 1: Label (most reliable) -->
-                    <label for="fileInput" class="btn-primary inline-flex" style="display: inline-flex !important; cursor: pointer !important; position: relative !important; z-index: 10000 !important;">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                        </svg>
-                        📁 Tap Here to Select File
-                    </label>
+                    <!-- Styled file input wrapper -->
+                    <div class="inline-block relative">
+                        <input type="file" id="fileInput" accept=".xlsx,.xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50" style="cursor: pointer !important;">
+                        <div class="btn-primary inline-flex pointer-events-none">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                            </svg>
+                            📁 Choose Excel File
+                        </div>
+                    </div>
                     
-                    <!-- Method 2: Plain link fallback -->
-                    <div class="mt-4">
-                        <a href="#" id="uploadLinkFallback" class="text-[#F6B17A] underline text-base font-semibold" style="display: inline-block !important; cursor: pointer !important; position: relative !important; z-index: 10000 !important;">
-                            Or click this link if button doesn't work
-                        </a>
+                    <!-- Fallback: Show native file input if styled one doesn't work -->
+                    <div class="mt-6">
+                        <p class="text-xs text-gray-500 mb-2">If button above doesn't work, use this:</p>
+                        <input type="file" id="fileInputFallback" accept=".xlsx,.xls" class="text-sm text-gray-400 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#F6B17A] file:text-white hover:file:bg-[#f49347] file:cursor-pointer cursor-pointer mx-auto" style="max-width: 100%;">
                     </div>
                 </div>
                 <div id="uploadingIndicator" class="hidden">
