@@ -1,19 +1,12 @@
 {
   "bindings": [
     {
-      "authLevel": "function",
-      "type": "httpTrigger",
+      "name": "myBlob",
+      "type": "blobTrigger",
       "direction": "in",
-      "name": "req",
-      "methods": [
-        "get",
-        "post"
-      ]
-    },
-    {
-      "type": "http",
-      "direction": "out",
-      "name": "res"
+      "path": "rfq-uploads/{name}",
+      "connection": "AzureWebJobsStorage"
     }
-  ]
+  ],
+  "scriptFile": "index.js"
 }
