@@ -17,7 +17,7 @@ This Azure Function provides a REST API for CRUD operations on RFQ data stored i
 ### Prerequisites
 
 1. **Node.js** 18+ installed
-2. **Azure Functions Core Tools** installed
+2. **Azure Functions Core Tools** installed (`npm install -g azure-functions-core-tools@4`)
 3. **SharePoint List** created (see schema below)
 4. **Azure AD App Registration** with SharePoint permissions
 
@@ -50,10 +50,26 @@ cp local.settings.json.template local.settings.json
 ### Local Testing
 
 ```bash
+# Start the function
 func start
+
+# Run automated tests (in another terminal)
+./test-local.sh
 ```
 
-The function will be available at: `http://localhost:7071/api/rfq`
+The function will be available at: `http://localhost:7071/api/sharepoint-rfq`
+
+### Deployment to Azure
+
+```bash
+# Quick deployment (interactive)
+./deploy.sh
+
+# Or manual deployment
+func azure functionapp publish <your-function-app-name> --javascript
+```
+
+See `DEPLOYMENT-CHECKLIST.md` for detailed deployment instructions.
 
 ---
 
@@ -61,7 +77,9 @@ The function will be available at: `http://localhost:7071/api/rfq`
 
 ### 1. Create RFQ (POST)
 
-**Endpoint:** `POST /api/rfq/create`
+**Endpoints (all equivalent):**
+- `POST /api/sharepoint-rfq/create`
+- `POST /api/sharepoint-rfq` (auto-infers from POST method)
 
 **Request Body:**
 ```json
