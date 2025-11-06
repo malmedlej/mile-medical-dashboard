@@ -168,9 +168,44 @@ function setupEventListeners() {
         });
     }
 
-    // Note: The entire upload zone is now a <label for="fileInput"> element
-    // This provides the largest possible tap target and uses native HTML behavior
-    // No JavaScript event handlers needed - the browser handles everything
+    // Multiple fallback methods to ensure file input can be triggered
+    
+    // Method 1: Fallback link handler
+    const uploadLinkFallback = document.getElementById('uploadLinkFallback');
+    if (uploadLinkFallback) {
+        uploadLinkFallback.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Fallback link clicked - triggering file input');
+            fileInput.click();
+        });
+        
+        uploadLinkFallback.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Fallback link touched - triggering file input');
+            fileInput.click();
+        }, { passive: false });
+    }
+    
+    // Method 2: Upload zone click (backup)
+    uploadZone.addEventListener('click', function(e) {
+        // Don't trigger if clicking on the label or link directly
+        if (!e.target.closest('label') && !e.target.closest('#uploadLinkFallback')) {
+            console.log('Upload zone clicked - triggering file input');
+            fileInput.click();
+        }
+    });
+    
+    // Method 3: Touch handler for upload zone
+    uploadZone.addEventListener('touchend', function(e) {
+        // Don't trigger if touching the label or link directly
+        if (!e.target.closest('label') && !e.target.closest('#uploadLinkFallback')) {
+            e.preventDefault();
+            console.log('Upload zone touched - triggering file input');
+            fileInput.click();
+        }
+    }, { passive: false });
     
     // File input change
     fileInput.addEventListener('change', handleFileUpload);
