@@ -67,43 +67,79 @@ async function loadPriceHistory() {
 // Setup event listeners
 function setupEventListeners() {
     const fileInput = document.getElementById('fileInput');
-    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInputFallback = document.getElementById('fileInputFallback');
     const uploadZone = document.getElementById('uploadZone');
     const autoSaveToggle = document.getElementById('autoSaveToggle');
     const savePricesBtn = document.getElementById('savePricesBtn');
     const exportBtn = document.getElementById('exportBtn');
     const notFoundToggle = document.getElementById('notFoundToggle');
 
-    uploadBtn.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFileUpload);
+    // Add null checks and setup listeners for BOTH file inputs
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFileUpload);
+        console.log('✅ File input listener attached');
+    } else {
+        console.error('❌ fileInput element not found');
+    }
+
+    if (fileInputFallback) {
+        fileInputFallback.addEventListener('change', handleFileUpload);
+        console.log('✅ Fallback file input listener attached');
+    } else {
+        console.error('❌ fileInputFallback element not found');
+    }
     
     // Drag and drop
-    uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.classList.add('border-[#F6B17A]');
-    });
-    
-    uploadZone.addEventListener('dragleave', () => {
-        uploadZone.classList.remove('border-[#F6B17A]');
-    });
-    
-    uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadZone.classList.remove('border-[#F6B17A]');
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            fileInput.files = files;
-            handleFileUpload({ target: { files } });
-        }
-    });
+    if (uploadZone) {
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('border-[#F6B17A]');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('border-[#F6B17A]');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('border-[#F6B17A]');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && fileInput) {
+                fileInput.files = files;
+                handleFileUpload({ target: { files } });
+            }
+        });
+        
+        // Add click handler to upload zone for mobile devices
+        uploadZone.addEventListener('click', (e) => {
+            // Only trigger if clicking on the zone itself, not the file input
+            if (e.target.id === 'uploadZone' || e.target.closest('#uploadPrompt')) {
+                if (fileInput) {
+                    fileInput.click();
+                }
+            }
+        });
+    }
 
-    autoSaveToggle.addEventListener('change', (e) => {
-        autoSaveEnabled = e.target.checked;
-    });
+    if (autoSaveToggle) {
+        autoSaveToggle.addEventListener('change', (e) => {
+            autoSaveEnabled = e.target.checked;
+        });
+    }
 
-    savePricesBtn.addEventListener('click', savePrices);
-    exportBtn.addEventListener('click', exportResults);
-    notFoundToggle.addEventListener('click', toggleNotFound);
+    if (savePricesBtn) {
+        savePricesBtn.addEventListener('click', savePrices);
+    }
+
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportResults);
+    }
+
+    if (notFoundToggle) {
+        notFoundToggle.addEventListener('click', toggleNotFound);
+    }
+
+    console.log('✅ All event listeners set up');
 }
 
 // Extract RFQ ID from filename
@@ -125,22 +161,34 @@ function extractRFQId(filename) {
 // Handle file upload
 async function handleFileUpload(event) {
     const file = event.target.files[0];
-    if (!file) return;
+    if (!file) {
+        console.log('No file selected');
+        return;
+    }
 
-    document.getElementById('uploadPrompt').classList.add('hidden');
-    document.getElementById('uploadingIndicator').classList.remove('hidden');
+    console.log('📁 File selected:', file.name);
+
+    const uploadPrompt = document.getElementById('uploadPrompt');
+    const uploadingIndicator = document.getElementById('uploadingIndicator');
+
+    if (uploadPrompt) uploadPrompt.classList.add('hidden');
+    if (uploadingIndicator) uploadingIndicator.classList.remove('hidden');
 
     try {
         currentRFQId = extractRFQId(file.name);
+        console.log('📋 RFQ ID:', currentRFQId);
+        
         const data = await readExcelFile(file);
+        console.log('📊 Extracted items:', data.length);
+        
         matchItems(data);
         displayResults();
         showToast('✅ File processed successfully', 'success');
     } catch (error) {
-        console.error('Error processing file:', error);
+        console.error('❌ Error processing file:', error);
         showToast('❌ Error processing file: ' + error.message, 'error');
-        document.getElementById('uploadPrompt').classList.remove('hidden');
-        document.getElementById('uploadingIndicator').classList.add('hidden');
+        if (uploadPrompt) uploadPrompt.classList.remove('hidden');
+        if (uploadingIndicator) uploadingIndicator.classList.add('hidden');
     }
 }
 
@@ -302,18 +350,28 @@ function getPriceHistory(nupcoCode, vendor = null) {
 
 // Display results
 function displayResults() {
-    document.getElementById('rfqIdDisplay').textContent = currentRFQId;
-    document.getElementById('rfqInfo').classList.remove('hidden');
-    document.getElementById('uploadZone').classList.add('hidden');
+    const rfqIdDisplay = document.getElementById('rfqIdDisplay');
+    const rfqInfo = document.getElementById('rfqInfo');
+    const uploadZone = document.getElementById('uploadZone');
+    
+    if (rfqIdDisplay) rfqIdDisplay.textContent = currentRFQId;
+    if (rfqInfo) rfqInfo.classList.remove('hidden');
+    if (uploadZone) uploadZone.classList.add('hidden');
     
     const total = matchedItems.length + notFoundItems.length;
     const matchRate = total > 0 ? Math.round((matchedItems.length / total) * 100) : 0;
     
-    document.getElementById('totalItems').textContent = total;
-    document.getElementById('matchedItems').textContent = matchedItems.length;
-    document.getElementById('notFoundItems').textContent = notFoundItems.length;
-    document.getElementById('matchRate').textContent = matchRate + '%';
-    document.getElementById('statsSection').classList.remove('hidden');
+    const totalItemsEl = document.getElementById('totalItems');
+    const matchedItemsEl = document.getElementById('matchedItems');
+    const notFoundItemsEl = document.getElementById('notFoundItems');
+    const matchRateEl = document.getElementById('matchRate');
+    const statsSection = document.getElementById('statsSection');
+    
+    if (totalItemsEl) totalItemsEl.textContent = total;
+    if (matchedItemsEl) matchedItemsEl.textContent = matchedItems.length;
+    if (notFoundItemsEl) notFoundItemsEl.textContent = notFoundItems.length;
+    if (matchRateEl) matchRateEl.textContent = matchRate + '%';
+    if (statsSection) statsSection.classList.remove('hidden');
     
     displayMatchedItems();
     
@@ -325,6 +383,8 @@ function displayResults() {
 // Display matched items in table
 function displayMatchedItems() {
     const tbody = document.getElementById('matchedTableBody');
+    if (!tbody) return;
+    
     tbody.innerHTML = '';
     
     console.log(`\n📊 Displaying ${matchedItems.length} matched items in table...\n`);
@@ -368,7 +428,8 @@ function displayMatchedItems() {
         }
     });
     
-    document.getElementById('matchedSection').classList.remove('hidden');
+    const matchedSection = document.getElementById('matchedSection');
+    if (matchedSection) matchedSection.classList.remove('hidden');
     
     // Add input listeners
     document.querySelectorAll('.price-input').forEach(input => {
@@ -385,9 +446,12 @@ function displayMatchedItems() {
 
 // Display not found items
 function displayNotFoundItems() {
-    document.getElementById('notFoundCount').textContent = notFoundItems.length;
+    const notFoundCount = document.getElementById('notFoundCount');
+    if (notFoundCount) notFoundCount.textContent = notFoundItems.length;
     
     const list = document.getElementById('notFoundList');
+    if (!list) return;
+    
     list.innerHTML = '';
     
     notFoundItems.forEach(item => {
@@ -407,7 +471,8 @@ function displayNotFoundItems() {
         list.appendChild(card);
     });
     
-    document.getElementById('notFoundSection').classList.remove('hidden');
+    const notFoundSection = document.getElementById('notFoundSection');
+    if (notFoundSection) notFoundSection.classList.remove('hidden');
 }
 
 // Toggle not found section
@@ -415,12 +480,14 @@ function toggleNotFound() {
     const content = document.getElementById('notFoundContent');
     const chevron = document.getElementById('notFoundChevron');
     
-    if (content.classList.contains('hidden')) {
-        content.classList.remove('hidden');
-        chevron.classList.add('rotate-180');
-    } else {
-        content.classList.add('hidden');
-        chevron.classList.remove('rotate-180');
+    if (content && chevron) {
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+        } else {
+            content.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
     }
 }
 
@@ -519,6 +586,8 @@ function showToast(message, type = 'success') {
     const toastMessage = document.getElementById('toastMessage');
     const toastIcon = document.getElementById('toastIcon');
     
+    if (!toast || !toastMessage || !toastIcon) return;
+    
     toastMessage.textContent = message;
     
     let iconHTML = '';
@@ -539,8 +608,11 @@ function showToast(message, type = 'success') {
     toastIcon.innerHTML = iconHTML;
     
     toast.classList.remove('translate-x-full');
+    toast.classList.remove('translate-y-[-200%]');
+    toast.classList.add('translate-y-0');
     
     setTimeout(() => {
-        toast.classList.add('translate-x-full');
+        toast.classList.remove('translate-y-0');
+        toast.classList.add('translate-y-[-200%]');
     }, 3000);
 }
