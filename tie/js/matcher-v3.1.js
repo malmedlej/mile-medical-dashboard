@@ -142,20 +142,11 @@ function setupEventListeners() {
     console.log('✅ All event listeners set up');
 }
 
-// Extract RFQ ID from filename
+// Extract RFQ ID from filename - KEEP FULL FILENAME WITHOUT EXTENSION
 function extractRFQId(filename) {
+    // Simply remove the extension and return the full filename
     const nameWithoutExt = filename.replace(/\.(xlsx|xls)$/i, '');
-    
-    let match = nameWithoutExt.match(/NUPCO[-_]?(\d+)/i);
-    if (match) return match[1];
-    
-    match = nameWithoutExt.match(/RFQ[-_]?(\d+)/i);
-    if (match) return match[1];
-    
-    match = nameWithoutExt.match(/(\d+)/);
-    if (match) return match[1];
-    
-    return Date.now().toString().slice(-6);
+    return nameWithoutExt;
 }
 
 // Handle file upload
@@ -273,7 +264,7 @@ function extractNUPCOCodes(data) {
     return items;
 }
 
-// SIMPLIFIED MATCHING - EXACT MATCH ONLY, SHOW ALL VENDORS
+// FIXED MATCHING - ONE ROW PER NUPCO CODE PER VENDOR (NO DUPLICATES)
 function matchItems(rfqItems) {
     matchedItems = [];
     notFoundItems = [];
@@ -287,30 +278,39 @@ function matchItems(rfqItems) {
     rfqItems.forEach((rfqItem, index) => {
         const code = rfqItem.nupco_code;
         
-        // SIMPLE EXACT MATCH - NO NORMALIZATION, NO LEADING ZERO REMOVAL
+        // Find all vendor matches for this NUPCO code
         const vendorMatches = vendorItems.filter(item => item.nupco_code === code);
         
-        // Log every match for debugging
         console.log(`[${index + 1}/${rfqItems.length}] Code: ${code}`);
         console.log(`  → Found ${vendorMatches.length} vendor match(es)`);
         
         if (vendorMatches.length > 0) {
-            vendorMatches.forEach((vendorItem, vIndex) => {
-                console.log(`     ${vIndex + 1}. ${vendorItem.supplier} - ${vendorItem.product_name.substring(0, 50)}`);
+            // Group by vendor and keep only ONE entry per vendor
+            const uniqueVendors = {};
+            
+            vendorMatches.forEach((vendorItem) => {
+                const vendor = vendorItem.supplier;
                 
-                const history = getPriceHistory(code, vendorItem.supplier);
-                
-                matchedItems.push({
-                    nupco_code: code,
-                    product_name: vendorItem.product_name,
-                    pack: vendorItem.pack || 'N/A',
-                    vendor: vendorItem.supplier,
-                    uom: rfqItem.uom,
-                    qty: rfqItem.qty,
-                    supplier: history ? history.Supplier : vendorItem.supplier,
-                    price: history ? history.Price : '',
-                    lastPrice: history
-                });
+                // Only add if we haven't seen this vendor yet for this NUPCO code
+                if (!uniqueVendors[vendor]) {
+                    uniqueVendors[vendor] = true;
+                    
+                    console.log(`     ✓ ${vendor} - ${vendorItem.product_name.substring(0, 50)}`);
+                    
+                    const history = getPriceHistory(code, vendor);
+                    
+                    matchedItems.push({
+                        nupco_code: code,
+                        product_name: vendorItem.product_name,
+                        pack: vendorItem.pack || 'N/A',
+                        vendor: vendor,
+                        uom: rfqItem.uom,
+                        qty: rfqItem.qty,
+                        supplier: history ? history.Supplier : vendor,
+                        price: history ? history.Price : '',
+                        lastPrice: history
+                    });
+                }
             });
         } else {
             console.log(`     ❌ No match found - adding to unmatched list`);
