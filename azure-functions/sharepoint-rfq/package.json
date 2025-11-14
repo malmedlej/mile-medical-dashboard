@@ -1,0 +1,27 @@
+{
+  "name": "sharepoint-rfq-function",
+  "version": "2.0.0",
+  "description": "Azure Function for real SharePoint RFQ storage integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "keywords": [
+    "azure",
+    "function",
+    "sharepoint",
+    "rfq",
+    "mile-medical"
+  ],
+  "author": "Mile Medical",
+  "license": "ISC",
+  "dependencies": {
+    "@pnp/core": "^3.17.0",
+    "@pnp/nodejs": "^3.17.0",
+    "@pnp/sp": "^3.17.0"
+  }
+}

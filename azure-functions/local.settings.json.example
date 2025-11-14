@@ -1,0 +1,18 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    
+    "SHAREPOINT_VENDOR_FILE_URL": "https://milemedical365.sharepoint.com/:x:/s/Milemedical2/EXUb3LmgUKtEijkKxESkSxMBM18ryASwuHIuSqLJvCFAfQ",
+    "SHAREPOINT_CLIENT_ID": "your-app-client-id",
+    "SHAREPOINT_CLIENT_SECRET": "your-app-client-secret",
+    "SHAREPOINT_TENANT_ID": "edd2363d-c022-49f2-b7f7-a8f08b72af06",
+    "SHAREPOINT_SITE_ID": "your-site-id",
+    "SHAREPOINT_DRIVE_ID": "your-drive-id",
+    "SHAREPOINT_FILE_ID": "155bdd1b-a840-4a8a-88a4-44a441cb0301",
+    
+    "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=youraccountname;AccountKey=yourkey;EndpointSuffix=core.windows.net",
+    "BLOB_CONTAINER_NAME": "tie-vendor-catalog"
+  }
+}

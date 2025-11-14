@@ -47,6 +47,73 @@ body {
     overflow-x: hidden;
 }
 
+/* Allow text selection only for inputs and explicitly editable content */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), 
+textarea, 
+[contenteditable="true"],
+.selectable-text {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    cursor: text;
+}
+
+/* Paragraphs and spans should NOT have text cursor by default */
+p, span, div {
+    cursor: default;
+    user-select: none;
+}
+
+/* Headings should NOT have text cursor - they're display elements */
+h1, h2, h3, h4, h5, h6 {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    cursor: default !important;
+}
+
+/* Explicitly prevent selection on logo and header elements */
+.sidebar-header,
+.sidebar-header *,
+img {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    cursor: default !important;
+    pointer-events: auto;
+}
+
+/* Text input fields should have text cursor */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea {
+    cursor: text !important;
+}
+
+/* Clickable elements should have pointer cursor */
+a, button, 
+.btn-primary, .btn-secondary,
+.nav-item,
+[role="button"],
+.clickable,
+input[type="file"],
+label[for] {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
 /* Sidebar Styles */
 .sidebar {
     position: fixed;
@@ -118,6 +185,9 @@ body {
     padding: 40px;
     overflow-y: auto;
     background: #0D0D10;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
 }
 
 /* Glass Card Effect */
@@ -129,6 +199,7 @@ body {
     padding: 24px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
+    pointer-events: auto;
 }
 
 .glass-card:hover {
@@ -196,6 +267,54 @@ table {
     background: rgba(246, 177, 122, 0.5);
 }
 
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 200;
+    background: linear-gradient(135deg, #F6B17A 0%, #f49347 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(246, 177, 122, 0.4);
+    transition: all 0.3s ease;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.mobile-menu-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(246, 177, 122, 0.5);
+}
+
+.mobile-menu-toggle svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+/* Mobile Overlay */
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .sidebar {
@@ -225,22 +344,227 @@ table {
 }
 
 @media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .mobile-overlay {
+        display: block;
+    }
+    
     .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
+        width: 260px;
+        box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5);
+    }
+    
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+    
+    /* Show all text when sidebar is open on mobile */
+    .sidebar.mobile-open .sidebar-header span,
+    .sidebar.mobile-open .sidebar-header h1,
+    .sidebar.mobile-open .sidebar-header p,
+    .sidebar.mobile-open .nav-item span,
+    .sidebar.mobile-open .sidebar-footer div > div:last-child {
+        display: block;
+    }
+    
+    .sidebar.mobile-open .nav-item {
+        justify-content: flex-start;
+    }
+    
+    .sidebar.mobile-open .nav-item svg {
+        margin-right: 12px;
     }
     
     .main-content {
         margin-left: 0;
         padding: 20px;
+        padding-top: 64px; /* Space for mobile menu button */
     }
     
     .glass-card {
         padding: 16px;
     }
+    
+    /* Improve header spacing on mobile */
+    header {
+        margin-bottom: 24px !important;
+    }
+    
+    header h2 {
+        font-size: 24px !important;
+    }
+    
+    /* Make cards stack better on mobile */
+    .grid {
+        gap: 16px !important;
+    }
+    
+    /* Improve table responsiveness */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+    
+    /* Better button layout on mobile */
+    .flex.space-x-3 {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        font-size: 12px;
+        padding: 8px 16px;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.3) !important;
+        min-height: 44px !important;
+    }
+    
+    /* Ensure all buttons and inputs are tappable */
+    button,
+    input[type="checkbox"],
+    input[type="file"],
+    label[for],
+    a {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.2) !important;
+    }
+    
+    /* Mobile Upload Zone - Allow all child elements to be clickable */
+    #uploadZone {
+        cursor: pointer !important;
+        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.2) !important;
+        touch-action: manipulation !important;
+        min-height: 250px !important;
+        display: block !important;
+        pointer-events: auto !important;
+        user-select: none !important;
+        -webkit-user-select: none !important;
+        position: relative !important;
+    }
+    
+    /* Allow ALL elements to receive pointer events on mobile */
+    #uploadZone * {
+        pointer-events: auto !important;
+    }
+    
+    /* Primary file input - make it easier to tap on mobile */
+    #fileInput {
+        opacity: 0 !important;
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        cursor: pointer !important;
+        z-index: 100 !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(246, 177, 122, 0.3) !important;
+    }
+    
+    /* Make the button wrapper visible but non-blocking */
+    #uploadZone .inline-block {
+        position: relative !important;
+        z-index: 10 !important;
+        pointer-events: none !important;
+    }
+    
+    #uploadZone:active {
+        transform: scale(0.99) !important;
+        background: rgba(246, 177, 122, 0.08) !important;
+        border-color: rgba(246, 177, 122, 0.8) !important;
+    }
+    
+    /* Fallback file input - native styling */
+    #fileInputFallback {
+        display: block !important;
+        margin: 0 auto !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        max-width: 100% !important;
+    }
+    
+    #fileInputFallback::file-selector-button {
+        cursor: pointer !important;
+        padding: 12px 24px !important;
+        background: linear-gradient(135deg, #F6B17A 0%, #f49347 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        margin-right: 12px !important;
+        min-height: 48px !important;
+    }
+    
+    /* Mobile Header - Stack buttons vertically */
+    header .flex.items-center.space-x-3 {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+        width: 100%;
+    }
+    
+    header .flex.items-center.space-x-3 > * {
+        width: 100%;
+    }
+    
+    #reloadCatalogBtn {
+        width: 100% !important;
+        justify-content: center;
+    }
 }
 
-/* Button Styles */
+@media (max-width: 480px) {
+    .main-content {
+        padding: 16px;
+        padding-top: 64px;
+    }
+    
+    header h2 {
+        font-size: 20px !important;
+    }
+    
+    header p {
+        font-size: 13px !important;
+    }
+    
+    .glass-card {
+        padding: 12px;
+    }
+    
+    /* Stack action buttons vertically on very small screens */
+    .flex.items-center.space-x-3 {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+/* File input overlay fix - ensure it's always on top and clickable */
+input[type="file"] {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    -webkit-tap-highlight-color: rgba(246, 177, 122, 0.2);
+    touch-action: manipulation;
+}
+
+/* Button Styles - Works for both button and label elements */
 .btn-primary {
     display: inline-flex;
     align-items: center;
@@ -252,14 +576,31 @@ table {
     font-size: 14px;
     border-radius: 10px;
     border: none;
-    cursor: pointer;
+    cursor: pointer !important;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(246, 177, 122, 0.3);
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 10;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    touch-action: manipulation;
+    text-decoration: none;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(246, 177, 122, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Label acting as button - ensure it's always clickable */
+label.btn-primary {
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: rgba(246, 177, 122, 0.3);
 }
 
 .btn-secondary {
@@ -284,6 +625,11 @@ table {
 }
 
 /* Input Styles */
+input[type="checkbox"] {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
 .price-input,
 .supplier-input {
     width: 100%;
@@ -294,6 +640,8 @@ table {
     color: white;
     font-size: 14px;
     transition: all 0.3s ease;
+    cursor: text !important;
+    pointer-events: auto !important;
 }
 
 .price-input:focus,
@@ -340,4 +688,25 @@ table {
 
 .glass-card:hover::before {
     opacity: 1;
+}
+
+/* Toast Notification Styles */
+#toast {
+    pointer-events: none !important;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+    z-index: 9999 !important;
+}
+
+#toast .glass-card {
+    pointer-events: auto;
+}
+
+/* Ensure toast is above everything on mobile */
+@media (max-width: 768px) {
+    #toast {
+        top: 70px !important; /* Below mobile menu button */
+        max-width: calc(100vw - 32px);
+        left: 50% !important;
+    }
 }

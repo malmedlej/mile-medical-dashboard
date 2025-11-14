@@ -1,99 +1,78 @@
-/**
- * RFQ Matcher Module - Tender Intelligence Engine
- * Fully matches RFQ Excel files with vendor catalog Excel data
- * Version: 3.0 - Complete Matching System
- */
-
 // Global variables
 let vendorItems = [];
+let vendorHashMap = {};  // VLOOKUP-style hash map for O(1) exact matching
+let priceHistory = [];
 let matchedItems = [];
 let notFoundItems = [];
 let currentRFQId = '';
-let rfqData = [];
+let autoSaveEnabled = true;
 
-// Column header variations for flexible parsing
-const COLUMN_PATTERNS = {
-    code: ['nupco code', 'item code', 'code', 'nupco', 'product code', 'material code'],
-    quantity: ['quantity', 'qty', 'rfq qty', 'order quantity', 'req qty', 'required qty', 'required quantity', 'needed qty', 'needed quantity'],
-    description: ['description', 'product name', 'item name', 'item description', 'product description', 'material description']
-};
-
-// Initialize on page load
+// Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 TIE Matcher v3.0.1-DEBUG - Full Matching System [BUILD: 2024-11-02-01]');
     await loadVendorItems();
+    await loadPriceHistory();
     setupEventListeners();
-    setupComingSoonLinks();
 });
 
-// Setup coming soon link handlers
-function setupComingSoonLinks() {
-    const comingSoonLinks = document.querySelectorAll('.nav-item.opacity-50');
-    comingSoonLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            showComingSoonToast();
-        });
-    });
-}
-
-// Show coming soon as toast
-function showComingSoonToast() {
-    showToast('🚧 This feature is coming soon!', 'warning');
-}
-
-// Load permanent vendor catalog from Excel
+// Load vendor items from Excel file (GitHub)
 async function loadVendorItems() {
     try {
-        console.log('📂 Loading vendor catalog from Excel...');
+        const response = await fetch('https://raw.githubusercontent.com/malmedlej/mile-medical-dashboard/main/tie/data/vendor_items.xlsx');
         
-        // Fetch vendor catalog Excel file
-        const response = await fetch('data/vendor_items.xlsx');
-        if (!response.ok) throw new Error('Failed to load vendor items Excel file');
+        if (!response.ok) {
+            throw new Error(`GitHub fetch failed: ${response.status}`);
+        }
         
-        // Read as array buffer
         const arrayBuffer = await response.arrayBuffer();
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
         
-        // Parse Excel file with SheetJS
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
         
-        // Get first sheet
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
+        // Convert to vendor items format - CLEAN, NO NORMALIZATION
+        vendorItems = jsonData.map(row => ({
+            nupco_code: String(row['NUPCO Code'] || '').trim(),
+            product_name: String(row['Product Name'] || '').trim(),
+            pack: String(row['Pack'] || '').trim(),
+            supplier: String(row['Supplier'] || '').trim()
+        })).filter(item => item.nupco_code);
         
-        // Convert to JSON (array of arrays)
-        const rawData = XLSX.utils.sheet_to_json(worksheet, { 
-            header: 1,
-            defval: '',
-            blankrows: false 
+        // BUILD HASH MAP for O(1) exact VLOOKUP-style matching
+        vendorHashMap = {};
+        vendorItems.forEach(item => {
+            const code = item.nupco_code;
+            if (!vendorHashMap[code]) {
+                vendorHashMap[code] = [];
+            }
+            vendorHashMap[code].push(item);
         });
         
-        // Parse vendor data (skip header row)
-        vendorItems = [];
-        for (let i = 1; i < rawData.length; i++) {
-            const row = rawData[i];
-            
-            // Skip empty rows
-            if (!row[0]) continue;
-            
-            vendorItems.push({
-                nupco_code: String(row[0] || '').trim(),
-                product_name: String(row[1] || '').trim(),
-                uom: String(row[2] || '').trim(),
-                supplier: String(row[3] || '').trim()
-            });
-        }
+        console.log(`✅ Loaded ${vendorItems.length} vendor items from GitHub`);
+        console.log(`✅ Built hash map with ${Object.keys(vendorHashMap).length} unique NUPCO codes`);
         
-        console.log(`✅ Loaded ${vendorItems.length} vendor items from Excel catalog`);
+        // Log unique suppliers
+        const uniqueSuppliers = [...new Set(vendorItems.map(item => item.supplier))];
+        console.log(`✅ Suppliers found: ${uniqueSuppliers.join(', ')}`);
         
-        if (vendorItems.length === 0) {
-            throw new Error('Vendor catalog is empty');
-        }
-        
+        showToast(`✅ Loaded ${vendorItems.length} items from vendor catalog`, 'success');
     } catch (error) {
         console.error('❌ Error loading vendor items:', error);
-        showToast('⚠️ Could not load vendor catalog. Please refresh the page.', 'error');
+        showToast('⚠️ Could not load vendor catalog from GitHub', 'warning');
         vendorItems = [];
+    }
+}
+
+// Load price history from JSON
+async function loadPriceHistory() {
+    try {
+        const response = await fetch('data/price_history.json');
+        priceHistory = await response.json();
+        console.log(`Loaded ${priceHistory.length} price history records`);
+    } catch (error) {
+        console.error('Error loading price history:', error);
+        priceHistory = [];
     }
 }
 
@@ -102,117 +81,122 @@ function setupEventListeners() {
     const fileInput = document.getElementById('fileInput');
     const uploadBtn = document.getElementById('uploadBtn');
     const uploadZone = document.getElementById('uploadZone');
+    const autoSaveToggle = document.getElementById('autoSaveToggle');
+    const saveToArchiveBtn = document.getElementById('saveToArchiveBtn');
     const exportBtn = document.getElementById('exportBtn');
-    const savePricesBtn = document.getElementById('savePricesBtn');
     const notFoundToggle = document.getElementById('notFoundToggle');
 
-    // Upload button click
-    uploadBtn.addEventListener('click', () => fileInput.click());
+    // FIXED: Single file input with button trigger (no double-trigger)
+    if (uploadBtn && fileInput) {
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        console.log('✅ Upload button listener attached');
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFileUpload);
+        console.log('✅ File input change listener attached');
+    } else {
+        console.error('❌ fileInput element not found');
+    }
     
-    // File input change
-    fileInput.addEventListener('change', handleFileUpload);
-    
-    // Drag and drop handlers
-    uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadZone.classList.add('border-[#F6B17A]', 'bg-[#F6B17A]/5');
-    });
-    
-    uploadZone.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadZone.classList.remove('border-[#F6B17A]', 'bg-[#F6B17A]/5');
-    });
-    
-    uploadZone.addEventListener('drop', async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadZone.classList.remove('border-[#F6B17A]', 'bg-[#F6B17A]/5');
+    // Drag and drop
+    if (uploadZone) {
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('border-[#F6B17A]');
+        });
         
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].name.match(/\.(xlsx|xls)$/i)) {
-            fileInput.files = files;
-            await handleFileUpload({ target: { files } });
-        } else {
-            showToast('⚠️ Please drop an Excel file (.xlsx or .xls)', 'warning');
-        }
-    });
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('border-[#F6B17A]');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('border-[#F6B17A]');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && fileInput) {
+                fileInput.files = files;
+                handleFileUpload({ target: { files } });
+            }
+        });
+    }
 
-    // Export button
-    exportBtn.addEventListener('click', exportResults);
-    
-    // Save prices button (disabled for now)
-    savePricesBtn.addEventListener('click', () => {
-        showToast('💡 Price saving feature coming soon!', 'warning');
-    });
-    
-    // Not found toggle
-    notFoundToggle.addEventListener('click', toggleNotFound);
+    if (autoSaveToggle) {
+        autoSaveToggle.addEventListener('change', (e) => {
+            autoSaveEnabled = e.target.checked;
+        });
+    }
+
+    // FIXED: Save to Archive button handler
+    if (saveToArchiveBtn) {
+        saveToArchiveBtn.addEventListener('click', async () => {
+            saveToArchiveBtn.disabled = true;
+            saveToArchiveBtn.innerHTML = '<svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>Saving...';
+            
+            await saveToArchive();
+            
+            saveToArchiveBtn.disabled = false;
+            saveToArchiveBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>Save to Archive';
+        });
+        console.log('✅ Save to Archive button listener attached');
+    }
+
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportResults);
+    }
+
+    if (notFoundToggle) {
+        notFoundToggle.addEventListener('click', toggleNotFound);
+    }
+
+    console.log('✅ All event listeners set up');
 }
 
-// Extract RFQ ID from filename (full name without extension)
+// Extract RFQ ID from filename - KEEP FULL FILENAME WITHOUT EXTENSION
 function extractRFQId(filename) {
-    const rfqId = filename.replace(/\.(xlsx|xls)$/i, '');
-    console.log(`🔍 RFQ ID Extraction - Original: "${filename}" → Extracted: "${rfqId}"`);
-    return rfqId;
+    // Simply remove the extension and return the full filename
+    const nameWithoutExt = filename.replace(/\.(xlsx|xls)$/i, '');
+    return nameWithoutExt;
 }
 
-// Handle RFQ file upload
+// Handle file upload
 async function handleFileUpload(event) {
     const file = event.target.files[0];
-    if (!file) return;
-
-    console.log('📂 File upload started');
-    console.log('   Original file.name:', file.name);
-    console.log('   File.name type:', typeof file.name);
-    console.log('   File.name length:', file.name.length);
-
-    // Validate file type
-    if (!file.name.match(/\.(xlsx|xls)$/i)) {
-        showToast('⚠️ Please upload an Excel file (.xlsx or .xls)', 'warning');
+    if (!file) {
+        console.log('No file selected');
         return;
     }
 
-    // Show loading state
-    document.getElementById('uploadPrompt').classList.add('hidden');
-    document.getElementById('uploadingIndicator').classList.remove('hidden');
+    console.log('📁 File selected:', file.name);
+
+    const uploadPrompt = document.getElementById('uploadPrompt');
+    const uploadingIndicator = document.getElementById('uploadingIndicator');
+
+    if (uploadPrompt) uploadPrompt.classList.add('hidden');
+    if (uploadingIndicator) uploadingIndicator.classList.remove('hidden');
 
     try {
-        // Extract RFQ ID from filename
         currentRFQId = extractRFQId(file.name);
-        console.log(`📋 Processing RFQ: ${currentRFQId}`);
+        console.log('📋 RFQ ID:', currentRFQId);
         
-        // Parse RFQ Excel file
-        rfqData = await parseRFQExcel(file);
-        console.log(`📊 Parsed ${rfqData.length} items from RFQ`);
+        const data = await readExcelFile(file);
+        console.log('📊 Extracted items:', data.length);
         
-        // Perform matching against vendor catalog
-        performMatching();
-        
-        // Display results
+        matchItems(data);
         displayResults();
-        
-        // Auto-save to archive if enabled
-        const autoSaveEnabled = document.getElementById('autoSaveToggle').checked;
-        if (autoSaveEnabled && matchedItems.length > 0) {
-            saveToArchive();
-        }
-        
-        showToast(`✅ Successfully matched ${matchedItems.length} of ${rfqData.length} items`, 'success');
-        
+        showToast('✅ File processed successfully', 'success');
     } catch (error) {
-        console.error('❌ Error processing RFQ file:', error);
-        showToast(`❌ Error: ${error.message}`, 'error');
-        
-        // Reset UI
-        document.getElementById('uploadPrompt').classList.remove('hidden');
-        document.getElementById('uploadingIndicator').classList.add('hidden');
+        console.error('❌ Error processing file:', error);
+        showToast('❌ Error processing file: ' + error.message, 'error');
+        if (uploadPrompt) uploadPrompt.classList.remove('hidden');
+        if (uploadingIndicator) uploadingIndicator.classList.add('hidden');
     }
 }
 
-// Parse RFQ Excel file with auto-detection of columns
-async function parseRFQExcel(file) {
+// Read Excel file using SheetJS
+function readExcelFile(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         
@@ -220,325 +204,303 @@ async function parseRFQExcel(file) {
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                
-                // Get first sheet
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                
-                // Convert to JSON with headers
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
-                    header: 1,
-                    defval: '',
-                    blankrows: false 
-                });
-                
-                // Auto-detect columns and parse data
-                const parsedData = autoDetectAndParseRFQ(jsonData);
-                
-                if (parsedData.length === 0) {
-                    throw new Error('No valid data found in RFQ Excel file');
-                }
-                
-                resolve(parsedData);
-                
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                const items = extractNUPCOCodes(jsonData);
+                resolve(items);
             } catch (error) {
-                reject(new Error(`Failed to parse RFQ Excel: ${error.message}`));
+                reject(error);
             }
         };
         
-        reader.onerror = () => reject(new Error('Failed to read RFQ file'));
+        reader.onerror = (error) => reject(error);
         reader.readAsArrayBuffer(file);
     });
 }
 
-// Auto-detect columns and parse RFQ data
-function autoDetectAndParseRFQ(rawData) {
-    if (rawData.length < 2) {
-        throw new Error('RFQ Excel file must have at least a header row and one data row');
-    }
+// Extract NUPCO items with all data from Excel
+function extractNUPCOCodes(data) {
+    const items = [];
+    let headerRowIndex = 0;
+    let codeColumnIndex = -1;
+    let nameColumnIndex = -1;
+    let uomColumnIndex = -1;
+    let qtyColumnIndex = -1;
     
-    console.log('\n🔍 === RFQ FILE STRUCTURE ANALYSIS ===');
-    console.log(`Total rows in file: ${rawData.length}`);
-    console.log('\n📋 First row (potential header):');
-    console.log(rawData[0]);
-    console.log('\n📋 Second row (first data row):');
-    console.log(rawData[1]);
-    
-    // Find header row and column indices
-    let headerRowIndex = -1;
-    let codeColIndex = -1;
-    let qtyColIndex = -1;
-    let descColIndex = -1;
-    
-    // Search first 5 rows for headers
-    for (let i = 0; i < Math.min(5, rawData.length); i++) {
-        const row = rawData[i];
-        
-        console.log(`\n🔎 Checking row ${i}:`, row);
-        
+    // Search for header row
+    for (let i = 0; i < Math.min(5, data.length); i++) {
+        const row = data[i];
         for (let j = 0; j < row.length; j++) {
-            const cellValue = String(row[j]).toLowerCase().trim();
+            const cell = String(row[j]).toLowerCase();
             
-            // Check for NUPCO Code column
-            if (codeColIndex === -1 && COLUMN_PATTERNS.code.some(pattern => cellValue.includes(pattern))) {
-                codeColIndex = j;
+            if (cell.includes('nupco') && (cell.includes('code') || cell.includes('item'))) {
                 headerRowIndex = i;
-                console.log(`   ✅ Found NUPCO Code column at index ${j}: "${row[j]}"`);
+                codeColumnIndex = j;
             }
-            
-            // Check for Quantity column
-            if (qtyColIndex === -1 && COLUMN_PATTERNS.quantity.some(pattern => cellValue.includes(pattern))) {
-                qtyColIndex = j;
-                console.log(`   ✅ Found Quantity column at index ${j}: "${row[j]}"`);
+            if ((cell.includes('product') || cell.includes('item') || cell.includes('description')) && cell.includes('name')) {
+                nameColumnIndex = j;
             }
-            
-            // Check for Description column
-            if (descColIndex === -1 && COLUMN_PATTERNS.description.some(pattern => cellValue.includes(pattern))) {
-                descColIndex = j;
-                console.log(`   ✅ Found Description column at index ${j}: "${row[j]}"`);
+            if (cell.includes('uom') || cell.includes('unit') || cell === 'unit') {
+                uomColumnIndex = j;
+            }
+            if (cell.includes('qty') || cell.includes('quantity') || cell.includes('required')) {
+                qtyColumnIndex = j;
             }
         }
-        
-        // If we found the code column, we have our header row
-        if (codeColIndex !== -1) break;
+        if (codeColumnIndex >= 0) break;
     }
     
-    // Fallback: if no header detected, assume first row is header
-    if (headerRowIndex === -1) {
-        console.warn('⚠️ No header row detected! Using fallback: assuming row 0 is header and column 0 is code');
-        headerRowIndex = 0;
-        codeColIndex = 0; // Assume first column is code
-    }
+    // Default positions if not found
+    if (codeColumnIndex === -1) codeColumnIndex = 0;
+    if (nameColumnIndex === -1) nameColumnIndex = 1;
+    if (uomColumnIndex === -1) uomColumnIndex = 2;
+    if (qtyColumnIndex === -1) qtyColumnIndex = 3;
     
-    console.log(`\n📍 Header detected at row ${headerRowIndex + 1}`);
-    console.log(`📋 Columns - Code: ${codeColIndex}, Qty: ${qtyColIndex}, Desc: ${descColIndex}`);
-    
-    // Parse data rows
-    const parsedItems = [];
-    console.log(`\n📊 Parsing data rows starting from row ${headerRowIndex + 2}...`);
-    
-    for (let i = headerRowIndex + 1; i < rawData.length; i++) {
-        const row = rawData[i];
-        
-        // Skip empty rows
-        if (!row || row.length === 0 || !row[codeColIndex]) continue;
-        
-        const code = String(row[codeColIndex]).trim();
-        
-        // Validate code (must contain at least one digit)
-        if (!code || !/\d/.test(code)) continue;
-        
-        const item = {
-            code: code,
-            quantity: qtyColIndex !== -1 ? String(row[qtyColIndex] || '').trim() : '1',
-            description: descColIndex !== -1 ? String(row[descColIndex] || '').trim() : ''
-        };
-        
-        // Log first 3 items in detail
-        if (parsedItems.length < 3) {
-            console.log(`\n   Item #${parsedItems.length + 1}:`);
-            console.log(`      Raw row:`, row);
-            console.log(`      Parsed code: "${item.code}"`);
-            console.log(`      Quantity: "${item.quantity}"`);
-            console.log(`      Description: "${item.description}"`);
+    // Extract data
+    for (let i = headerRowIndex + 1; i < data.length; i++) {
+        const row = data[i];
+        if (row[codeColumnIndex]) {
+            const code = String(row[codeColumnIndex]).trim();
+            if (code && /\d/.test(code)) {
+                items.push({
+                    nupco_code: code,
+                    rfq_description: row[nameColumnIndex] ? String(row[nameColumnIndex]).trim() : 'N/A',  // RFQ item name
+                    product_name: row[nameColumnIndex] ? String(row[nameColumnIndex]).trim() : 'N/A',      // Keep for compatibility
+                    uom: row[uomColumnIndex] ? String(row[uomColumnIndex]).trim() : 'N/A',
+                    qty: row[qtyColumnIndex] ? String(row[qtyColumnIndex]).trim() : 'N/A'
+                });
+            }
         }
-        
-        parsedItems.push(item);
     }
     
-    console.log(`\n✅ Parsed ${parsedItems.length} valid items from RFQ`);
-    console.log('='.repeat(50) + '\n');
-    
-    return parsedItems;
+    return items;
 }
 
-// Perform matching between RFQ and vendor catalog
-function performMatching() {
+// EXACT VLOOKUP-STYLE MATCHING - Hash map O(1) lookup
+// NO AI, NO SEMANTIC MATCHING - Pure exact NUPCO code match
+function matchItems(rfqItems) {
     matchedItems = [];
     notFoundItems = [];
     
-    console.log('🔍 Starting matching process...');
-    console.log(`📊 RFQ Items to match: ${rfqData.length}`);
-    console.log(`📦 Vendor catalog items: ${vendorItems.length}`);
+    console.log('\n' + '='.repeat(80));
+    console.log('🔍 MATCHING RFQ ITEMS AGAINST VENDOR CATALOG');
+    console.log('='.repeat(80));
+    console.log(`RFQ Items: ${rfqItems.length}`);
+    console.log(`Vendor Items: ${vendorItems.length}\n`);
     
-    // Debug: Show sample vendor codes
-    console.log('📋 Sample vendor codes (first 5):');
-    vendorItems.slice(0, 5).forEach(v => {
-        console.log(`  - Original: "${v.nupco_code}" → Normalized: "${normalizeCode(v.nupco_code)}"`);
-    });
-    
-    // Debug: Show sample RFQ codes
-    console.log('📋 Sample RFQ codes (first 5):');
-    rfqData.slice(0, 5).forEach(r => {
-        console.log(`  - Original: "${r.code}" → Normalized: "${normalizeCode(r.code)}"`);
-    });
-    
-    rfqData.forEach((rfqItem, index) => {
-        const normalizedCode = normalizeCode(rfqItem.code);
+    rfqItems.forEach((rfqItem, index) => {
+        const code = rfqItem.nupco_code;
         
-        // Debug first 3 items in detail
-        if (index < 3) {
-            console.log(`\n🔎 Matching item #${index + 1}: "${rfqItem.code}" (normalized: "${normalizedCode}")`);
-        }
+        // EXACT MATCH using hash map (O(1) lookup like VLOOKUP)
+        const vendorMatches = vendorHashMap[code] || [];
         
-        // Try to find match in vendor catalog
-        const vendorMatch = vendorItems.find(vendor => {
-            const vendorCode = normalizeCode(vendor.nupco_code);
-            return vendorCode === normalizedCode;
-        });
+        console.log(`[${index + 1}/${rfqItems.length}] Code: ${code}`);
+        console.log(`  → Found ${vendorMatches.length} vendor match(es)`);
         
-        if (vendorMatch) {
-            if (index < 3) console.log(`✅ MATCH FOUND: "${vendorMatch.nupco_code}"`);
-            matchedItems.push({
-                nupco_code: rfqItem.code,
-                product_name: vendorMatch.product_name,
-                uom: vendorMatch.uom || 'N/A',
-                supplier: vendorMatch.supplier || '-',
-                required_qty: rfqItem.quantity || '1',
-                rfq_description: rfqItem.description,
-                status: 'Matched'
+        if (vendorMatches.length > 0) {
+            // Group by vendor and keep only ONE entry per vendor
+            const uniqueVendors = {};
+            
+            vendorMatches.forEach((vendorItem) => {
+                const vendor = vendorItem.supplier;
+                
+                // Only add if we haven't seen this vendor yet for this NUPCO code
+                if (!uniqueVendors[vendor]) {
+                    uniqueVendors[vendor] = true;
+                    
+                    console.log(`     ✓ ${vendor} - ${vendorItem.product_name.substring(0, 50)}`);
+                    
+                    const history = getPriceHistory(code, vendor);
+                    
+                    matchedItems.push({
+                        nupco_code: code,
+                        rfq_description: rfqItem.rfq_description,           // RFQ item name (PRIMARY)
+                        vendor_product_name: vendorItem.product_name,       // Vendor product name (SECONDARY)
+                        product_name: vendorItem.product_name,              // Keep for backward compatibility
+                        pack: vendorItem.pack || 'N/A',
+                        vendor: vendor,
+                        uom: rfqItem.uom,
+                        qty: rfqItem.qty,
+                        required_qty: rfqItem.qty,                          // Alias for consistency
+                        supplier: history ? history.Supplier : vendor,
+                        price: history ? history.Price : '',
+                        lastPrice: history
+                    });
+                }
             });
         } else {
-            if (index < 3) console.log(`❌ NO MATCH for "${rfqItem.code}"`);
+            console.log(`     ❌ No match found - adding to unmatched list`);
             notFoundItems.push({
-                code: rfqItem.code,
-                quantity: rfqItem.quantity,
-                description: rfqItem.description
+                nupco_code: code,
+                product_name: rfqItem.rfq_description,
+                uom: rfqItem.uom,
+                qty: rfqItem.qty
             });
         }
     });
     
-    console.log(`\n✅ Matching complete: ${matchedItems.length} matched, ${notFoundItems.length} not found`);
+    console.log('\n' + '='.repeat(80));
+    console.log('✅ MATCHING COMPLETE');
+    console.log('='.repeat(80));
+    console.log(`Total matched rows: ${matchedItems.length}`);
+    console.log(`Total unmatched items: ${notFoundItems.length}`);
+    console.log('='.repeat(80) + '\n');
 }
 
-// Normalize NUPCO code for matching (ignore case, spaces, dashes)
-function normalizeCode(code) {
-    const normalized = String(code)
-        .toLowerCase()
-        .replace(/[\s\-_]/g, '')
-        .trim();
-    return normalized;
+// Get price history for a NUPCO code from specific vendor
+function getPriceHistory(nupcoCode, vendor = null) {
+    let entries = priceHistory.filter(entry => entry.NUPCO_Code === nupcoCode);
+    
+    if (vendor) {
+        const vendorEntries = entries.filter(entry => entry.Supplier === vendor);
+        if (vendorEntries.length > 0) {
+            entries = vendorEntries;
+        }
+    }
+    
+    if (entries.length === 0) return null;
+    
+    entries.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+    return entries[0];
 }
 
 // Display results
 function displayResults() {
-    // Update RFQ ID display
-    const displayElement = document.getElementById('rfqIdDisplay');
-    displayElement.textContent = currentRFQId;
-    document.getElementById('rfqInfo').classList.remove('hidden');
+    const rfqIdDisplay = document.getElementById('rfqIdDisplay');
+    const rfqInfo = document.getElementById('rfqInfo');
+    const uploadZone = document.getElementById('uploadZone');
     
-    // Hide upload zone
-    document.getElementById('uploadZone').classList.add('hidden');
+    if (rfqIdDisplay) rfqIdDisplay.textContent = currentRFQId;
+    if (rfqInfo) rfqInfo.classList.remove('hidden');
+    if (uploadZone) uploadZone.classList.add('hidden');
     
-    // Calculate statistics
-    const totalItems = matchedItems.length + notFoundItems.length;
-    const matchRate = totalItems > 0 ? Math.round((matchedItems.length / totalItems) * 100) : 0;
+    const total = matchedItems.length + notFoundItems.length;
+    const matchRate = total > 0 ? Math.round((matchedItems.length / total) * 100) : 0;
     
-    // Update KPI counters with animation
-    animateCounter('totalItems', totalItems);
-    animateCounter('matchedItems', matchedItems.length);
-    animateCounter('notFoundItems', notFoundItems.length);
-    document.getElementById('matchRate').textContent = `${matchRate}%`;
+    const totalItemsEl = document.getElementById('totalItems');
+    const matchedItemsEl = document.getElementById('matchedItems');
+    const notFoundItemsEl = document.getElementById('notFoundItems');
+    const matchRateEl = document.getElementById('matchRate');
+    const statsSection = document.getElementById('statsSection');
     
-    // Show statistics section
-    document.getElementById('statsSection').classList.remove('hidden');
+    if (totalItemsEl) totalItemsEl.textContent = total;
+    if (matchedItemsEl) matchedItemsEl.textContent = matchedItems.length;
+    if (notFoundItemsEl) notFoundItemsEl.textContent = notFoundItems.length;
+    if (matchRateEl) matchRateEl.textContent = matchRate + '%';
+    if (statsSection) statsSection.classList.remove('hidden');
     
-    // Display matched items table
-    if (matchedItems.length > 0) {
-        displayMatchedTable();
-    }
+    displayMatchedItems();
     
-    // Display not found items
     if (notFoundItems.length > 0) {
         displayNotFoundItems();
     }
 }
 
-// Animate counter (count up effect)
-function animateCounter(elementId, targetValue) {
-    const element = document.getElementById(elementId);
-    const duration = 1000; // 1 second
-    const steps = 20;
-    const increment = targetValue / steps;
-    let current = 0;
-    
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= targetValue) {
-            element.textContent = targetValue;
-            clearInterval(timer);
-        } else {
-            element.textContent = Math.floor(current);
-        }
-    }, duration / steps);
-}
-
 // Display matched items in table
-function displayMatchedTable() {
+function displayMatchedItems() {
     const tbody = document.getElementById('matchedTableBody');
+    if (!tbody) return;
+    
     tbody.innerHTML = '';
+    
+    console.log(`\n📊 Displaying ${matchedItems.length} matched items in table...\n`);
     
     matchedItems.forEach((item, index) => {
         const row = document.createElement('tr');
         row.className = 'border-b border-white/5 hover:bg-white/5 transition-colors';
         
+        let historyHtml = '';
+        if (item.lastPrice) {
+            const date = new Date(item.lastPrice.Date);
+            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            historyHtml = `<p class="text-xs text-gray-500 mt-1">Last: ${item.lastPrice.Price} SAR (${item.lastPrice.Supplier} – ${formattedDate})</p>`;
+        }
+        
+        // FIXED: Show RFQ description as primary, vendor product name as secondary
+        const escapeHtml = (text) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+        
         row.innerHTML = `
             <td class="py-4 px-4 text-sm font-mono text-white">${escapeHtml(item.nupco_code)}</td>
             <td class="py-4 px-4 text-sm text-gray-300">
-                <div class="font-medium">${escapeHtml(item.product_name)}</div>
-                ${item.rfq_description ? `<div class="text-xs text-gray-500 mt-1">${escapeHtml(item.rfq_description)}</div>` : ''}
+                <div class="font-medium text-white">${escapeHtml(item.rfq_description || item.product_name)}</div>
+                ${item.vendor_product_name && item.rfq_description !== item.vendor_product_name ? 
+                    `<div class="text-xs text-gray-500 mt-1">Vendor: ${escapeHtml(item.vendor_product_name)}</div>` : ''}
             </td>
-            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.uom)}</td>
-            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.supplier)}</td>
-            <td class="py-4 px-4 text-sm font-semibold text-[#F6B17A]">${escapeHtml(item.required_qty)}</td>
+            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.uom || 'N/A')}</td>
+            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.qty || 'N/A')}</td>
+            <td class="py-4 px-4 text-sm text-[#F6B17A] font-semibold">${escapeHtml(item.vendor)}</td>
             <td class="py-4 px-4">
                 <span class="status-badge status-submitted">✓ Matched</span>
+            </td>
+            <td class="py-4 px-4">
+                <input type="number" 
+                       class="price-input" 
+                       data-index="${index}"
+                       value="${item.price}"
+                       step="0.01"
+                       placeholder="0.00">
+                ${historyHtml}
             </td>
         `;
         
         tbody.appendChild(row);
+        
+        // Log first 10 rows for debugging
+        if (index < 10) {
+            console.log(`Row ${index + 1}: ${item.nupco_code} | ${item.vendor} | ${item.product_name.substring(0, 40)}`);
+        }
     });
     
-    // Show matched section
-    document.getElementById('matchedSection').classList.remove('hidden');
+    const matchedSection = document.getElementById('matchedSection');
+    if (matchedSection) matchedSection.classList.remove('hidden');
     
-    // Disable save prices button (feature not ready)
-    const savePricesBtn = document.getElementById('savePricesBtn');
-    savePricesBtn.disabled = true;
-    savePricesBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    // Add input listeners
+    document.querySelectorAll('.price-input').forEach(input => {
+        input.addEventListener('change', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            matchedItems[index].price = e.target.value;
+            
+            if (autoSaveEnabled && e.target.value) {
+                saveSinglePrice(index);
+            }
+        });
+    });
 }
 
-// Display not found items as chips
+// Display not found items
 function displayNotFoundItems() {
+    const notFoundCount = document.getElementById('notFoundCount');
+    if (notFoundCount) notFoundCount.textContent = notFoundItems.length;
+    
     const list = document.getElementById('notFoundList');
+    if (!list) return;
+    
     list.innerHTML = '';
     
     notFoundItems.forEach(item => {
-        const chip = document.createElement('div');
-        chip.className = 'bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 mb-2';
-        chip.innerHTML = `
-            <div class="flex items-start space-x-2">
-                <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-                <div class="flex-1">
-                    <div class="text-sm font-mono text-red-300 font-semibold">${escapeHtml(item.code)}</div>
-                    ${item.quantity ? `<div class="text-xs text-red-400 mt-1">Qty: ${escapeHtml(item.quantity)}</div>` : ''}
-                    ${item.description ? `<div class="text-xs text-gray-400 mt-1">${escapeHtml(item.description)}</div>` : ''}
+        const card = document.createElement('div');
+        card.className = 'bg-red-500/10 border border-red-500/30 rounded-lg p-4';
+        card.innerHTML = `
+            <div class="space-y-2">
+                <p class="text-sm font-semibold text-red-400">${item.nupco_code}</p>
+                <p class="text-xs text-gray-300">${item.product_name}</p>
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>UOM: ${item.uom}</span>
+                    <span>Qty: ${item.qty}</span>
                 </div>
+                <p class="text-xs text-red-300 font-medium">❌ Not in catalog</p>
             </div>
         `;
-        list.appendChild(chip);
+        list.appendChild(card);
     });
     
-    document.getElementById('notFoundCount').textContent = notFoundItems.length;
-    document.getElementById('notFoundSection').classList.remove('hidden');
-    
-    // Auto-expand if there are few items
-    if (notFoundItems.length <= 10) {
-        document.getElementById('notFoundContent').classList.remove('hidden');
-        document.getElementById('notFoundChevron').classList.add('rotate-180');
-    }
+    const notFoundSection = document.getElementById('notFoundSection');
+    if (notFoundSection) notFoundSection.classList.remove('hidden');
 }
 
 // Toggle not found section
@@ -546,69 +508,182 @@ function toggleNotFound() {
     const content = document.getElementById('notFoundContent');
     const chevron = document.getElementById('notFoundChevron');
     
-    if (content.classList.contains('hidden')) {
-        content.classList.remove('hidden');
-        chevron.classList.add('rotate-180');
-    } else {
-        content.classList.add('hidden');
-        chevron.classList.remove('rotate-180');
+    if (content && chevron) {
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            chevron.classList.add('rotate-180');
+        } else {
+            content.classList.add('hidden');
+            chevron.classList.remove('rotate-180');
+        }
+    }
+}
+
+// Save single price
+function saveSinglePrice(index) {
+    const item = matchedItems[index];
+    
+    if (!item.price || !item.supplier) return;
+    
+    const priceEntry = {
+        NUPCO_Code: item.nupco_code,
+        RFQ_ID: currentRFQId,
+        Supplier: item.supplier,
+        Price: parseFloat(item.price),
+        Date: new Date().toISOString().split('T')[0]
+    };
+    
+    priceHistory.push(priceEntry);
+    console.log('Auto-saved price:', priceEntry);
+}
+
+// Save all prices
+function savePrices() {
+    const newEntries = [];
+    
+    matchedItems.forEach(item => {
+        if (item.price && item.supplier) {
+            newEntries.push({
+                NUPCO_Code: item.nupco_code,
+                RFQ_ID: currentRFQId,
+                Supplier: item.supplier,
+                Price: parseFloat(item.price),
+                Date: new Date().toISOString().split('T')[0]
+            });
+        }
+    });
+    
+    if (newEntries.length === 0) {
+        showToast('⚠️ No prices to save', 'warning');
+        return;
+    }
+    
+    priceHistory.push(...newEntries);
+    downloadJSON(priceHistory, 'price_history.json');
+    showToast(`✅ ${newEntries.length} prices saved`, 'success');
+}
+
+// Save RFQ to Archive (SharePoint + localStorage)
+async function saveToArchive() {
+    try {
+        if (!currentRFQId) {
+            showToast('❌ No RFQ loaded', 'error');
+            return;
+        }
+
+        const rfqObject = {
+            rfqId: currentRFQId,
+            date: new Date().toISOString(),
+            matchedItems: matchedItems.map(item => ({
+                nupco_code: item.nupco_code,
+                rfq_description: item.rfq_description,
+                vendor_product_name: item.vendor_product_name,
+                product_name: item.product_name,
+                uom: item.uom,
+                qty: item.qty,
+                required_qty: item.required_qty || item.qty,
+                vendor: item.vendor,
+                supplier: item.supplier,
+                price: item.price || '',
+                unit_price: item.price || '',
+                total_price: ''
+            })),
+            notFoundItems: notFoundItems,
+            matchedCount: matchedItems.length,
+            totalCount: matchedItems.length + notFoundItems.length,
+            status: 'New'
+        };
+
+        console.log('💾 Saving RFQ to archive:', rfqObject);
+
+        // Try to save to SharePoint (if available via storageManager)
+        if (window.storageManager) {
+            try {
+                const result = await window.storageManager.saveRFQ(rfqObject);
+                if (result && result.success) {
+                    showToast('✅ RFQ saved to SharePoint', 'success');
+                    return;
+                }
+            } catch (sharepointError) {
+                console.warn('⚠️ SharePoint save failed, using localStorage:', sharepointError);
+            }
+        }
+
+        // Fallback: Save to localStorage only
+        saveToLocalStorageOnly(rfqObject);
+        showToast('💾 RFQ saved locally', 'success');
+
+    } catch (error) {
+        console.error('❌ Error saving to archive:', error);
+        showToast('❌ Failed to save RFQ: ' + error.message, 'error');
+    }
+}
+
+// Save to localStorage fallback
+function saveToLocalStorageOnly(rfqObject) {
+    try {
+        const ARCHIVE_STORAGE_KEY = 'tie_rfq_archive';
+        const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+        let archive = stored ? JSON.parse(stored) : [];
+
+        // Remove existing entry with same RFQ ID
+        archive = archive.filter(item => item.rfqId !== rfqObject.rfqId);
+
+        // Add new entry
+        archive.unshift(rfqObject);
+
+        // Save back
+        localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archive));
+        console.log('✅ Saved to localStorage:', rfqObject.rfqId);
+    } catch (error) {
+        console.error('❌ localStorage save error:', error);
+        throw error;
     }
 }
 
 // Export results to Excel
 function exportResults() {
-    try {
-        // Prepare matched data
-        const exportData = matchedItems.map(item => ({
+    const exportData = matchedItems.map(item => ({
+        'NUPCO Code': item.nupco_code,
+        'Product Name': item.product_name,
+        'UOM': item.uom,
+        'Quantity': item.qty,
+        'Vendor': item.vendor,
+        'Price (SAR)': item.price || '',
+        'Status': 'Matched'
+    }));
+    
+    notFoundItems.forEach(item => {
+        exportData.push({
             'NUPCO Code': item.nupco_code,
             'Product Name': item.product_name,
             'UOM': item.uom,
-            'Supplier': item.supplier,
-            'Required Qty': item.required_qty,
-            'Status': item.status
-        }));
-        
-        // Add not found items
-        notFoundItems.forEach(item => {
-            exportData.push({
-                'NUPCO Code': item.code,
-                'Product Name': 'NOT FOUND IN CATALOG',
-                'UOM': '-',
-                'Supplier': '-',
-                'Required Qty': item.quantity || '1',
-                'Status': 'Not Found'
-            });
+            'Quantity': item.qty,
+            'Vendor': '-',
+            'Price (SAR)': '-',
+            'Status': 'Not Found'
         });
-        
-        // Create worksheet
-        const ws = XLSX.utils.json_to_sheet(exportData);
-        
-        // Set column widths
-        ws['!cols'] = [
-            { wch: 15 },  // NUPCO Code
-            { wch: 45 },  // Product Name
-            { wch: 20 },  // UOM
-            { wch: 25 },  // Supplier
-            { wch: 12 },  // Required Qty
-            { wch: 12 }   // Status
-        ];
-        
-        // Create workbook
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Matched Results');
-        
-        // Generate filename with RFQ ID
-        const filename = `${currentRFQId}-Results.xlsx`;
-        
-        // Download file
-        XLSX.writeFile(wb, filename);
-        
-        showToast(`✅ Results exported: ${filename}`, 'success');
-        
-    } catch (error) {
-        console.error('❌ Export error:', error);
-        showToast('❌ Failed to export results', 'error');
-    }
+    });
+    
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'RFQ Results');
+    XLSX.writeFile(wb, `RFQ-${currentRFQId}-Results.xlsx`);
+    
+    showToast('✅ Results exported successfully', 'success');
+}
+
+// Download JSON file
+function downloadJSON(data, filename) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 // Show toast notification
@@ -617,94 +692,33 @@ function showToast(message, type = 'success') {
     const toastMessage = document.getElementById('toastMessage');
     const toastIcon = document.getElementById('toastIcon');
     
+    if (!toast || !toastMessage || !toastIcon) return;
+    
     toastMessage.textContent = message;
     
-    // Set icon based on type
     let iconHTML = '';
     let bgColor = '';
     
-    switch(type) {
-        case 'success':
-            bgColor = 'bg-green-500/20';
-            iconHTML = `<svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>`;
-            break;
-        case 'error':
-            bgColor = 'bg-red-500/20';
-            iconHTML = `<svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>`;
-            break;
-        case 'warning':
-            bgColor = 'bg-yellow-500/20';
-            iconHTML = `<svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>`;
-            break;
+    if (type === 'success') {
+        bgColor = 'bg-green-500/20';
+        iconHTML = '<svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+    } else if (type === 'error') {
+        bgColor = 'bg-red-500/20';
+        iconHTML = '<svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+    } else if (type === 'warning') {
+        bgColor = 'bg-yellow-500/20';
+        iconHTML = '<svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>';
     }
     
     toastIcon.className = `w-10 h-10 rounded-full flex items-center justify-center ${bgColor}`;
     toastIcon.innerHTML = iconHTML;
     
-    // Show toast
     toast.classList.remove('translate-x-full');
+    toast.classList.remove('translate-y-[-200%]');
+    toast.classList.add('translate-y-0');
     
-    // Hide after 4 seconds
     setTimeout(() => {
-        toast.classList.add('translate-x-full');
-    }, 4000);
-}
-
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Save current RFQ to archive
-function saveToArchive() {
-    try {
-        const ARCHIVE_STORAGE_KEY = 'tie_rfq_archive';
-        
-        // Load existing archive
-        let archivedRFQs = [];
-        const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
-        if (stored) {
-            archivedRFQs = JSON.parse(stored);
-        }
-        
-        // Check if RFQ already exists
-        const existingIndex = archivedRFQs.findIndex(rfq => rfq.rfqId === currentRFQId);
-        
-        // Create RFQ object
-        const rfqObject = {
-            rfqId: currentRFQId,
-            date: new Date().toISOString(),
-            matchedItems: matchedItems.map(item => ({...item, price: ''})),
-            matchedCount: matchedItems.length,
-            totalCount: matchedItems.length + notFoundItems.length,
-            status: 'New'
-        };
-        
-        // Update or add
-        if (existingIndex !== -1) {
-            archivedRFQs[existingIndex] = rfqObject;
-            console.log(`📝 Updated existing RFQ in archive: ${currentRFQId}`);
-        } else {
-            archivedRFQs.unshift(rfqObject);
-            console.log(`💾 Saved new RFQ to archive: ${currentRFQId}`);
-        }
-        
-        // Save to localStorage
-        localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archivedRFQs));
-        
-        // Show notification
-        const notification = existingIndex !== -1 ? 'RFQ updated in archive' : 'RFQ saved to archive';
-        console.log(`✅ ${notification}`);
-        
-    } catch (error) {
-        console.error('❌ Error saving to archive:', error);
-    }
+        toast.classList.remove('translate-y-0');
+        toast.classList.add('translate-y-[-200%]');
+    }, 3000);
 }

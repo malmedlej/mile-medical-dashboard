@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        h1 {
+            color: #F6B17A;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #F6B17A;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 20px 0;
+            padding: 10px;
+            background: white;
+            color: black;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+        }
+        button {
+            background: #F6B17A;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button:active {
+            background: #f49347;
+        }
+        #result {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            min-height: 50px;
+            font-family: monospace;
+        }
+        .success {
+            color: #4ade80;
+        }
+        .error {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔬 File Upload Diagnostic Test</h1>
+    <p>This page tests if file uploads work on your browser/device.</p>
+
+    <div class="test-section">
+        <h2>Test 1: Native File Input</h2>
+        <p>This is the browser's default file picker:</p>
+        <input type="file" id="test1" accept=".xlsx,.xls">
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Hidden Input + Button</h2>
+        <p>Click this button to trigger hidden file input:</p>
+        <input type="file" id="test2" accept=".xlsx,.xls" style="display: none;">
+        <button onclick="document.getElementById('test2').click()">Click to Choose File</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Label Method</h2>
+        <p>Click this label to trigger file input:</p>
+        <input type="file" id="test3" accept=".xlsx,.xls" style="display: none;">
+        <label for="test3" style="display: inline-block; background: #F6B17A; padding: 15px 30px; border-radius: 8px; cursor: pointer; width: calc(100% - 60px); text-align: center;">
+            Click Label to Choose File
+        </label>
+    </div>
+
+    <div id="result">
+        <strong>Results:</strong> No file selected yet. Try each method above.
+    </div>
+
+    <script>
+        const result = document.getElementById('result');
+        
+        function showResult(testNum, fileName) {
+            const msg = `<span class="success">✅ Test ${testNum} WORKS! File selected: ${fileName}</span>`;
+            result.innerHTML += '<br>' + msg;
+            console.log(`Test ${testNum} success:`, fileName);
+        }
+
+        document.getElementById('test1').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                showResult(1, e.target.files[0].name);
+            }
+        });
+
+        document.getElementById('test2').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                showResult(2, e.target.files[0].name);
+            }
+        });
+
+        document.getElementById('test3').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                showResult(3, e.target.files[0].name);
+            }
+        });
+
+        console.log('🔬 File Upload Diagnostic Test loaded');
+        console.log('Browser:', navigator.userAgent);
+        console.log('Platform:', navigator.platform);
+    </script>
+</body>
+</html>

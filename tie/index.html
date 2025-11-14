@@ -24,6 +24,16 @@
 </head>
 <body class="bg-[#0D0D10] text-gray-100 font-['Inter']">
     
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle Menu">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+    </button>
+    
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+    
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -110,11 +120,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                     </div>
-                    <span class="text-xs font-semibold text-green-400 bg-green-400/10 px-2 py-1 rounded-full">+12%</span>
                 </div>
                 <h3 class="text-gray-400 text-sm font-medium mb-1">Total RFQs</h3>
-                <p class="text-3xl font-bold text-white">132</p>
-                <p class="text-xs text-gray-500 mt-2">Active this month</p>
+                <p class="text-3xl font-bold text-white">0</p>
+                <p class="text-xs text-gray-500 mt-2">No RFQs yet</p>
             </div>
 
             <!-- Matched Items -->
@@ -127,8 +136,8 @@
                     </div>
                 </div>
                 <h3 class="text-gray-400 text-sm font-medium mb-1">Matched Items</h3>
-                <p class="text-3xl font-bold text-white">87%</p>
-                <p class="text-xs text-gray-500 mt-2">Based on uploaded catalogs</p>
+                <p class="text-3xl font-bold text-white">0%</p>
+                <p class="text-xs text-gray-500 mt-2">Based on archived RFQs</p>
             </div>
 
             <!-- Participated Tenders -->
@@ -141,8 +150,8 @@
                     </div>
                 </div>
                 <h3 class="text-gray-400 text-sm font-medium mb-1">Participated Tenders</h3>
-                <p class="text-3xl font-bold text-white">64</p>
-                <p class="text-xs text-gray-500 mt-2">Active RFQs</p>
+                <p class="text-3xl font-bold text-white">0</p>
+                <p class="text-xs text-gray-500 mt-2">Quoted/Submitted RFQs</p>
             </div>
 
             <!-- Average Margin -->
@@ -155,8 +164,8 @@
                     </div>
                 </div>
                 <h3 class="text-gray-400 text-sm font-medium mb-1">Average Margin</h3>
-                <p class="text-3xl font-bold text-white">23%</p>
-                <p class="text-xs text-gray-500 mt-2">Across current P&L</p>
+                <p class="text-3xl font-bold text-white">N/A</p>
+                <p class="text-xs text-gray-500 mt-2">Pricing data needed</p>
             </div>
         </div>
 
@@ -247,6 +256,7 @@
     </main>
 
     <script src="js/user-auth.js"></script>
+    <script src="js/mobile-menu.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

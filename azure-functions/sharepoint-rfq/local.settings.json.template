@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "SHAREPOINT_SITE_URL": "https://milemedical365.sharepoint.com/sites/MileMedical2",
+    "AZURE_TENANT_ID": "your-tenant-id-here",
+    "AZURE_CLIENT_ID": "your-client-id-here",
+    "AZURE_CLIENT_SECRET": "your-client-secret-here",
+    "NODE_ENV": "development"
+  },
+  "Host": {
+    "CORS": "*",
+    "CORSCredentials": false
+  }
+}

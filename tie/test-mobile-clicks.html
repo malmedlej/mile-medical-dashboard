@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobile Click Test - TIE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0D0D10;
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            color: #F6B17A;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .info {
+            background: rgba(246, 177, 122, 0.1);
+            border: 1px solid rgba(246, 177, 122, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-section h2 {
+            color: #F6B17A;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        button, .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #F6B17A 0%, #f49347 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer !important;
+            margin: 10px 0;
+            pointer-events: auto !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0.3) !important;
+            display: block;
+        }
+        
+        button:active, .btn:active {
+            transform: scale(0.98);
+            background: #f49347;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            touch-action: manipulation !important;
+        }
+        
+        input[type="file"]::file-selector-button {
+            background: #F6B17A;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer !important;
+            margin-right: 10px;
+        }
+        
+        input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            margin-right: 10px;
+        }
+        
+        label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            padding: 10px 0;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            touch-action: manipulation !important;
+        }
+        
+        #log {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .log-entry.success {
+            color: #4ade80;
+        }
+        
+        .log-entry.error {
+            color: #ef4444;
+        }
+        
+        .hidden-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .hidden-input-wrapper input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            z-index: 100;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            touch-action: manipulation !important;
+        }
+        
+        .hidden-input-wrapper .btn {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔬 Mobile Click Diagnostics</h1>
+    
+    <div class="info">
+        <strong>Instructions:</strong> Try tapping each element below. If it works, you'll see a ✅ success message in the log at the bottom.
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 1: Regular Button</h2>
+        <button onclick="log('✅ Regular button clicked!', 'success')">
+            Tap This Button
+        </button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Checkbox & Label</h2>
+        <label>
+            <input type="checkbox" id="checkbox1" onchange="log('✅ Checkbox toggled: ' + this.checked, 'success')">
+            Tap to toggle checkbox
+        </label>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Native File Input</h2>
+        <input type="file" id="file1" accept=".xlsx,.xls" onchange="handleFile(this, '1')">
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Hidden File Input (Overlay Method)</h2>
+        <p style="font-size: 14px; margin-bottom: 10px; color: #999;">This mimics the TIE matcher button</p>
+        <div class="hidden-input-wrapper">
+            <input type="file" id="file2" accept=".xlsx,.xls" onchange="handleFile(this, '2')">
+            <div class="btn">
+                📁 Choose Excel File (Tap Here)
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 5: Multiple Buttons in Flex Container</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button style="flex: 1; min-width: 140px;" onclick="log('✅ Button A clicked!', 'success')">
+                Button A
+            </button>
+            <button style="flex: 1; min-width: 140px;" onclick="log('✅ Button B clicked!', 'success')">
+                Button B
+            </button>
+        </div>
+    </div>
+    
+    <div id="log">
+        <strong>📋 Event Log:</strong>
+        <div class="log-entry">Waiting for interactions...</div>
+    </div>
+    
+    <script>
+        const logContainer = document.getElementById('log');
+        let logCount = 0;
+        
+        function log(message, type = 'success') {
+            logCount++;
+            const entry = document.createElement('div');
+            entry.className = 'log-entry ' + type;
+            const time = new Date().toLocaleTimeString();
+            entry.textContent = `[${time}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(message);
+            
+            // Visual feedback
+            if (type === 'success') {
+                navigator.vibrate && navigator.vibrate(50);
+            }
+        }
+        
+        function handleFile(input, testNum) {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                log(`✅ Test ${testNum} SUCCESS! File selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`, 'success');
+            } else {
+                log(`⚠️ Test ${testNum}: File picker opened but no file selected`, 'error');
+            }
+        }
+        
+        // Log device info
+        log(`📱 Device: ${navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}`, 'success');
+        log(`🌐 Browser: ${navigator.userAgent.match(/Chrome|Safari|Firefox|Edge/)?.[0] || 'Unknown'}`, 'success');
+        log(`📐 Viewport: ${window.innerWidth}x${window.innerHeight}`, 'success');
+        log(`👆 Touch support: ${('ontouchstart' in window) ? 'Yes' : 'No'}`, 'success');
+        
+        // Detect any pointer events
+        document.addEventListener('touchstart', function(e) {
+            console.log('Touch started on:', e.target);
+        }, { passive: true });
+        
+        document.addEventListener('click', function(e) {
+            console.log('Click detected on:', e.target);
+        });
+    </script>
+</body>
+</html>
