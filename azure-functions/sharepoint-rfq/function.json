@@ -1,17 +1,11 @@
 {
   "bindings": [
     {
-      "authLevel": "anonymous",
-      "type": "httpTrigger",
+      "name": "myBlob",
+      "type": "blobTrigger",
       "direction": "in",
-      "name": "req",
-      "methods": ["get", "post", "put", "delete", "patch", "options"],
-      "route": "sharepoint-rfq/{action?}/{id?}"
-    },
-    {
-      "type": "http",
-      "direction": "out",
-      "name": "res"
+      "path": "rfq-uploads/{name}",
+      "connection": "AzureWebJobsStorage"
     }
   ],
   "scriptFile": "index.js"

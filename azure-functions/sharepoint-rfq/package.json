@@ -7,13 +7,6 @@
     "start": "func start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "@pnp/sp": "^3.18.0",
-    "@pnp/nodejs": "^3.18.0",
-    "@pnp/common": "^3.18.0",
-    "@pnp/logging": "^3.18.0",
-    "@pnp/odata": "^3.18.0"
-  },
   "devDependencies": {
     "@azure/functions": "^4.0.0"
   },
@@ -25,5 +18,10 @@
     "mile-medical"
   ],
   "author": "Mile Medical",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@pnp/core": "^3.17.0",
+    "@pnp/nodejs": "^3.17.0",
+    "@pnp/sp": "^3.17.0"
+  }
 }
