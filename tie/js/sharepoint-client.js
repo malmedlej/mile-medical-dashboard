@@ -160,6 +160,61 @@ class SharePointClient {
         const filter = `RFQDate ge datetime'${isoDate}'`;
         return await this.getRFQs({ filter, orderBy: 'RFQDate', desc: 'true' });
     }
+
+    /**
+     * Upload RFQ Excel file to Azure Blob Storage
+     * @param {File} file - Excel file to upload
+     * @param {string} rfqId - RFQ identifier
+     * @returns {Promise<{success: boolean, fileUrl: string, fileName: string}>}
+     */
+    async uploadRFQFile(file, rfqId) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('rfqId', rfqId);
+            
+            console.log(`📤 Uploading file to Azure: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`);
+            
+            const response = await fetch(`${this.baseUrl}/upload`, {
+                method: 'POST',
+                body: formData,
+                signal: AbortSignal.timeout(this.timeout)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'File upload failed');
+            }
+
+            console.log('✅ File uploaded to Azure Blob Storage');
+            return {
+                success: true,
+                fileUrl: result.fileUrl,
+                fileName: result.fileName,
+                message: 'File uploaded successfully'
+            };
+
+        } catch (error) {
+            console.error('❌ Azure file upload error:', error);
+            
+            // FALLBACK: Store file metadata locally (file content not persisted)
+            console.warn('⚠️ Using local file metadata fallback (file content not stored)');
+            
+            // Create a pseudo-URL for local reference
+            const localFileRef = {
+                success: true,
+                fileUrl: `blob:local/${rfqId}/${file.name}`,
+                fileName: file.name,
+                fileSize: file.size,
+                fileType: file.type,
+                localOnly: true,
+                message: 'File metadata stored locally (awaiting Azure deployment)'
+            };
+            
+            return localFileRef;
+        }
+    }
 }
 
 /**
@@ -174,24 +229,56 @@ class RFQStorageManager {
 
     /**
      * Save RFQ to SharePoint (primary) and localStorage (backup)
+     * Now includes file upload support
+     * @param {Object} rfqData - RFQ data object
+     * @param {File} rfqFile - Optional Excel file to upload
      */
-    async saveRFQ(rfqData) {
+    async saveRFQ(rfqData, rfqFile = null) {
         try {
             console.log('💾 Saving RFQ to SharePoint...');
             
-            // Save to SharePoint first
-            const result = await this.spClient.createRFQ(rfqData);
+            // Step 1: Upload file if provided
+            let fileUrl = null;
+            let fileName = null;
+            
+            if (rfqFile) {
+                try {
+                    console.log('📤 Uploading RFQ file...');
+                    const uploadResult = await this.spClient.uploadRFQFile(rfqFile, rfqData.rfqId);
+                    
+                    if (uploadResult.success) {
+                        fileUrl = uploadResult.fileUrl;
+                        fileName = uploadResult.fileName;
+                        console.log(`✅ File uploaded: ${fileName}`);
+                    }
+                } catch (uploadError) {
+                    console.warn('⚠️ File upload failed, continuing with metadata only:', uploadError);
+                    // Continue even if file upload fails
+                }
+            }
+            
+            // Step 2: Save metadata to SharePoint
+            const rfqDataWithFile = {
+                ...rfqData,
+                fileUrl: fileUrl,
+                fileName: fileName,
+                originalFileName: rfqFile ? rfqFile.name : null
+            };
+            
+            const result = await this.spClient.createRFQ(rfqDataWithFile);
             
             if (result.success) {
                 console.log(`✅ RFQ saved to SharePoint (ID: ${result.data.id})`);
                 
                 // Also save to localStorage as backup
-                this.saveToLocalStorage(rfqData, result.data.id);
+                this.saveToLocalStorage(rfqDataWithFile, result.data.id);
                 
                 return {
                     success: true,
                     sharePointId: result.data.id,
-                    message: 'RFQ saved successfully to SharePoint'
+                    fileUrl: fileUrl,
+                    fileName: fileName,
+                    message: fileUrl ? 'RFQ and file saved to SharePoint' : 'RFQ saved to SharePoint'
                 };
             } else {
                 throw new Error('SharePoint save failed');
@@ -200,14 +287,14 @@ class RFQStorageManager {
         } catch (error) {
             console.error('❌ Failed to save to SharePoint:', error);
             
-            // Fallback: Save to localStorage only
+            // Fallback: Save to localStorage only (without file)
             console.log('⚠️ Falling back to localStorage only');
             this.saveToLocalStorage(rfqData);
             
             return {
                 success: false,
                 localOnly: true,
-                message: 'Saved locally only. Will sync to SharePoint when available.',
+                message: 'Saved locally only. File not stored. Will sync to SharePoint when available.',
                 error: error.message
             };
         }

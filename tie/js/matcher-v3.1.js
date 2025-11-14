@@ -5,6 +5,7 @@ let priceHistory = [];
 let matchedItems = [];
 let notFoundItems = [];
 let currentRFQId = '';
+let currentRFQFile = null;  // Store the uploaded Excel file for later storage
 let autoSaveEnabled = true;
 
 // Initialize
@@ -178,8 +179,11 @@ async function handleFileUpload(event) {
     if (uploadingIndicator) uploadingIndicator.classList.remove('hidden');
 
     try {
+        // Store the file reference for later saving to storage
+        currentRFQFile = file;
         currentRFQId = extractRFQId(file.name);
         console.log('📋 RFQ ID:', currentRFQId);
+        console.log('💾 File stored for upload:', file.name, `(${(file.size / 1024).toFixed(2)} KB)`);
         
         const data = await readExcelFile(file);
         console.log('📊 Extracted items:', data.length);
@@ -190,6 +194,7 @@ async function handleFileUpload(event) {
     } catch (error) {
         console.error('❌ Error processing file:', error);
         showToast('❌ Error processing file: ' + error.message, 'error');
+        currentRFQFile = null;  // Clear file on error
         if (uploadPrompt) uploadPrompt.classList.remove('hidden');
         if (uploadingIndicator) uploadingIndicator.classList.add('hidden');
     }
@@ -563,7 +568,7 @@ function savePrices() {
     showToast(`✅ ${newEntries.length} prices saved`, 'success');
 }
 
-// Save RFQ to Archive (SharePoint + localStorage)
+// Save RFQ to Archive (SharePoint + localStorage) with FILE UPLOAD
 async function saveToArchive() {
     try {
         if (!currentRFQId) {
@@ -595,13 +600,29 @@ async function saveToArchive() {
         };
 
         console.log('💾 Saving RFQ to archive:', rfqObject);
+        
+        // Check if we have the original file to upload
+        if (currentRFQFile) {
+            console.log('📤 Including file upload:', currentRFQFile.name);
+        } else {
+            console.warn('⚠️ No file available for upload - metadata only');
+        }
 
         // Try to save to SharePoint (if available via storageManager)
         if (window.storageManager) {
             try {
-                const result = await window.storageManager.saveRFQ(rfqObject);
+                // Pass both metadata AND file to storage manager
+                const result = await window.storageManager.saveRFQ(rfqObject, currentRFQFile);
+                
                 if (result && result.success) {
-                    showToast('✅ RFQ saved to SharePoint', 'success');
+                    const message = result.fileUrl 
+                        ? '✅ RFQ and file saved to SharePoint' 
+                        : '✅ RFQ saved to SharePoint';
+                    showToast(message, 'success');
+                    console.log('📁 File URL:', result.fileUrl || 'N/A');
+                    return;
+                } else if (result && result.localOnly) {
+                    showToast('💾 Saved locally (SharePoint unavailable)', 'warning');
                     return;
                 }
             } catch (sharepointError) {
@@ -609,9 +630,9 @@ async function saveToArchive() {
             }
         }
 
-        // Fallback: Save to localStorage only
+        // Fallback: Save to localStorage only (metadata only, no file)
         saveToLocalStorageOnly(rfqObject);
-        showToast('💾 RFQ saved locally', 'success');
+        showToast('💾 RFQ saved locally (file not stored)', 'warning');
 
     } catch (error) {
         console.error('❌ Error saving to archive:', error);

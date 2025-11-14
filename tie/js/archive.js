@@ -235,13 +235,20 @@ function renderArchiveTable() {
             </td>
             <td class="py-4 px-4">
                 <div class="flex space-x-2">
-                    <button onclick="viewRFQ(${index})" class="text-[#F6B17A] hover:text-[#f49347] transition-colors">
+                    <button onclick="viewRFQ(${index})" class="text-[#F6B17A] hover:text-[#f49347] transition-colors" title="View Details">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                         </svg>
                     </button>
-                    <button onclick="deleteRFQ(${index})" class="text-red-400 hover:text-red-300 transition-colors">
+                    ${rfq.fileUrl ? `
+                    <button onclick="downloadRFQFile(${index})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Download Original File">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </button>
+                    ` : ''}
+                    <button onclick="deleteRFQ(${index})" class="text-red-400 hover:text-red-300 transition-colors" title="Delete RFQ">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
@@ -299,6 +306,28 @@ function viewRFQ(index) {
     
     const matchRate = Math.round((currentRFQ.matchedCount / currentRFQ.totalCount) * 100) || 0;
     document.getElementById('modalMatchRate').textContent = `${matchRate}% (${currentRFQ.matchedCount}/${currentRFQ.totalCount})`;
+    
+    // Show file info if available
+    const modalHeader = document.querySelector('#rfqModal .glass-card > div:first-child');
+    const existingFileInfo = modalHeader.querySelector('.file-info');
+    if (existingFileInfo) {
+        existingFileInfo.remove();
+    }
+    
+    if (currentRFQ.fileUrl) {
+        const fileInfo = document.createElement('div');
+        fileInfo.className = 'file-info flex items-center space-x-2 text-sm text-gray-400 mt-2';
+        fileInfo.innerHTML = `
+            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>Original file: ${escapeHtml(currentRFQ.originalFileName || currentRFQ.fileName || 'Available')}</span>
+            <button onclick="window.open('${currentRFQ.fileUrl}', '_blank')" class="text-blue-400 hover:text-blue-300 underline">
+                Download
+            </button>
+        `;
+        modalHeader.appendChild(fileInfo);
+    }
 
     // Render matched items
     const modalItemsBody = document.getElementById('modalItemsBody');
@@ -714,3 +743,56 @@ window.archiveRFQ = function(rfqData) {
 
     console.log(`✅ Archived RFQ: ${rfqData.rfqId}`);
 };
+
+// Download RFQ file
+function downloadRFQFile(index) {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const sortFilter = document.getElementById('sortFilter').value;
+
+    // Get filtered RFQs (same logic as renderArchiveTable)
+    let filteredRFQs = archivedRFQs.filter(rfq => {
+        const matchesSearch = rfq.rfqId.toLowerCase().includes(searchTerm);
+        const matchesStatus = statusFilter === 'all' || rfq.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
+
+    filteredRFQs.sort((a, b) => {
+        switch (sortFilter) {
+            case 'date-desc':
+                return new Date(b.date) - new Date(a.date);
+            case 'date-asc':
+                return new Date(a.date) - new Date(b.date);
+            case 'items-desc':
+                return b.matchedCount - a.matchedCount;
+            case 'items-asc':
+                return a.matchedCount - b.matchedCount;
+            default:
+                return 0;
+        }
+    });
+
+    const rfq = filteredRFQs[index];
+    
+    if (!rfq || !rfq.fileUrl) {
+        showToast('❌ File not available', 'error');
+        return;
+    }
+
+    // Download file
+    try {
+        const link = document.createElement('a');
+        link.href = rfq.fileUrl;
+        link.download = rfq.fileName || rfq.originalFileName || `${rfq.rfqId}.xlsx`;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log('📥 Downloading file:', rfq.fileUrl);
+        showToast('📥 Downloading file...', 'success');
+    } catch (error) {
+        console.error('❌ Download failed:', error);
+        showToast('❌ Download failed', 'error');
+    }
+}
