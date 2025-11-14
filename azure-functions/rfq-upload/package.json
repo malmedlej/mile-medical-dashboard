@@ -1,0 +1,22 @@
+{
+  "name": "rfq-upload-function",
+  "version": "1.0.0",
+  "description": "Azure Function for uploading RFQ Excel files to Blob Storage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests configured\" && exit 0"
+  },
+  "dependencies": {
+    "@azure/storage-blob": "^12.17.0",
+    "parse-multipart-data": "^1.5.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "azure-functions",
+    "blob-storage",
+    "file-upload",
+    "rfq"
+  ],
+  "author": "Mile Medical",
+  "license": "MIT"
+}

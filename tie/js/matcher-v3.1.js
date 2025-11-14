@@ -1,9 +1,11 @@
 // Global variables
 let vendorItems = [];
+let vendorHashMap = {};  // VLOOKUP-style hash map for O(1) exact matching
 let priceHistory = [];
 let matchedItems = [];
 let notFoundItems = [];
 let currentRFQId = '';
+let currentRFQFile = null;  // Store the uploaded Excel file for later storage
 let autoSaveEnabled = true;
 
 // Initialize
@@ -38,7 +40,18 @@ async function loadVendorItems() {
             supplier: String(row['Supplier'] || '').trim()
         })).filter(item => item.nupco_code);
         
+        // BUILD HASH MAP for O(1) exact VLOOKUP-style matching
+        vendorHashMap = {};
+        vendorItems.forEach(item => {
+            const code = item.nupco_code;
+            if (!vendorHashMap[code]) {
+                vendorHashMap[code] = [];
+            }
+            vendorHashMap[code].push(item);
+        });
+        
         console.log(`✅ Loaded ${vendorItems.length} vendor items from GitHub`);
+        console.log(`✅ Built hash map with ${Object.keys(vendorHashMap).length} unique NUPCO codes`);
         
         // Log unique suppliers
         const uniqueSuppliers = [...new Set(vendorItems.map(item => item.supplier))];
@@ -67,26 +80,26 @@ async function loadPriceHistory() {
 // Setup event listeners
 function setupEventListeners() {
     const fileInput = document.getElementById('fileInput');
-    const fileInputFallback = document.getElementById('fileInputFallback');
+    const uploadBtn = document.getElementById('uploadBtn');
     const uploadZone = document.getElementById('uploadZone');
     const autoSaveToggle = document.getElementById('autoSaveToggle');
-    const savePricesBtn = document.getElementById('savePricesBtn');
+    const saveToArchiveBtn = document.getElementById('saveToArchiveBtn');
     const exportBtn = document.getElementById('exportBtn');
     const notFoundToggle = document.getElementById('notFoundToggle');
 
-    // Add null checks and setup listeners for BOTH file inputs
-    if (fileInput) {
-        fileInput.addEventListener('change', handleFileUpload);
-        console.log('✅ File input listener attached');
-    } else {
-        console.error('❌ fileInput element not found');
+    // FIXED: Single file input with button trigger (no double-trigger)
+    if (uploadBtn && fileInput) {
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        console.log('✅ Upload button listener attached');
     }
 
-    if (fileInputFallback) {
-        fileInputFallback.addEventListener('change', handleFileUpload);
-        console.log('✅ Fallback file input listener attached');
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFileUpload);
+        console.log('✅ File input change listener attached');
     } else {
-        console.error('❌ fileInputFallback element not found');
+        console.error('❌ fileInput element not found');
     }
     
     // Drag and drop
@@ -109,16 +122,6 @@ function setupEventListeners() {
                 handleFileUpload({ target: { files } });
             }
         });
-        
-        // Add click handler to upload zone for mobile devices
-        uploadZone.addEventListener('click', (e) => {
-            // Only trigger if clicking on the zone itself, not the file input
-            if (e.target.id === 'uploadZone' || e.target.closest('#uploadPrompt')) {
-                if (fileInput) {
-                    fileInput.click();
-                }
-            }
-        });
     }
 
     if (autoSaveToggle) {
@@ -127,8 +130,18 @@ function setupEventListeners() {
         });
     }
 
-    if (savePricesBtn) {
-        savePricesBtn.addEventListener('click', savePrices);
+    // FIXED: Save to Archive button handler
+    if (saveToArchiveBtn) {
+        saveToArchiveBtn.addEventListener('click', async () => {
+            saveToArchiveBtn.disabled = true;
+            saveToArchiveBtn.innerHTML = '<svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>Saving...';
+            
+            await saveToArchive();
+            
+            saveToArchiveBtn.disabled = false;
+            saveToArchiveBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>Save to Archive';
+        });
+        console.log('✅ Save to Archive button listener attached');
     }
 
     if (exportBtn) {
@@ -166,8 +179,11 @@ async function handleFileUpload(event) {
     if (uploadingIndicator) uploadingIndicator.classList.remove('hidden');
 
     try {
+        // Store the file reference for later saving to storage
+        currentRFQFile = file;
         currentRFQId = extractRFQId(file.name);
         console.log('📋 RFQ ID:', currentRFQId);
+        console.log('💾 File stored for upload:', file.name, `(${(file.size / 1024).toFixed(2)} KB)`);
         
         const data = await readExcelFile(file);
         console.log('📊 Extracted items:', data.length);
@@ -178,6 +194,7 @@ async function handleFileUpload(event) {
     } catch (error) {
         console.error('❌ Error processing file:', error);
         showToast('❌ Error processing file: ' + error.message, 'error');
+        currentRFQFile = null;  // Clear file on error
         if (uploadPrompt) uploadPrompt.classList.remove('hidden');
         if (uploadingIndicator) uploadingIndicator.classList.add('hidden');
     }
@@ -253,7 +270,8 @@ function extractNUPCOCodes(data) {
             if (code && /\d/.test(code)) {
                 items.push({
                     nupco_code: code,
-                    product_name: row[nameColumnIndex] ? String(row[nameColumnIndex]).trim() : 'N/A',
+                    rfq_description: row[nameColumnIndex] ? String(row[nameColumnIndex]).trim() : 'N/A',  // RFQ item name
+                    product_name: row[nameColumnIndex] ? String(row[nameColumnIndex]).trim() : 'N/A',      // Keep for compatibility
                     uom: row[uomColumnIndex] ? String(row[uomColumnIndex]).trim() : 'N/A',
                     qty: row[qtyColumnIndex] ? String(row[qtyColumnIndex]).trim() : 'N/A'
                 });
@@ -264,7 +282,8 @@ function extractNUPCOCodes(data) {
     return items;
 }
 
-// FIXED MATCHING - ONE ROW PER NUPCO CODE PER VENDOR (NO DUPLICATES)
+// EXACT VLOOKUP-STYLE MATCHING - Hash map O(1) lookup
+// NO AI, NO SEMANTIC MATCHING - Pure exact NUPCO code match
 function matchItems(rfqItems) {
     matchedItems = [];
     notFoundItems = [];
@@ -278,8 +297,8 @@ function matchItems(rfqItems) {
     rfqItems.forEach((rfqItem, index) => {
         const code = rfqItem.nupco_code;
         
-        // Find all vendor matches for this NUPCO code
-        const vendorMatches = vendorItems.filter(item => item.nupco_code === code);
+        // EXACT MATCH using hash map (O(1) lookup like VLOOKUP)
+        const vendorMatches = vendorHashMap[code] || [];
         
         console.log(`[${index + 1}/${rfqItems.length}] Code: ${code}`);
         console.log(`  → Found ${vendorMatches.length} vendor match(es)`);
@@ -301,11 +320,14 @@ function matchItems(rfqItems) {
                     
                     matchedItems.push({
                         nupco_code: code,
-                        product_name: vendorItem.product_name,
+                        rfq_description: rfqItem.rfq_description,           // RFQ item name (PRIMARY)
+                        vendor_product_name: vendorItem.product_name,       // Vendor product name (SECONDARY)
+                        product_name: vendorItem.product_name,              // Keep for backward compatibility
                         pack: vendorItem.pack || 'N/A',
                         vendor: vendor,
                         uom: rfqItem.uom,
                         qty: rfqItem.qty,
+                        required_qty: rfqItem.qty,                          // Alias for consistency
                         supplier: history ? history.Supplier : vendor,
                         price: history ? history.Price : '',
                         lastPrice: history
@@ -316,7 +338,7 @@ function matchItems(rfqItems) {
             console.log(`     ❌ No match found - adding to unmatched list`);
             notFoundItems.push({
                 nupco_code: code,
-                product_name: rfqItem.product_name,
+                product_name: rfqItem.rfq_description,
                 uom: rfqItem.uom,
                 qty: rfqItem.qty
             });
@@ -400,12 +422,23 @@ function displayMatchedItems() {
             historyHtml = `<p class="text-xs text-gray-500 mt-1">Last: ${item.lastPrice.Price} SAR (${item.lastPrice.Supplier} – ${formattedDate})</p>`;
         }
         
+        // FIXED: Show RFQ description as primary, vendor product name as secondary
+        const escapeHtml = (text) => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+        
         row.innerHTML = `
-            <td class="py-4 px-4 text-sm font-medium text-white">${item.nupco_code}</td>
-            <td class="py-4 px-4 text-sm text-gray-300">${item.product_name}</td>
-            <td class="py-4 px-4 text-sm text-gray-300">${item.uom || 'N/A'}</td>
-            <td class="py-4 px-4 text-sm text-gray-300">${item.qty || 'N/A'}</td>
-            <td class="py-4 px-4 text-sm text-[#F6B17A] font-semibold">${item.vendor}</td>
+            <td class="py-4 px-4 text-sm font-mono text-white">${escapeHtml(item.nupco_code)}</td>
+            <td class="py-4 px-4 text-sm text-gray-300">
+                <div class="font-medium text-white">${escapeHtml(item.rfq_description || item.product_name)}</div>
+                ${item.vendor_product_name && item.rfq_description !== item.vendor_product_name ? 
+                    `<div class="text-xs text-gray-500 mt-1">Vendor: ${escapeHtml(item.vendor_product_name)}</div>` : ''}
+            </td>
+            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.uom || 'N/A')}</td>
+            <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.qty || 'N/A')}</td>
+            <td class="py-4 px-4 text-sm text-[#F6B17A] font-semibold">${escapeHtml(item.vendor)}</td>
             <td class="py-4 px-4">
                 <span class="status-badge status-submitted">✓ Matched</span>
             </td>
@@ -533,6 +566,100 @@ function savePrices() {
     priceHistory.push(...newEntries);
     downloadJSON(priceHistory, 'price_history.json');
     showToast(`✅ ${newEntries.length} prices saved`, 'success');
+}
+
+// Save RFQ to Archive (SharePoint + localStorage) with FILE UPLOAD
+async function saveToArchive() {
+    try {
+        if (!currentRFQId) {
+            showToast('❌ No RFQ loaded', 'error');
+            return;
+        }
+
+        const rfqObject = {
+            rfqId: currentRFQId,
+            date: new Date().toISOString(),
+            matchedItems: matchedItems.map(item => ({
+                nupco_code: item.nupco_code,
+                rfq_description: item.rfq_description,
+                vendor_product_name: item.vendor_product_name,
+                product_name: item.product_name,
+                uom: item.uom,
+                qty: item.qty,
+                required_qty: item.required_qty || item.qty,
+                vendor: item.vendor,
+                supplier: item.supplier,
+                price: item.price || '',
+                unit_price: item.price || '',
+                total_price: ''
+            })),
+            notFoundItems: notFoundItems,
+            matchedCount: matchedItems.length,
+            totalCount: matchedItems.length + notFoundItems.length,
+            status: 'New'
+        };
+
+        console.log('💾 Saving RFQ to archive:', rfqObject);
+        
+        // Check if we have the original file to upload
+        if (currentRFQFile) {
+            console.log('📤 Including file upload:', currentRFQFile.name);
+        } else {
+            console.warn('⚠️ No file available for upload - metadata only');
+        }
+
+        // Try to save to SharePoint (if available via storageManager)
+        if (window.storageManager) {
+            try {
+                // Pass both metadata AND file to storage manager
+                const result = await window.storageManager.saveRFQ(rfqObject, currentRFQFile);
+                
+                if (result && result.success) {
+                    const message = result.fileUrl 
+                        ? '✅ RFQ and file saved to SharePoint' 
+                        : '✅ RFQ saved to SharePoint';
+                    showToast(message, 'success');
+                    console.log('📁 File URL:', result.fileUrl || 'N/A');
+                    return;
+                } else if (result && result.localOnly) {
+                    showToast('💾 Saved locally (SharePoint unavailable)', 'warning');
+                    return;
+                }
+            } catch (sharepointError) {
+                console.warn('⚠️ SharePoint save failed, using localStorage:', sharepointError);
+            }
+        }
+
+        // Fallback: Save to localStorage only (metadata only, no file)
+        saveToLocalStorageOnly(rfqObject);
+        showToast('💾 RFQ saved locally (file not stored)', 'warning');
+
+    } catch (error) {
+        console.error('❌ Error saving to archive:', error);
+        showToast('❌ Failed to save RFQ: ' + error.message, 'error');
+    }
+}
+
+// Save to localStorage fallback
+function saveToLocalStorageOnly(rfqObject) {
+    try {
+        const ARCHIVE_STORAGE_KEY = 'tie_rfq_archive';
+        const stored = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+        let archive = stored ? JSON.parse(stored) : [];
+
+        // Remove existing entry with same RFQ ID
+        archive = archive.filter(item => item.rfqId !== rfqObject.rfqId);
+
+        // Add new entry
+        archive.unshift(rfqObject);
+
+        // Save back
+        localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archive));
+        console.log('✅ Saved to localStorage:', rfqObject.rfqId);
+    } catch (error) {
+        console.error('❌ localStorage save error:', error);
+        throw error;
+    }
 }
 
 // Export results to Excel
