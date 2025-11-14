@@ -168,16 +168,15 @@ function setupEventListeners() {
         });
     }
 
-    // Handle both primary and fallback file inputs
-    const fileInputFallback = document.getElementById('fileInputFallback');
-    
-    // Primary file input (styled with opacity overlay)
-    fileInput.addEventListener('change', handleFileUpload);
-    
-    // Fallback file input (native browser styling - always works)
-    if (fileInputFallback) {
-        fileInputFallback.addEventListener('change', handleFileUpload);
+    // Upload button triggers file input
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
     }
+    
+    // File input change handler (single listener, no double trigger)
+    fileInput.addEventListener('change', handleFileUpload, { once: false });
     
     // Drag and drop handlers (for desktop)
     uploadZone.addEventListener('dragover', (e) => {
@@ -209,10 +208,19 @@ function setupEventListeners() {
     // Export button
     exportBtn.addEventListener('click', exportResults);
     
-    // Save prices button (disabled for now)
-    savePricesBtn.addEventListener('click', () => {
-        showToast('💡 Price saving feature coming soon!', 'warning');
-    });
+    // Save to archive button
+    const saveToArchiveBtn = document.getElementById('saveToArchiveBtn');
+    if (saveToArchiveBtn) {
+        saveToArchiveBtn.addEventListener('click', async () => {
+            saveToArchiveBtn.disabled = true;
+            saveToArchiveBtn.innerHTML = '<svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>Saving...';
+            
+            await saveToArchive();
+            
+            saveToArchiveBtn.disabled = false;
+            saveToArchiveBtn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>Save to Archive';
+        });
+    }
     
     // Not found toggle
     notFoundToggle.addEventListener('click', toggleNotFound);
@@ -552,8 +560,8 @@ function displayMatchedTable() {
         row.innerHTML = `
             <td class="py-4 px-4 text-sm font-mono text-white">${escapeHtml(item.nupco_code)}</td>
             <td class="py-4 px-4 text-sm text-gray-300">
-                <div class="font-medium">${escapeHtml(item.product_name)}</div>
-                ${item.rfq_description ? `<div class="text-xs text-gray-500 mt-1">${escapeHtml(item.rfq_description)}</div>` : ''}
+                <div class="font-medium text-white">${escapeHtml(item.rfq_description || item.product_name)}</div>
+                ${item.product_name && item.rfq_description !== item.product_name ? `<div class="text-xs text-gray-500 mt-1">Vendor: ${escapeHtml(item.product_name)}</div>` : ''}
             </td>
             <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.uom)}</td>
             <td class="py-4 px-4 text-sm text-gray-300">${escapeHtml(item.supplier)}</td>
@@ -568,11 +576,6 @@ function displayMatchedTable() {
     
     // Show matched section
     document.getElementById('matchedSection').classList.remove('hidden');
-    
-    // Disable save prices button (feature not ready)
-    const savePricesBtn = document.getElementById('savePricesBtn');
-    savePricesBtn.disabled = true;
-    savePricesBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
 // Display not found items as chips

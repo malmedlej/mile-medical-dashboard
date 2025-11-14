@@ -13,9 +13,9 @@
     -ms-user-select: none;
 }
 
-/* Allow text selection only for actual text content and inputs */
-p, span,
-input, textarea, 
+/* Allow text selection only for inputs and explicitly editable content */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), 
+textarea, 
 [contenteditable="true"],
 .selectable-text {
     user-select: text;
@@ -23,6 +23,12 @@ input, textarea,
     -moz-user-select: text;
     -ms-user-select: text;
     cursor: text;
+}
+
+/* Paragraphs and spans should NOT have text cursor by default */
+p, span, div {
+    cursor: default;
+    user-select: none;
 }
 
 /* Headings should NOT have text cursor - they're display elements */
@@ -46,10 +52,14 @@ img {
     pointer-events: auto;
 }
 
-/* Input fields should have text cursor */
-input:not([type="checkbox"]):not([type="radio"]),
+/* Text input fields should have text cursor */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
 textarea {
-    cursor: text;
+    cursor: text !important;
 }
 
 /* Clickable elements should have pointer cursor */
